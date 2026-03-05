@@ -1,0 +1,163 @@
+//board consts
+const boardHeight = 600;
+const boardWidth = 1200;
+const playerWidth = 90;
+const playerHeight = 95;
+const playerPosX = 50;
+const obstructionHeight = 70;
+const gravity = 900;
+let obstructionSpeed = 600;
+const rockWidth1 = 34;
+const rockWidth2 = 69;
+const rockWidth3 = 102;
+const playerJumpStrength = 600;
+
+class Object {
+    constructor (x=0, y=0, width=0, height=0, velX=0, velY=0, img) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.velX = velX;
+        this.velY = velY;
+        this.img = img;
+    }
+
+    draw (context) {
+        context.drawImage(this.img, this.x, this.y, this.width, this.height);
+    }
+
+    update (dt) {
+        this.x += this.velX * dt
+    }
+
+    checkCollision(other) {
+        return this.x < other.x + other.width &&
+            this.x + this.width > other.x &&
+            this.y < other.y + other.height &&
+            this.y + this.height > other.y;
+    }
+}
+
+class Player extends Object{
+    constructor(img){
+        super(playerPosX, boardHeight - playerHeight, playerWidth, playerHeight, 0, 0, img)
+        this.move = this.move.bind(this);
+    }
+
+    move (e) {
+        if ((e.code == "Space" || e.code == "ArrowUp") && this.y == boardHeight - playerHeight) {
+            console.log("Jump");
+            this.velY = -playerJumpStrength;
+        }
+    }
+
+    update(dt) {
+        super.update(dt);
+        this.velY += gravity * dt;
+        this.y = Math.min(boardHeight - playerHeight, + this.y + this.velY * dt); //apply gravity to player, but makes sure it doesn't go underground
+        //console.log(player.y);
+    }
+}
+
+class Obstruction extends Object{
+    constructor(width, img_src){
+        super(boardWidth, boardHeight - obstructionHeight, width, obstructionHeight, -obstructionSpeed, 0, img_src)
+    }
+}
+
+let player;
+let board;
+let context;
+let obstructions = [];
+let gameOver = false;
+let score = 0;
+let playerImage;
+let rockImage1;
+let rockImage2;
+let rockImage3;
+let prevtime;
+
+window.onload = function() {
+    let scale = 1.0;
+    board = document.getElementById("board");
+    //keep resolution, scale linearly
+    board.height = boardHeight * scale;
+    board.width = boardWidth * scale;
+
+    context = board.getContext("2d");
+
+    playerImage = new Image();
+    playerImage.src = "./game/img/jelly0.png";
+    
+    rockImage1 = new Image();
+    rockImage1.src = "./game/img/rock0.png"
+
+    rockImage2 = new Image();
+    rockImage2.src = "./game/img/rock1.png"
+
+    rockImage3 = new Image();
+    rockImage3.src = "./game/img/rock2.png"
+
+    player = new Player(playerImage);
+    prevtime = this.performance.now();
+
+    this.requestAnimationFrame(update);
+    this.setInterval(spawnRock, 1500);
+    this.document.addEventListener("keydown", player.move);
+}
+
+function update() {
+    requestAnimationFrame(update);
+    if (gameOver) return;
+
+    context.clearRect(0, 0, board.width, board.height);
+
+    let dt = (performance.now() - prevtime) / 1000;
+    obstructionSpeed += dt * 5;
+
+    prevtime = performance.now();
+    player.update(dt);
+    player.draw(context);
+
+    for (let i = 0; i < obstructions.length; ++i) {
+        let rock = obstructions[i];
+        rock.update(dt);
+        rock.draw(context);
+
+        if (player.checkCollision(rock)) {
+            console.log(player.x, player.y, player.width, player.height);
+            console.log(rock.x, rock.y, rock.width, rock.height);
+            gameOverEvent();
+        }
+    }
+
+    context.fillStyle = "black";
+    context.font = "20px courier";
+    score++;
+    context.fillText(score, 5, 20);
+}
+
+function spawnRock() {
+    if (gameOver) return;
+
+    let obj;
+    let typeChance = Math.random();
+
+    if (typeChance < 0.15) {
+        obj = new Obstruction(rockWidth3, rockImage3);
+    } else if (typeChance < 0.45) {
+        obj = new Obstruction(rockWidth2, rockImage2);
+    } else {
+        obj = new Obstruction(rockWidth1, rockImage1);
+    }
+    obstructions.push(obj);
+
+    if (obstructions.length > 10) {
+        obstructions.shift();
+    }
+}
+
+function gameOverEvent() {
+    gameOver = true
+}
