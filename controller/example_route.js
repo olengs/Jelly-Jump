@@ -9,7 +9,7 @@ router.get("/create", (req, res) => {
     res.send("This is the example create homepage")
 });
 
-router.get("/update", (req, res) => {
+routerS.get("/update", (req, res) => {
     res.send("This is the example update homepage")
 });
 
