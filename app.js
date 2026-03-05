@@ -15,8 +15,11 @@ server.use(express.urlencoded());
 server.set("view engine", "ejs");
 
 // Server all imported routes
-const example = require("./controller/example_route")
+const example = require("./controller/example_route");
 server.use("/example", example);
+
+const gameRoute = require("./controller/game_controller");
+server.use("/game", gameRoute);
 
 //Home page
 server.get("/", (req, res) => {
