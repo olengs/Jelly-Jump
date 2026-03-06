@@ -4,13 +4,14 @@ const boardWidth = 1200;
 const playerWidth = 90;
 const playerHeight = 95;
 const playerPosX = 50;
-const obstructionHeight = 70;
-const gravity = 900;
+const obstructionHeight = 100;
+const gravity = 1000;
 let obstructionSpeed = 600;
 const rockWidth1 = 34;
 const rockWidth2 = 69;
 const rockWidth3 = 102;
-const playerJumpStrength = 600;
+const playerJumpStrength = 800;
+const airResistance = 1200;
 
 class Object {
     constructor (x=0, y=0, width=0, height=0, velX=0, velY=0, img) {
@@ -43,18 +44,22 @@ class Player extends Object{
     constructor(img){
         super(playerPosX, boardHeight - playerHeight, playerWidth, playerHeight, 0, 0, img)
         this.move = this.move.bind(this);
+        this.accX = 0;
+        this.accY = 0;
     }
 
     move (e) {
         if ((e.code == "Space" || e.code == "ArrowUp") && this.y == boardHeight - playerHeight) {
             console.log("Jump");
+            this.accY = airResistance;
             this.velY = -playerJumpStrength;
         }
     }
 
     update(dt) {
         super.update(dt);
-        this.velY += gravity * dt;
+        this.accY += gravity * dt;
+        this.velY += this.accY * dt;
         this.y = Math.min(boardHeight - playerHeight, + this.y + this.velY * dt); //apply gravity to player, but makes sure it doesn't go underground
         //console.log(player.y);
     }
@@ -77,6 +82,7 @@ let rockImage1;
 let rockImage2;
 let rockImage3;
 let prevtime;
+let bgImage;
 
 window.onload = function() {
     let scale = 1.0;
@@ -88,16 +94,16 @@ window.onload = function() {
     context = board.getContext("2d");
 
     playerImage = new Image();
-    playerImage.src = "./game/img/jelly0.png";
+    playerImage.src = "/game/img/jelly0.png";
     
     rockImage1 = new Image();
-    rockImage1.src = "./game/img/rock0.png"
+    rockImage1.src = "/game/img/rock0.png";
 
     rockImage2 = new Image();
-    rockImage2.src = "./game/img/rock1.png"
+    rockImage2.src = "/game/img/rock1.png";
 
     rockImage3 = new Image();
-    rockImage3.src = "./game/img/rock2.png"
+    rockImage3.src = "/game/img/rock2.png";
 
     player = new Player(playerImage);
     prevtime = this.performance.now();
@@ -112,6 +118,8 @@ function update() {
     if (gameOver) return;
 
     context.clearRect(0, 0, board.width, board.height);
+    context.fillStyle = "#1a2231";
+    context.fillRect(0, 0, board.width, board.height);
 
     let dt = (performance.now() - prevtime) / 1000;
     obstructionSpeed += dt * 5;
@@ -132,10 +140,10 @@ function update() {
         }
     }
 
-    context.fillStyle = "black";
+    context.fillStyle = "white";
     context.font = "20px courier";
     score++;
-    context.fillText(score, 5, 20);
+    context.fillText(`Score: ${score}`, 5, 20);
 }
 
 function spawnRock() {
