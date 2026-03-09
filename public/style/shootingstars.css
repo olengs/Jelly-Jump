@@ -9,6 +9,7 @@ body {
   /* background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f); */
   overflow: hidden;
   background-image: url("/images/bg.jpg");
+  background-size: cover;
 }
 
 .stars {
