@@ -4,6 +4,8 @@ body {
 }
 
 #board {
+    position: relative;
     background-color: lightgray;
     border-bottom: 1px solid black;
+    z-index: 10;
 }
