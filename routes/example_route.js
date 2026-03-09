@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const ExampleController = require("../controllers/example_controller");
+const ExampleControllers = require("../controllers/example_controllers");
 
-router.get("/", ExampleController.exampleHome);
+router.get("/", ExampleControllers.exampleHome);
 
-router.get("/create", ExampleController.exampleCreate);
+router.get("/create", ExampleControllers.exampleCreate);
 
-router.get("/update", ExampleController.exampleUpdate);
+router.get("/update", ExampleControllers.exampleUpdate);
 
-router.get("/delete", ExampleController.exampleDelete);
+router.get("/delete", ExampleControllers.exampleDelete);
 
 module.exports = router;

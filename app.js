@@ -11,7 +11,7 @@ const port = 8000;
 server.use('/', express.static('public'));
 
 // Parse URL-encoded data from POST requests
-server.use(express.urlencoded());
+server.use(express.urlencoded({extended: true}));
 server.set("view engine", "ejs");
 
 // Server all imported routes
@@ -21,9 +21,12 @@ server.use("/example", example);
 const gameRoute = require("./routes/game_routes");
 server.use("/game", gameRoute);
 
+const authRoute = require("./routes/user_routes");
+server.use("/", authRoute);
+
 //Home page
 server.get("/", (req, res) => {
-  res.redirect("/test.html")
+  res.redirect("/login");
 });
 
 server.listen(port, hostname, () => {

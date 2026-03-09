@@ -1,1 +1,1 @@
-npm init -y && npm install express ejs
+npm init -y && npm install express ejs mongoose dotenv express-session

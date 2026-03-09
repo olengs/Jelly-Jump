@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const game_controller = require("../controllers/game_controller")
+const GameControllers = require("../controllers/game_controllers")
 
-router.get("/", game_controller.gameViewController);
+router.use(express.json());
+
+router.get("/", GameControllers.gameViewController);
+
+router.post("/endgame", GameControllers.EndGameUpdateController);
 
 module.exports = router;

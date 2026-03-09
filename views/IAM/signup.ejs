@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Jelly Sign Up</title>
+    <link rel="stylesheet" href="/style/login.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+
+    <div class="login-container">
+        <div class="mascot-container">
+            <svg viewBox="0 0 10 8" width="80" height="64" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    .j-body { fill: #ff77a8; }
+                    .j-light { fill: #ffb6c1; }
+                    .j-eye-w { fill: #ffffff; }
+                    .j-eye-b { fill: #22123d; }
+                    .j-blush { fill: #ff3377; }
+                </style>
+                <rect x="3" y="0" width="4" height="1" class="j-light" />
+                <rect x="2" y="1" width="6" height="1" class="j-body" />
+                <rect x="3" y="1" width="2" height="1" class="j-light" />
+                <rect x="1" y="2" width="8" height="1" class="j-body" />
+                <rect x="2" y="2" width="1" height="1" class="j-eye-w" />
+                <rect x="7" y="2" width="1" height="1" class="j-eye-w" />
+                <rect x="1" y="3" width="8" height="1" class="j-body" />
+                <rect x="2" y="3" width="1" height="1" class="j-eye-b" />
+                <rect x="7" y="3" width="1" height="1" class="j-eye-b" />
+                <rect x="0" y="4" width="10" height="1" class="j-body" />
+                <rect x="1" y="4" width="1" height="1" class="j-blush" />
+                <rect x="8" y="4" width="1" height="1" class="j-blush" />
+                <rect x="0" y="5" width="10" height="1" class="j-body" />
+                <rect x="0" y="6" width="2" height="1" class="j-body" />
+                <rect x="3" y="6" width="1" height="1" class="j-body" />
+                <rect x="6" y="6" width="1" height="1" class="j-body" />
+                <rect x="8" y="6" width="2" height="1" class="j-body" />
+                <rect x="0" y="7" width="1" height="1" class="j-body" />
+                <rect x="4" y="7" width="2" height="1" class="j-body" />
+                <rect x="9" y="7" width="1" height="1" class="j-body" />
+            </svg>
+        </div>
+
+        <h1>JOIN THE ARMY</h1>
+        <p class="subtitle">NEW RECRUIT REGISTRATION</p>
+        
+        <form onsubmit="event.preventDefault();" action="/auth/signup" method="post">
+            <div class="input-group">
+                <label for="email">EMAIL:</label>
+                <input type="email" id="email" placeholder="ENTER EMAIL" required>
+            </div>
+
+            <div class="input-group">
+                <label for="username">NEW JELLY ID:</label>
+                <input type="text" id="username" placeholder="CHOOSE ALIAS" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">PASSWORD:</label>
+                <input type="password" id="password" placeholder="****" required>
+            </div>
+
+            <div class="input-group">
+                <label for="confirm-password">VERIFY PASSWORD:</label>
+                <input type="password" id="confirm-password" placeholder="****" required>
+            </div>
+            
+            <button type="submit" class="login-btn">HATCH ACCOUNT</button>
+        </form>
+        
+        <p class="subtitle linktext">
+            ALREADY HATCHED? <br><br>
+            <a href="/login" class="links">LOG IN</a>
+        </p>
+    </div>
+</body>
+</html>

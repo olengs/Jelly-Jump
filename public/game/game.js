@@ -50,7 +50,7 @@ class Player extends Object{
 
     move (e) {
         if ((e.code == "Space" || e.code == "ArrowUp") && this.y == boardHeight - playerHeight) {
-            console.log("Jump");
+            //console.log("Jump");
             this.accY = airResistance;
             this.velY = -playerJumpStrength;
         }
@@ -78,11 +78,10 @@ let obstructions = [];
 let gameOver = false;
 let score = 0;
 let playerImage;
-let rockImage1;
-let rockImage2;
-let rockImage3;
+let rockImage1, rockImage2, rockImage3, bgImage;
 let prevtime;
-let bgImage;
+let bgx = 0;
+let bgx_speed = 120;
 
 window.onload = function() {
     let scale = 1.0;
@@ -92,6 +91,9 @@ window.onload = function() {
     board.width = boardWidth * scale;
 
     context = board.getContext("2d");
+
+    bgImage = new Image();
+    bgImage.src = "/game/img/gamebg.png";
 
     playerImage = new Image();
     playerImage.src = "/game/img/jelly0.png";
@@ -117,12 +119,18 @@ function update() {
     requestAnimationFrame(update);
     if (gameOver) return;
 
-    context.clearRect(0, 0, board.width, board.height);
-    context.fillStyle = "#1a2231";
-    context.fillRect(0, 0, board.width, board.height);
-
     let dt = (performance.now() - prevtime) / 1000;
+
+    context.clearRect(0, 0, board.width, board.height);
+    context.fillStyle = "black";
+    context.fillRect(0, 0, board.width, board.height);
+    context.globalAlpha = 0.5
+    context.drawImage(bgImage, bgx, 0, board.width, board.height);
+    context.drawImage(bgImage, board.width + bgx - 5, 0, board.width, board.height);
+    context.globalAlpha = 1;
+
     obstructionSpeed += dt * 5;
+    bgx = (bgx - obstructionSpeed * dt) % board.width;
 
     prevtime = performance.now();
     player.update(dt);
@@ -134,9 +142,10 @@ function update() {
         rock.draw(context);
 
         if (player.checkCollision(rock)) {
-            console.log(player.x, player.y, player.width, player.height);
-            console.log(rock.x, rock.y, rock.width, rock.height);
+            //console.log(player.x, player.y, player.width, player.height);
+            //console.log(rock.x, rock.y, rock.width, rock.height);
             gameOverEvent();
+            return;
         }
     }
 
@@ -168,4 +177,43 @@ function spawnRock() {
 
 function gameOverEvent() {
     gameOver = true
+    obstructions = [];
+
+    //redraw bg
+    context.clearRect(0, 0, board.width, board.height);
+    context.fillStyle = "black";
+    context.fillRect(0, 0, board.width, board.height);
+    context.globalAlpha = 0.2
+    context.drawImage(bgImage, bgx, 0, board.width, board.height);
+    context.drawImage(bgImage, board.width + bgx - 5, 0, board.width, board.height);
+    context.globalAlpha = 1;
+
+    context.fillStyle = "white";
+    context.font = "20px courier";
+    context.fillText(`Game Over`, board.width * 0.45, board.height * 0.5);
+    context.fillText(`Score: ${score}`, board.width * 0.45, board.height * 0.5 + 20);
+
+    // 
+    updateHighscore(score);
+}
+
+async function updateHighscore(highscore) {
+    try {
+        let userId = document.getElementById("userId").value;
+        const data = JSON.stringify({userId, highscore, gameEndTime: Date.now()});
+        let resp = await fetch(`/game/endgame`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: data,
+        });
+        if (!resp.ok) {
+            throw new Error(`Network response error: ${resp.Error}`);
+        }
+        let respjson = await resp.json();
+        if (respjson.Error) {
+            throw new Error(`Update highscore error: ${resp.Error}`);
+        }
+    } catch (error) {
+        console.log(error);
+    }
 }
