@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Astro Jelly Login</title>
     <link rel="stylesheet" href="style/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
 <body>
     <div class="scanlines"></div>
@@ -42,7 +43,7 @@
             </svg>
         </div>
 
-        <h1>ASTRO<br>JELLIES</h1>
+        <h1>ASTRO JELLIES</h1>
         <p class="subtitle">SQUISHY INVASION PROTOCOL</p>
         
         <form onsubmit="event.preventDefault();" action="/auth/login" method="post">
@@ -53,7 +54,10 @@
             
             <div class="input-group">
                 <label for="password">PASSWORD:</label>
-                <input type="password" id="password" placeholder="****" required>
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="****" required>
+                    <button type="button" class="preview"><i class="fa-regular fa-eye visible-icon" onclick="toggleDisplay('password')"></i></button>
+                </div>
             </div>
             
             <button type="submit" class="login-btn">BOOP TO ENTER</button>
@@ -66,3 +70,14 @@
     </div>
 </body>
 </html>
+
+<script>
+function toggleDisplay(id) {
+    var x = document.getElementById(id);
+    if (x.type === "password") {
+        x.type = "text"; // or "inline", "inline-block", etc., depending on desired layout
+    } else {
+        x.type = "password";
+    }
+}
+</script>

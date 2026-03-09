@@ -34,7 +34,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .login-container {
@@ -105,7 +105,7 @@ p.subtitle {
 
 .input-group label {
     display: block;
-    font-size: 10px;
+    font-size: 15px;
     color: var(--jelly-light-pink);
     margin-bottom: 10px;
     text-shadow: 1px 1px 0px #1a0b2e;
@@ -131,6 +131,31 @@ p.subtitle {
 
 .input-group input::placeholder {
     color: #6b4c8a;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    /* Extra padding on the right so text doesn't type under the eye icon */
+    padding-right: 45px; 
+}
+
+.preview {
+    position: absolute;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: var(--jelly-pink);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
 button.login-btn {
@@ -184,4 +209,9 @@ a.links {
     text-decoration: underline solid var(--jelly-light-pink) !important;
     color: var(--jelly-light-pink) !important;
     line-height: 1.5 !important;
+}
+
+.visible-icon {
+    position: relative;
+    right: 10%;
 }
