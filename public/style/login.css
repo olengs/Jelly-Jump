@@ -1,40 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
-
-:root {
-    --space-bg: #22123d; /* Deep galaxy purple */
-    --panel-bg: #3a1f5d; /* Lighter purple panel */
-    --jelly-pink: #ff77a8;
-    --jelly-light-pink: #ffb6c1;
-    --cute-cyan: #00e5ff;
-    --text-color: #fff0f5;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-weight: 400 !important;
-    font-family: "Pixelify Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-}
-
 body {
-    background-color: var(--space-bg);
-    /* Pastel stars background */
-    background-image: 
-        radial-gradient(var(--cute-cyan), rgba(0,229,255,0.2) 2px, transparent 4px),
-        radial-gradient(var(--jelly-pink), rgba(255,119,168,0.2) 2px, transparent 4px),
-        radial-gradient(white, rgba(255,255,255,0.1) 1px, transparent 2px);
-    background-size: 450px 450px, 300px 300px, 150px 150px;
-    background-position: 0 0, 40px 60px, 130px 270px;
-    font-family: 'Press Start 2P', cursive;
-    color: var(--text-color);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .login-container {
@@ -105,7 +73,7 @@ p.subtitle {
 
 .input-group label {
     display: block;
-    font-size: 10px;
+    font-size: 15px;
     color: var(--jelly-light-pink);
     margin-bottom: 10px;
     text-shadow: 1px 1px 0px #1a0b2e;
@@ -131,6 +99,31 @@ p.subtitle {
 
 .input-group input::placeholder {
     color: #6b4c8a;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    /* Extra padding on the right so text doesn't type under the eye icon */
+    padding-right: 45px; 
+}
+
+.preview {
+    position: absolute;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: var(--jelly-pink);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
 button.login-btn {
@@ -184,4 +177,9 @@ a.links {
     text-decoration: underline solid var(--jelly-light-pink) !important;
     color: var(--jelly-light-pink) !important;
     line-height: 1.5 !important;
+}
+
+.visible-icon {
+    position: relative;
+    right: 10%;
 }

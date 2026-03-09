@@ -16,13 +16,14 @@ server.set("view engine", "ejs");
 
 // Server all imported routes
 const example = require("./routes/example_route");
-server.use("/example", example);
-
 const gameRoute = require("./routes/game_routes");
-server.use("/game", gameRoute);
+const userRoute = require("./routes/user_routes");
+const authRoute = require("./routes/iam_routes");
 
-const authRoute = require("./routes/user_routes");
-server.use("/", authRoute);
+server.use("/example", example);
+server.use("/game", gameRoute);
+server.use("/", userRoute);
+server.use("/auth", authRoute);
 
 //Home page
 server.get("/", (req, res) => {

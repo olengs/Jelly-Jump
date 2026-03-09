@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Astro Jelly Sign Up</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
     <link rel="stylesheet" href="/style/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
 <body>
     <div class="scanlines"></div>
@@ -45,25 +47,31 @@
         <h1>JOIN THE ARMY</h1>
         <p class="subtitle">NEW RECRUIT REGISTRATION</p>
         
-        <form onsubmit="event.preventDefault();" action="/auth/signup" method="post">
+        <form onsubmit="if(event.type != 'submit') event.preventDefault();" action="/auth/signup" method="post">
             <div class="input-group">
                 <label for="email">EMAIL:</label>
-                <input type="email" id="email" placeholder="ENTER EMAIL" required>
+                <input type="email" name="email" id="email" placeholder="ENTER EMAIL" required>
             </div>
 
             <div class="input-group">
                 <label for="username">NEW JELLY ID:</label>
-                <input type="text" id="username" placeholder="CHOOSE ALIAS" required>
+                <input type="text" name="username" id="username" placeholder="CHOOSE ALIAS" required>
             </div>
             
             <div class="input-group">
                 <label for="password">PASSWORD:</label>
-                <input type="password" id="password" placeholder="****" required>
+                <div class="password-wrapper">
+                    <input type="password" name="password" id="password" placeholder="****" required>
+                    <button type="button" class="preview"><i class="fa-regular fa-eye visible-icon" onclick="toggleDisplay('password')"></i></button>
+                </div>
             </div>
 
             <div class="input-group">
-                <label for="confirm-password">VERIFY PASSWORD:</label>
-                <input type="password" id="confirm-password" placeholder="****" required>
+                <label for="password">CONFIRM PASSWORD:</label>
+                <div class="password-wrapper">
+                    <input type="password" name="confirmPassword" id="confirm-password" placeholder="****" required>
+                    <button type="button" class="preview"><i class="fa-regular fa-eye visible-icon" onclick="toggleDisplay('confirm-password')"></i></button>
+                </div>
             </div>
             
             <button type="submit" class="login-btn">HATCH ACCOUNT</button>
@@ -76,3 +84,14 @@
     </div>
 </body>
 </html>
+
+<script>
+function toggleDisplay(id) {
+    var x = document.getElementById(id);
+    if (x.type === "password") {
+        x.type = "text"; // or "inline", "inline-block", etc., depending on desired layout
+    } else {
+        x.type = "password";
+    }
+}
+</script>
