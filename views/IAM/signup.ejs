@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Astro Jelly Sign Up</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
     <link rel="stylesheet" href="/style/login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
@@ -46,7 +47,7 @@
         <h1>JOIN THE ARMY</h1>
         <p class="subtitle">NEW RECRUIT REGISTRATION</p>
         
-        <form onsubmit="event.preventDefault();" action="/auth/signup" method="post">
+        <form onsubmit="if(event.type != 'submit') event.preventDefault();" action="/auth/signup" method="post">
             <div class="input-group">
                 <label for="email">EMAIL:</label>
                 <input type="email" name="email" id="email" placeholder="ENTER EMAIL" required>
@@ -66,7 +67,7 @@
             </div>
 
             <div class="input-group">
-                <label for="password">PASSWORD:</label>
+                <label for="password">CONFIRM PASSWORD:</label>
                 <div class="password-wrapper">
                     <input type="password" name="confirmPassword" id="confirm-password" placeholder="****" required>
                     <button type="button" class="preview"><i class="fa-regular fa-eye visible-icon" onclick="toggleDisplay('confirm-password')"></i></button>

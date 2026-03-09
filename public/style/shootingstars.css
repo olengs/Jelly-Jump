@@ -5,11 +5,19 @@
 }
 
 body {
-  min-height: 100vh;
-  /* background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f); */
-  overflow: hidden;
-  /* background-image: url("/images/bg.jpg");
-  background-size: cover; */
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    padding-top: 50px;
+}
+
+h1 {
+    color: var(--jelly-pink);
+    font-size: 40px;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0px #1a0b2e;
+    line-height: 1.5;
+    padding-bottom: 50px;
 }
 
 .stars {

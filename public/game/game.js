@@ -7,9 +7,9 @@ const playerPosX = 50;
 const obstructionHeight = 100;
 const gravity = 1000;
 let obstructionSpeed = 600;
-const rockWidth1 = 34;
-const rockWidth2 = 69;
-const rockWidth3 = 102;
+const rockWidth1 = 50;
+const rockWidth2 = 80;
+const rockWidth3 = 120;
 const playerJumpStrength = 800;
 const airResistance = 1200;
 
@@ -124,7 +124,7 @@ function update() {
     context.clearRect(0, 0, board.width, board.height);
     context.fillStyle = "black";
     context.fillRect(0, 0, board.width, board.height);
-    context.globalAlpha = 0.5
+    context.globalAlpha = 0.2
     context.drawImage(bgImage, bgx, 0, board.width, board.height);
     context.drawImage(bgImage, board.width + bgx - 5, 0, board.width, board.height);
     context.globalAlpha = 1;

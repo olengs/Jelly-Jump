@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+:root {
+    --space-bg: #22123d; /* Deep galaxy purple */
+    --panel-bg: #3a1f5d; /* Lighter purple panel */
+    --jelly-pink: #ff77a8;
+    --jelly-light-pink: #ffb6c1;
+    --cute-cyan: #00e5ff;
+    --text-color: #fff0f5;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-weight: 400 !important;
+    font-family: "Pixelify Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+body {
+    background-color: var(--space-bg);
+    /* Pastel stars background */
+    background-image: 
+        radial-gradient(var(--cute-cyan), rgba(0,229,255,0.2) 2px, transparent 4px),
+        radial-gradient(var(--jelly-pink), rgba(255,119,168,0.2) 2px, transparent 4px),
+        radial-gradient(white, rgba(255,255,255,0.1) 1px, transparent 2px);
+    background-size: 450px 450px, 300px 300px, 150px 150px;
+    background-position: 0 0, 40px 60px, 130px 270px;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--text-color);
+    min-height: 100vh;
+}
