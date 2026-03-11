@@ -1,7 +1,5 @@
-// Week 4 - Extra Question 9 - server.js
-// -------------------------------------
-
 const express = require('express');
+const bcrypt = require("bcrypt");
 const server = express();
 
 const hostname = 'localhost';
@@ -16,14 +14,12 @@ server.set("view engine", "ejs");
 
 // Server all imported routes
 const example = require("./routes/example_route");
-const gameRoute = require("./routes/game_routes");
-const userRoute = require("./routes/user_routes");
-const authRoute = require("./routes/iam_routes");
+const gameRoutes = require("./routes/game_routes");
+const userRoutes = require("./routes/user_routes");
 
 server.use("/example", example);
-server.use("/game", gameRoute);
-server.use("/", userRoute);
-server.use("/auth", authRoute);
+server.use("/game", gameRoutes);
+server.use("/", userRoutes);
 
 //Home page
 server.get("/", (req, res) => {

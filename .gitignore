@@ -139,3 +139,6 @@ dist
 # MAC
 .DS_STORE
 */.DS_STORE
+
+#env
+*.env
