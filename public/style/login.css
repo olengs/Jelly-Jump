@@ -1,0 +1,185 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: scroll;
+}
+
+.login-container {
+    background-color: var(--panel-bg);
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    /* Squishy pixel border effect */
+    border: 4px solid var(--jelly-pink);
+    box-shadow: 
+        inset 0 0 15px rgba(255, 119, 168, 0.4),
+        0 0 20px rgba(255, 119, 168, 0.6),
+        8px 8px 0px rgba(0, 0, 0, 0.3); /* Retro drop shadow */
+    position: relative;
+    z-index: 2;
+}
+
+/* Cute blocky corners */
+.login-container::before, .login-container::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: var(--space-bg);
+}
+.login-container::before {
+    top: -4px; left: -4px;
+    box-shadow: calc(100% + 404px) 0 0 var(--space-bg);
+}
+.login-container::after {
+    bottom: -4px; left: -4px;
+    box-shadow: calc(100% + 404px) 0 0 var(--space-bg);
+}
+
+/* Floating Jelly Animation */
+.mascot-container {
+    margin-bottom: 20px;
+    animation: float 2.5s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-10px) scale(1.05); }
+    100% { transform: translateY(0px) scale(1); }
+}
+
+h1 {
+    color: var(--jelly-pink);
+    font-size: 40px;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0px #1a0b2e;
+    line-height: 1.5;
+}
+
+p.subtitle {
+    font-size: 15px;
+    color: var(--cute-cyan);
+    margin-bottom: 35px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0px #1a0b2e;
+}
+
+.input-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 15px;
+    color: var(--jelly-light-pink);
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 0px #1a0b2e;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    background-color: #22123d;
+    border: 2px solid var(--cute-cyan);
+    color: var(--text-color);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: var(--jelly-pink);
+    box-shadow: 0 0 10px rgba(255, 119, 168, 0.5);
+    background-color: #2b174a;
+}
+
+.input-group input::placeholder {
+    color: #6b4c8a;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    /* Extra padding on the right so text doesn't type under the eye icon */
+    padding-right: 45px; 
+}
+
+.preview {
+    position: absolute;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: var(--jelly-pink);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+button.login-btn {
+    width: 100%;
+    background-color: var(--jelly-pink);
+    color: #1a0b2e;
+    border: 4px solid #1a0b2e;
+    padding: 15px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.2s ease;
+    box-shadow: 4px 4px 0px #1a0b2e;
+}
+
+button.login-btn:hover {
+    background-color: var(--cute-cyan);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #1a0b2e;
+}
+
+button.login-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #1a0b2e;
+}
+
+/* Softer, dreamy arcade scanlines */
+.scanlines {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(255, 119, 168, 0.05) 50%,
+        rgba(255, 119, 168, 0.05)
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.linktext {
+    margin-top: 25px;
+    margin-bottom: 0 !important;
+}
+
+a.links {
+    text-decoration: underline solid var(--jelly-light-pink) !important;
+    color: var(--jelly-light-pink) !important;
+    line-height: 1.5 !important;
+}
+
+.visible-icon {
+    position: relative;
+    right: 10%;
+}
