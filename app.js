@@ -35,13 +35,13 @@ server.get("/", (req, res) => {
 async function main() {
     try {
         await mongoose_connect_promise;
+        server.listen(port, hostname, () => {
+            console.log(`Server running at http://${hostname}:${port}/`);
+        });
     } catch (error) {
         console.log(`Error connecting to db: ${error}`);
         return;
     }
-    server.listen(port, hostname, () => {
-        console.log(`Server running at http://${hostname}:${port}/`);
-    });
 }
 
 main();
