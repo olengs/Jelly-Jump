@@ -1,8 +1,11 @@
-// Week 4 - Extra Question 9 - server.js
-// -------------------------------------
-
 const express = require('express');
+const bcrypt = require("bcrypt");
 const server = express();
+require("dotenv").config();
+const mongoose = require("mongoose");
+mongoose.set("bufferCommands", false);
+
+let mongoose_connect_promise = mongoose.connect(process.env.DB_TEST_URI);
 
 const hostname = 'localhost';
 const port = 8000;
@@ -11,25 +14,34 @@ const port = 8000;
 server.use('/', express.static('public'));
 
 // Parse URL-encoded data from POST requests
-server.use(express.urlencoded({extended: true}));
+server.use(express.urlencoded({ extended: true }));
 server.set("view engine", "ejs");
 
 // Server all imported routes
 const example = require("./routes/example_route");
-const gameRoute = require("./routes/game_routes");
-const userRoute = require("./routes/user_routes");
-const authRoute = require("./routes/iam_routes");
+const gameRoutes = require("./routes/game_routes");
+const userRoutes = require("./routes/user_routes");
 
 server.use("/example", example);
-server.use("/game", gameRoute);
-server.use("/", userRoute);
-server.use("/auth", authRoute);
+server.use("/game", gameRoutes);
+server.use("/", userRoutes);
 
 //Home page
 server.get("/", (req, res) => {
-  res.redirect("/login");
+    res.redirect("/login");
 });
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+//console.log(process.env.DB_TEST_URI);
+async function main() {
+    try {
+        await mongoose_connect_promise;
+        server.listen(port, hostname, () => {
+            console.log(`Server running at http://${hostname}:${port}/`);
+        });
+    } catch (error) {
+        console.log(`Error connecting to db: ${error}`);
+        return;
+    }
+}
+
+main();
