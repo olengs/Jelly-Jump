@@ -1,5 +1,6 @@
 const UserModel = require("../models/user-model");
 const bcrypt = require("bcrypt");
+const Errors = require("../models/errors");
 
 
 exports.loginView = (req, res) => {
@@ -17,20 +18,19 @@ exports.login = async (req, res) => {
     try {
         if (!username || !password) throw new Error("Empty login field(s)");
 
-        
         let user = await UserModel.getUserByName(username);
 
         let password_valid = await bcrypt.compare(password, user.passwordHash);
-        if (!password_valid) throw new UserModel.InvalidPasswordError();
+        if (!password_valid) throw new Errors.InvalidPasswordError();
         // todo: establish session and save cookie on user side to persist session for x duration
 
         console.log(`Logged in with ${username}, ${password}`);
     } catch (error) {
-        if (error instanceof UserModel.UserNotFoundError) {
+        if (error instanceof Errors.UserNotFoundError) {
             res.redirect(302, "/login");
             return;
         }
-        if (error instanceof UserModel.InvalidPasswordError) {
+        if (error instanceof Errors.InvalidPasswordError) {
             //todo: add error to session for display
             res.redirect(302, "/login");
         }
@@ -59,15 +59,15 @@ exports.signup = async (req, res) => {
         user = await UserModel.createUser(username, email, await bcrypt.hash(password, Math.floor(Math.random() * 10) ));
         console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
     } catch (error) {
-        if (error instanceof UserModel.UserAlreadyExistsError) {
+        if (error instanceof Errors.UserAlreadyExistsError) {
             res.render("IAM/signup", {email, username, errorMsg: error.message});
             return
         }
-        if (error instanceof UserModel.EmailAlreadyExistsError) {
+        if (error instanceof Errors.EmailAlreadyExistsError) {
             res.render("IAM/signup", {email, username, errorMsg: error.message});
             return
         }
-        res.redirect(500, "/");
+        res.status(500).render("error", {error: "access denied"});
         console.log(error);
         return
     }

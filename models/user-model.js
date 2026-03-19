@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const {sleep} = require("../utilities/sleep");
+const errors = require("./errors");
 
 function isDBConnected() {
     return mongoose.STATES[mongoose.connection.readyState] == "connected"
@@ -12,48 +13,12 @@ const userSchema = new mongoose.Schema({
     records: []
 })
 
-class DatabaseNotConnectedError extends Error{
-    constructor(){
-        super("Database not connected");
-        this.statusCode = 500 // status: internal server error
-    }
-}
-
-class UserAlreadyExistsError extends Error{
-    constructor(username){
-        super(`username ${username} already exists`);
-        this.username = username;
-        this.statusCode = 400; //status: bad request
-    }
-}
-
-class UserNotFoundError extends Error {
-    constructor(username) {
-        super(`Username not found`);
-        this.username = username;
-        this.statusCode = 400; //status: bad request
-    }
-}
-
-class EmailAlreadyExistsError extends Error {
-    constructor(email){
-        super(`Email ${email} already exists`);
-        this.statusCode = 400; //status: bad request
-    }
-}
-
-class InvalidPasswordError extends Error {
-    constructor(){
-        super("Password is invalid");
-        this.statusCode = 400;
-    }
-}
-
 const User = mongoose.model('User', userSchema, "users");
+exports.User = User;
 
-const databaseError = new DatabaseNotConnectedError();
+const databaseError = new errors.DatabaseNotConnectedError();
 
-let createUser = async (username, email, passwordHash) => {
+exports.createUser = async (username, email, passwordHash) => {
     if (!isDBConnected()) {
         throw databaseError;
     }
@@ -62,11 +27,11 @@ let createUser = async (username, email, passwordHash) => {
     email_exists = User.findOne({email})
 
     if (await username_exists) {
-        throw new UserAlreadyExistsError(username);
+        throw new errors.UserAlreadyExistsError(username);
     }
 
     if (await email_exists) {
-        throw new EmailAlreadyExistsError(email);
+        throw new errors.EmailAlreadyExistsError(email);
     }
 
     let dbuser = new User({username, email, passwordHash});
@@ -74,7 +39,7 @@ let createUser = async (username, email, passwordHash) => {
     return await dbuser.save();;
 }
 
-let getUserByName = async (username) => {
+exports.getUserByName = async (username) => {
     if (!isDBConnected()) {
         throw databaseError;
     }
@@ -85,16 +50,4 @@ let getUserByName = async (username) => {
     }
 
     return user;
-}
-
-// exporting everything
-module.exports = {
-    DatabaseNotConnectedError,
-    UserAlreadyExistsError,
-    UserNotFoundError,
-    EmailAlreadyExistsError,
-    InvalidPasswordError,
-    createUser,
-    getUserByName,
-    User,
 }
