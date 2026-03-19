@@ -5,11 +5,11 @@ const playerWidth = 90;
 const playerHeight = 95;
 const playerPosX = 50;
 const obstructionHeight = 100;
-const gravity = 1000;
-let obstructionSpeed = 600;
+const gravity = 1400;
+let obstructionSpeed = 800;
 const rockWidth1 = 50;
-const rockWidth2 = 80;
-const rockWidth3 = 120;
+const rockWidth2 = 170;
+const rockWidth3 = 200;
 const playerJumpStrength = 800;
 const airResistance = 1200;
 
@@ -96,7 +96,7 @@ window.onload = function() {
     bgImage.src = "/game/img/gamebg.png";
 
     playerImage = new Image();
-    playerImage.src = "/game/img/jelly0.png";
+    playerImage.src = "/game/img/jelly3.png";
     
     rockImage1 = new Image();
     rockImage1.src = "/game/img/rock0.png";

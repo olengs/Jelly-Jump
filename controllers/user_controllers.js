@@ -1,4 +1,5 @@
 const IAMController = require("./iam_controllers");
+const UserDB = require("../models/user");
 
 exports.loginView = (req, res) => {
     res.render("IAM/login", {});
@@ -18,7 +19,6 @@ exports.login = async (req, res) => {
         // todo: establish session and save cookie on user side to persist session for x duration
 
         console.log(`Logged in with ${username}, ${password}`);
-
     } catch (error) {
         // todo: handle & display error to user
         console.log(error);
