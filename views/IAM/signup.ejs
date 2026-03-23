@@ -46,16 +46,23 @@
 
         <h1>JOIN THE ARMY</h1>
         <p class="subtitle">NEW RECRUIT REGISTRATION</p>
+
+        <div class="bot-space">
+            <%= typeof errorMsg !== 'undefined' ? errorMsg : "" %>
+        </div>
         
-        <form onsubmit="if(event.type != 'submit') event.preventDefault();" action="" method="post">
+        
+        <form onkeydown="return event.key != 'Enter'" action="" method="post">
             <div class="input-group">
                 <label for="email">EMAIL:</label>
-                <input type="email" name="email" id="email" placeholder="ENTER EMAIL" required>
+                <input type="email" name="email" id="email" placeholder="ENTER EMAIL" required
+                <%= typeof email !== 'undefined' ? `value=${email}` : `` %>>
             </div>
 
             <div class="input-group">
                 <label for="username">NEW JELLY ID:</label>
-                <input type="text" name="username" id="username" placeholder="CHOOSE ALIAS" required>
+                <input type="text" name="username" id="username" placeholder="CHOOSE ALIAS" required 
+                <%= typeof username !== 'undefined' ? `value=${username}` : `` %>>
             </div>
             
             <div class="input-group">
