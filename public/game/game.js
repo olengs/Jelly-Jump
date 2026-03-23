@@ -86,7 +86,7 @@ let bgx_speed = 120;
 window.onload = function() {
     let scale = 1.0;
     board = document.getElementById("board");
-    character = this.document.getElementById("character").value;
+    const character = this.document.getElementById("character").value;
 
     //keep resolution, scale linearly
     board.height = boardHeight * scale;
@@ -201,8 +201,9 @@ function gameOverEvent() {
 
 async function updateHighscore(highscore) {
     try {
-        let userId = document.getElementById("UUID").value;
-        const data = JSON.stringify({userId, highscore, gameEndTime: Date.now()});
+        let playerUID = document.getElementById("UUID").value;
+        const character = this.document.getElementById("character").value;
+        const data = JSON.stringify({playerUID, highscore, gameEndTime: Date.now(), character});
         let resp = await fetch(`/game/endgame`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
