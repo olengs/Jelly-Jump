@@ -15,7 +15,7 @@ class UserAlreadyExistsError extends Error{
 
 class UserNotFoundError extends Error {
     constructor(username) {
-        super(`Username not found`);
+        super(`Username ${username} not found`);
         this.username = username;
         this.statusCode = 400; //status: bad request
     }
@@ -30,7 +30,7 @@ class EmailAlreadyExistsError extends Error {
 
 class InvalidPasswordError extends Error {
     constructor(){
-        super("Password is invalid");
+        super("Either Password is invalid or user is not found");
         this.statusCode = 400;
     }
 }
