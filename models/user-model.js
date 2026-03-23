@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 const dbcommons = require("./dbcommons");
-const {sleep} = require("../utilities/utilities");
+const utilities = require("../utilities/utilities");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true},
@@ -76,5 +75,13 @@ exports.deleteUserPassword = async (username) => {
 exports.findUsersByStr = async (partialName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    //do mongodb leveinstein distance
+    //using custom leveinstein distance to do search 
+    // -- DO NOT USE THIS IN A NORMAL PROJECT, THIS METHOD IS VERY SLOW AS IT QUERIES THE WHOLE DB
+    // -- THIS IS ONLY DONE BECAUSE I AM UNABLE TO IMPORT OTHER PACKAGES DUE TO PROJECT CONSTRAINTS
+    // - JC
+    const filterAfterDistance = 5;
+    let similarNames = (await User.find({})).sort(
+        (a, b) => utilities.levenshteinDist(partialName, a) - utilities.levenshteinDist(partialName, b)).filter(
+            a => utilities.levenshteinDist(partialName, a) < filterAfterDistance);
+    console.log(similarNames);
 }
