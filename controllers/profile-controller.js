@@ -45,14 +45,14 @@ async function postEditProfile(req, res){
 
         const username = req.body.username; 
         const bio = req.body.bio; 
-        const avatar = req.body.avatar; 
+        const nickname = req.body.nickname; 
 
         if (!username){
             const user = await findByID(userID);
             return res.render("edit-profile", {user: user, error: "Username cannot be empty."});
         }
 
-        await User.findByIDAndUpdate(userID, {username: username, bio: bio, avatar: avatar});
+        await User.findByIDAndUpdate(userID, {username: username, bio: bio, nickname: nickname});
 
         res.redirect("/profile");
     } catch (error) {
@@ -92,7 +92,7 @@ async function getHistory(req, res){
         }
 
         const user = await User.findByID(userID);
-        const history = await PlayerHistory.find({userID: userID}); 
+        const history = await PlayerHistory.find({userID: userID}).sort({timestamp: -1}); 
 
         res.render("/player-history", {user: user, history: history, error: null});
     } catch (error) {
