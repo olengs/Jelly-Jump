@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 const dbcommons = require("./dbcommons");
-const {sleep} = require("../utilities/sleep");
+const {sleep} = require("../utilities/utilities");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true},
-    email: {type: String, required: true, unique:true},
+    email: {type: String, required: true, unique:true, trim:true},
     passwordHash: {type: String, required: true, unique:true},
-    UUID: {type: String, required: true, unique: true},
+    role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
+    bio: {type: String, required: true, default: "My bio"},
 })
 
 const User = mongoose.model('User', userSchema, "users");
@@ -30,9 +31,8 @@ exports.createUser = async (username, email, password) => {
     if (await email_exists) {
         throw new errors.EmailAlreadyExistsError(email);
     }
-    let passwordHash = await bcrypt.hash(password, Math.floor(Math.random() * 10) );
-    let UUID = crypto.randomUUID();
-    let dbuser = new User({username, email, passwordHash, UUID});
+    let passwordHash = await bcrypt.hash(password, Math.floor(Math.random() * 10));
+    let dbuser = new User({username, email, passwordHash});
 
     return await dbuser.save();
 }
@@ -46,10 +46,13 @@ exports.getUserByName = async (username) => {
     return user;
 }
 
-exports.getUserByUUID = async (UUID) => {
+exports.getUserById = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let user = await User.findOne({UUID});
-    if (!user) throw new errors.UserNotFoundError(UUID);
+
+    let user = await User.findById(id);
+    if (!user) throw new errors.UserNotFoundError(id);
+
+    return user;
 }
 
 // create reset password for update
@@ -68,4 +71,10 @@ exports.deleteUserPassword = async (username) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     return await User.deleteOne({username});
+}
+
+exports.findUsersByStr = async (partialName) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    //do mongodb leveinstein distance
 }

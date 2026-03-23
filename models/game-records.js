@@ -5,12 +5,11 @@ const errors = require("./errors");
 const crypto = require("crypto");
 
 const gameRecordsSchema = new mongoose.Schema({
-    recordId: {type: Number, require: true, unique: true},
-    playerUID: {type: String, required: true, unique: true},
-    timestamp: {type: String, required: true},
+    playerId: {type: String, required: true},
+    timestamp: {type: Date, required: true, default: Date.now()},
     score: {type: Number, required: true},
-    character: {type: String, required: true},
-    currencyEarned: {type: Number, required: true},
+    character: {type: String, required: true, default: "0"},
+    currencyEarned: {type: Number, required: true, default: 0},
 });
 
 const GameRecords = mongoose.model('GameRecords', gameRecordsSchema, "records");
@@ -22,4 +21,3 @@ exports.createRecord = async (playerUID, timestamp, score, character, currencyEa
     let record = new GameRecords({recordId, playerUID, timestamp, score, character, currencyEarned});
     return await record.save();
 }
-//lets say I made changes

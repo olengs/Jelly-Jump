@@ -201,9 +201,9 @@ function gameOverEvent() {
 
 async function updateHighscore(highscore) {
     try {
-        let playerUID = document.getElementById("UUID").value;
+        let playerId = document.getElementById("playerId").value;
         const character = this.document.getElementById("character").value;
-        const data = JSON.stringify({playerUID, highscore, gameEndTime: Date.now(), character});
+        const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
         let resp = await fetch(`/game/endgame`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
