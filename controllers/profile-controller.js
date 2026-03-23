@@ -92,7 +92,7 @@ async function getHistory(req, res){
         }
 
         const user = await User.findByID(userID);
-        const history = await PlayerHistory.find({userID: userID}); 
+        const history = await PlayerHistory.find({userID: userID}).sort({timestamp: -1}); 
 
         res.render("/player-history", {user: user, history: history, error: null});
     } catch (error) {
