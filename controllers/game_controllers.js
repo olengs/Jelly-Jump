@@ -1,12 +1,16 @@
+const recordsModel = require("../models/game-records");
+
 exports.gameViewController = (req, res) => {
     //add customizable shop etc
-    res.render("game/gameview", {});
+    const user = req.session.user;
+    const character = 0;
+    res.render("game/gameview", {UUID: user.UUID, character});
 };
 
 exports.EndGameUpdateController = (req, res) => {
-    let {userId, highscore, gameEndTime} = req.body;
+    let {UUID, highscore, gameEndTime, character} = req.body;
     let endTime = new Date(gameEndTime);
 
     //update db with user score
-    console.log(`${endTime.toISOString()}: Updating userId: ${userId} and highscore: ${highscore} into DB`);
+    console.log(`${endTime.toISOString()}: Updating UUID: ${UUID} and highscore: ${highscore} into DB`);
 };
