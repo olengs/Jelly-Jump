@@ -22,3 +22,4 @@ exports.createRecord = async (playerUID, timestamp, score, character, currencyEa
     let record = new GameRecords({recordId, playerUID, timestamp, score, character, currencyEarned});
     return await record.save();
 }
+//lets say I made changes
