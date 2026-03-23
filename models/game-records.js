@@ -5,7 +5,6 @@ const errors = require("./errors");
 const crypto = require("crypto");
 
 const gameRecordsSchema = new mongoose.Schema({
-    recordId: {type: Number, require: true, unique: true},
     playerUID: {type: String, required: true, unique: true},
     timestamp: {type: String, required: true},
     score: {type: Number, required: true},

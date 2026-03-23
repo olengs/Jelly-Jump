@@ -75,4 +75,6 @@ exports.deleteUserPassword = async (username) => {
 
 exports.findUsersByStr = async (partialName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    //do mongodb leveinstein distance
 }
