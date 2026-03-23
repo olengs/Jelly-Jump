@@ -15,7 +15,7 @@ class UserAlreadyExistsError extends Error{
 
 class UserNotFoundError extends Error {
     constructor(username) {
-        super(`Username ${username} not found`);
+        super(`User ${username} not found`);
         this.username = username;
         this.statusCode = 400; //status: bad request
     }
