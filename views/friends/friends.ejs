@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>Friends List</title>
+</head>
+<body>
+    <form action="/friendslist" method="post">
+        Name of Friend:<input type="text" name="friendname"><br><br>
+        User of Friend: <input type="text" name="frienduser"><br><br>
+        <button type="submit">submit</button>
+    </form>
+
+
+
+    <% AllDataFriends.forEach(f => { %>
+    <p><%= f.user %> → <%= f.friendName %></p>
+<% }) %>
+    
+</body>
+</html>

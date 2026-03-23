@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const {sleep} = require("../utilities/sleep");
 
+
 function isDBConnected() {
     return mongoose.STATES[mongoose.connection.readyState] == "connected"
 }
