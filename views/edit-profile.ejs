@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Edit Profile</title>
+</head>
+<body>
+    <h1>Edit Profile</h1>
+    
+    <% if (error) { %>
+        <p><%= error %></p>
+    <% } %>
+
+    <form action="/profile/edit" method="post">
+        <label>Username:</label><br>
+        <input type="text" name="username" value="<%= user.username %>"><br><br>
+
+        <label>Nickname:</label><br>
+        <input type="text" name="nickname" value="<%=user.nickname %>"><br><br>
+
+        <label>Bio:</label><br>
+        <textarea name="bio"><%= user.bio %></textarea><br><br>
+    </form>
+
+</body>
+</html>

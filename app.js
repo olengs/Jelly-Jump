@@ -1,15 +1,31 @@
 const express = require('express');
-const bcrypt = require("bcrypt");
+const session = require('express-session');
 const server = express();
-require("dotenv").config();
+require("dotenv").config({quiet: true});
 const mongoose = require("mongoose");
 mongoose.set("bufferCommands", false);
 
+
+
+
+// start running mongoose connect early
 
 let mongoose_connect_promise = mongoose.connect(process.env.DB_TEST_URI);
 
 const hostname = 'localhost';
 const port = 8000;
+
+server.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false, // stops extra writes if session is not modified
+    saveUninitialized: false, // save session only when session is modified.
+    rolling: true, //will reset cookie lifetime on each request
+    cookie: {
+        httpOnly: true,
+        // maxAge: 10 * 60 * 1000 //10 mins
+        maxAge: 20 * 1000, //20s for testing
+    }
+}));
 
 // Serve static files from the 'public' folder
 server.use('/', express.static('public'));

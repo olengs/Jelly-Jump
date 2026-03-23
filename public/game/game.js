@@ -86,6 +86,8 @@ let bgx_speed = 120;
 window.onload = function() {
     let scale = 1.0;
     board = document.getElementById("board");
+    const character = this.document.getElementById("character").value;
+
     //keep resolution, scale linearly
     board.height = boardHeight * scale;
     board.width = boardWidth * scale;
@@ -96,7 +98,7 @@ window.onload = function() {
     bgImage.src = "/game/img/gamebg.png";
 
     playerImage = new Image();
-    playerImage.src = "/game/img/jelly3.png";
+    playerImage.src = `/game/img/jelly${character}.png`;
     
     rockImage1 = new Image();
     rockImage1.src = "/game/img/rock0.png";
@@ -199,8 +201,9 @@ function gameOverEvent() {
 
 async function updateHighscore(highscore) {
     try {
-        let userId = document.getElementById("userId").value;
-        const data = JSON.stringify({userId, highscore, gameEndTime: Date.now()});
+        let playerId = document.getElementById("playerId").value;
+        const character = this.document.getElementById("character").value;
+        const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
         let resp = await fetch(`/game/endgame`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
