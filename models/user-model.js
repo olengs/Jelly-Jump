@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const dbcommons = require("./dbcommons")
+const dbcommons = require("./dbcommons");
 const {sleep} = require("../utilities/sleep");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
@@ -44,6 +44,12 @@ exports.getUserByName = async (username) => {
     if (!user) throw new errors.UserNotFoundError(username);
 
     return user;
+}
+
+exports.getUserByUUID = async (UUID) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    let user = await User.findOne({UUID});
+    if (!user) throw new errors.UserNotFoundError(UUID);
 }
 
 // create reset password for update
