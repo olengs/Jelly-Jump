@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Player History</title>
+</head>
+<body>
+    <h1>Player History</h1>
+    
+    <% if (error) { %>
+        <p><%= error %></p>
+    <% } %>
+
+    if (history.length === 0) {
+        <p>No games played yet. Go play!</p>
+    } else {
+        <tr>
+            <th>Date</th>
+            <th>Score</th>
+            <th>Level</th>
+            <th>Duration</th>
+            <th>Result</th>
+            <th>Action</th>
+        </tr>
+
+        history.forEach(function(enntry) {
+            <tr>
+                <td></td>
+            </tr>
+        })
+    }
+
+</body>
+</html>
