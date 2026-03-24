@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const {sleep} = require("../utilities/sleep");
+// i comment this line out first giving error
+// const {sleep} = require("../utilities/sleep");
 
 
 function isDBConnected() {
