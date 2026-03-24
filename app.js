@@ -4,10 +4,6 @@ const server = express();
 require("dotenv").config({quiet: true});
 const mongoose = require("mongoose");
 mongoose.set("bufferCommands", false);
-
-
-
-
 // start running mongoose connect early
 
 let mongoose_connect_promise = mongoose.connect(process.env.DB_TEST_URI);
