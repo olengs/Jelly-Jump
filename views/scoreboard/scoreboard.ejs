@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Jelly Jump</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
+</head>
+<body>
+    <h1>🏆 Leaderboard</h1>
+
+    <% if (topTen && topTen.length > 0) { %>
+    <table border="1">
+        <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>High Score</th>
+            <th>Games Played</th>
+        </tr>
+        <% topTen.forEach((entry, index) => { %>
+        <tr>
+            <td><%= index + 1 %></td>
+            <td>
+                <%= entry.username %>
+            </td>
+            <td><%= entry.highscore %></td>
+            <td><%= entry.gamesPlayed %></td>
+        </tr>
+        <% }); %>
+    </table>
+    <% } else { %>
+        <p>No scores yet. Be the first to play!</p>
+    <% } %>
+
+    <a href="/game">Play Again</a>
+</body>
+</html>
