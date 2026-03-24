@@ -7,7 +7,7 @@ exports.sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-exports.levensheteinDist = (a, b) => { 
+exports.levenshteinDist = (a, b) => { 
     if (!a || !b) return (a || b).length;
     var m = [];
     for(var i = 0; i <= b.length; ++i) {

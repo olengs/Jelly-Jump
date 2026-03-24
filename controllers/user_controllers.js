@@ -43,7 +43,8 @@ exports.login = async (req, res) => {
     res.redirect(302, "/home");
 }
 
-const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //match {0-9A-z}1+, then @, then {0-9A-z}1+, then ., then {0-9A-z} 2+
+const email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //match {0-9A-z}1+, then @, then {0-9A-z}1+, then ., then {0-9A-z} 2+
+const username_regex = /^[a-zA-Z0-9]%/;
 
 exports.signup = async (req, res) => {
     const {email, username, password, confirmPassword} = req.body;
@@ -59,6 +60,10 @@ exports.signup = async (req, res) => {
     if (!email.match(email_regex)){
         res.render("IAM/signup", {username, errorMsg: "Email of invalid format"});
         return
+    }
+    if (!username.match(username_regex)) {
+        res.render("IAM/signup", {email, errorMsg: "Only letters and numbers are allowed in username"});
+        return;
     }
     
     try {
