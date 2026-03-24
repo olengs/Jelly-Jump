@@ -1,9 +1,9 @@
-require('dotenv').config({path: './config.env'});
+//require('dotenv').config({path: './config.env'});
 
 const express = require('express');
 const session = require('express-session');
 const server = express();
-// require("dotenv").config({quiet: true});
+require("dotenv").config({quiet: true});
 const mongoose = require("mongoose");
 mongoose.set("bufferCommands", false);
 
