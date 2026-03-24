@@ -2,8 +2,6 @@ const userModel = require("../models/user-model");
 
 exports.requireUser = (req, res, next) => {
 
-    console.log("require user called");
-
     if (req.session && req.session.user) {
         return next();
     }
