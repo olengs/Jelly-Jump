@@ -46,8 +46,12 @@
 
         <h1>ASTRO JELLIES</h1>
         <p class="subtitle">SQUISHY INVASION PROTOCOL</p>
+
+        <div class="bot-space">
+            <%= typeof errorMsg !== 'undefined' ? errorMsg : "" %>
+        </div>
         
-        <form onsubmit="if (event.type != 'submit') event.preventDefault();" action="" method="post">
+        <form onkeydown="return event.key != 'Enter'" action="" method="post">
             <div class="input-group">
                 <label for="username">JELLY ID:</label>
                 <input type="text" name="username" id="username" placeholder="ENTER ALIAS" required>

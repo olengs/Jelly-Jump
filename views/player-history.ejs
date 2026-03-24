@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Player History</title>
+</head>
+<body>
+    <h1>Player History</h1>
+    
+    <% if (error) { %>
+        <p><%= error %></p>
+    <% } %>
+
+    <% if (history.length === 0) { %>
+        <p>No games played yet. Go play!</p>
+    <% } else { %>
+        <table border="1">
+            <tr>
+                <th>Date</th>
+                <th>Score</th>
+                <th>Character</th>
+                <th>Currency Earned</th>
+                <th>Action</th>
+            </tr>
+
+            <% history.forEach(function(entry) { %>
+            <tr>
+                <td><%= entry.timestamp.toLocaleDateString() %></td>
+                <td><%= entry.score %></td>
+                <td><%= entry.character || '-' %></td>
+                <td><%= entry.currencyEarned %></td>
+                <td>
+                    <form action="/history/delete/<%= entry._id %>" method="post">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>
+        </table>
+    <% } %>
+</body>
+</html>

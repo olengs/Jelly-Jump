@@ -21,6 +21,10 @@ body {
     z-index: 2;
 }
 
+.bot-space {
+    margin-bottom: 20px;
+}
+
 /* Cute blocky corners */
 .login-container::before, .login-container::after {
     content: '';
@@ -61,7 +65,7 @@ h1 {
 p.subtitle {
     font-size: 15px;
     color: var(--cute-cyan);
-    margin-bottom: 35px;
+    margin-bottom: 15px;
     letter-spacing: 1px;
     text-shadow: 1px 1px 0px #1a0b2e;
 }
