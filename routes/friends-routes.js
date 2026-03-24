@@ -4,6 +4,7 @@ const router = express.Router();
 const FriendsControllers = require("../controllers/friends_controllers");
 
 router.get("/friendslist", FriendsControllers.friendslist);
-router.post('/friendslist',FriendsControllers.addFriend)
+router.post('/addfriend',FriendsControllers.addFriend)
+router.post('/deletefriend',FriendsControllers.deleteFriend)
 
 module.exports = router;

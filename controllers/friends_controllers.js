@@ -25,3 +25,14 @@ exports.addFriend = async(req,res)=>{
         res.send('error cannot add')
     }
 }
+
+exports.deleteFriend = async(req,res) =>{
+    try{
+        const friendid= req.body.friendid
+        await Friend.deleteOne({_id:friendid})
+        res.redirect('friendslist')
+    }catch(error){
+        console.log(error)
+        res.send('error cannot delete') }}
+
+
