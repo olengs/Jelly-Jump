@@ -1,14 +1,6 @@
 const mongoose = require("mongoose");
 
-const {sleep} = require("../utilities/sleep");
-
-
-function isDBConnected() {
-    return mongoose.STATES[mongoose.connection.readyState] == "connected"
-}
-
 const dbcommons = require("./dbcommons");
-const utilities = require("../utilities/utilities");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
 
