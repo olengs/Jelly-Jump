@@ -10,7 +10,7 @@ router.post("/signup", userControllers.signup);
 router.get("/logout", userMiddleware.requireUser, userControllers.logout);
 
 //temp route
-router.get("/home", (req, res) => {
+router.get("/home", userMiddleware.requireUser, (req, res) => {
     res.render("home", {});
 });
 
