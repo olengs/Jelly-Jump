@@ -5,7 +5,11 @@ require("dotenv").config({quiet: true});
 const mongoose = require("mongoose");
 mongoose.set("bufferCommands", false);
 
+
+
+
 // start running mongoose connect early
+
 let mongoose_connect_promise = mongoose.connect(process.env.DB_TEST_URI);
 
 const hostname = 'localhost';
@@ -34,10 +38,12 @@ server.set("view engine", "ejs");
 const example = require("./routes/example_route");
 const gameRoutes = require("./routes/game_routes");
 const userRoutes = require("./routes/user_routes");
+const friendRoutes= require('./routes/friends-routes')
 
 server.use("/example", example);
 server.use("/game", gameRoutes);
 server.use("/", userRoutes);
+server.use('/',friendRoutes)
 
 //Home page
 server.get("/", (req, res) => {

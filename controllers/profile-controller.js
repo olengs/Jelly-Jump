@@ -1,5 +1,5 @@
 const User = require("../models/user-profile");
-const PlayerHistory = require("../models/player-history");
+const GameHistory = require("../models/player-history");
 
 // read - get profile page 
 async function getProfile(req, res){
@@ -64,14 +64,14 @@ async function postEditProfile(req, res){
 // delete - delete user account 
 async function deleteProfile(req, res){
     try {
-        const userID = req.session.userID;
+        const userID = req.session.userId;
 
         if (!userID){
             return res.redirect("/login");
         }
 
         await User.findByIDAndDelete(userID);
-        await PlayerHistory.deleteMany({userID: userID});
+        await PlayerHistory.deleteMany({playerId: userID});
 
         // clear the session 
         req.session.destroy();
@@ -92,7 +92,7 @@ async function getHistory(req, res){
         }
 
         const user = await User.findByID(userID);
-        const history = await PlayerHistory.find({userID: userID}).sort({timestamp: -1}); 
+        const history = await GameHistory.find({playerId: userID}).sort({timestamp: -1}); 
 
         res.render("/player-history", {user: user, history: history, error: null});
     } catch (error) {
@@ -110,7 +110,7 @@ async function deleteHistory(req, res){
             return res.redirect("/login"); 
         }
 
-        await PlayerHistory.findByIDAndDelete(req.params.id); 
+        await GameHistory.findByIDAndDelete(req.params.id); 
         res.redirect("/player-history");
     } catch (error) {
         console.error(error); 
