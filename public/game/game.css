@@ -9,3 +9,15 @@ body {
     border-bottom: 1px solid black;
     z-index: 10;
 }
+
+#midbutton {
+    position: relative; 
+}
+
+.margin-top-20 {
+    margin-top: 20px;
+}
+
+.margin-bot-20 {
+    margin-bottom: 20px;
+}

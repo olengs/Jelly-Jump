@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
 }
 
 const email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //match {0-9A-z}1+, then @, then {0-9A-z}1+, then ., then {0-9A-z} 2+
-const username_regex = /^[a-zA-Z0-9]%/;
+const username_regex = /^[a-zA-Z0-9]{4,12}$/;
 
 exports.signup = async (req, res) => {
     const {email, username, password, confirmPassword} = req.body;
@@ -62,7 +62,7 @@ exports.signup = async (req, res) => {
         return
     }
     if (!username.match(username_regex)) {
-        res.render("IAM/signup", {email, errorMsg: "Only letters and numbers are allowed in username"});
+        res.render("IAM/signup", {email, errorMsg: "Username must be between 4 and 12 characters and only letters and numbers are allowed in username"});
         return;
     }
     
@@ -93,9 +93,4 @@ exports.logout = async (req, res) => {
         }
         return res.redirect(302, "/login");
     });
-}
-
-exports.adminViewUsers = async (req, res) => {
-    const user = req.session.user
-    
 }
