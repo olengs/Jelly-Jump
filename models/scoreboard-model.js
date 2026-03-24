@@ -24,3 +24,7 @@ exports.upsertScore = function(playerId, username, newScore) {
         { upsert: true, returnDocument: 'after' }
     );
 };
+
+exports.deleteScore = function(playerId) {
+    return Scoreboard.deleteOne({ playerId: playerId });
+};

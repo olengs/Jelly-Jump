@@ -12,6 +12,9 @@
     <% if (topTen && topTen.length > 0) { %>
     <table border="1">
         <tr>
+            <% if (user && user.role === 'admin') { %>
+                <th>Actions</th>
+            <% } %>
             <th>Rank</th>
             <th>Player</th>
             <th>High Score</th>
@@ -19,6 +22,13 @@
         </tr>
         <% topTen.forEach((entry, index) => { %>
         <tr>
+            <% if (user && user.role === 'admin') { %>
+                <td>
+                    <form action="/scoreboard/delete/<%= entry.playerId %>" method="POST" onsubmit="return confirm('Delete this entry?')">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            <% } %>
             <td><%= index + 1 %></td>
             <td>
                 <%= entry.username %>
