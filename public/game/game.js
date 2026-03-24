@@ -82,17 +82,25 @@ let rockImage1, rockImage2, rockImage3, bgImage;
 let prevtime;
 let bgx = 0;
 let bgx_speed = 120;
+let midbutton;
+let scale = 1.0;
 
 window.onload = function() {
-    let scale = 1.0;
     board = document.getElementById("board");
-    const character = this.document.getElementById("character").value;
 
     //keep resolution, scale linearly
-    board.height = boardHeight * scale;
-    board.width = boardWidth * scale;
 
     context = board.getContext("2d");
+
+    board.height = boardHeight * scale;
+    board.width = boardWidth * scale;
+}
+
+let start = function() {
+    midbutton = document.getElementById("midbutton");
+    midbutton.hidden = true;
+    
+    const character = this.document.getElementById("character").value;
 
     bgImage = new Image();
     bgImage.src = "/game/img/gamebg.png";
@@ -219,4 +227,6 @@ async function updateHighscore(highscore) {
     } catch (error) {
         console.log(error);
     }
+
+    
 }
