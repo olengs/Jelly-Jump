@@ -2,13 +2,13 @@
 
 const mongoose = require("mongoose");
 
-const playerHistorySchema = new mongoose.Schema({
-    userID: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true}, 
-    recordId: { type: String, required: true}, 
+const gameRecordsSchema = new mongoose.Schema({
+    recordId: {type: String, required: true},
+    playerId: { type: String, required: true}, 
     score: {type: Number, required: true}, 
-    character: {type: String, default: ""}, 
+    character: {type: String, default: "0"}, 
     currencyEarned: {type: Number, default: 0}, 
-    timestamp: {type: Date, default: Date.now},
+    timestamp: {type: Date, default: Date.now()},
 }); 
 
-module.exports = mongoose.model("PlayerHistory", playerHistorySchema); 
+module.exports = mongoose.model("GameRecords", gameRecordsSchema, "records"); 
