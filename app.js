@@ -20,8 +20,8 @@ server.use(session({
     rolling: true, //will reset cookie lifetime on each request
     cookie: {
         httpOnly: true,
-        // maxAge: 10 * 60 * 1000 //10 mins
-        maxAge: 20 * 1000, //20s for testing
+        maxAge: 30 * 60 * 1000 //10 mins
+        // maxAge: 20 * 1000, //20s for testing
     }
 }));
 
@@ -38,12 +38,14 @@ const gameRoutes = require("./routes/game_routes");
 const userRoutes = require("./routes/user_routes");
 const friendRoutes= require('./routes/friends-routes');
 const scoreboardRoutes = require('./routes/scoreboard_routes');
+const homeRoutes = require('./routes/home-routes');
 
 server.use("/example", example);
 server.use("/game", gameRoutes);
 server.use("/", userRoutes);
 server.use('/',friendRoutes);
 server.use('/scoreboard', scoreboardRoutes);
+server.use("/", homeRoutes);
 
 //Home page
 server.get("/", (req, res) => {
