@@ -18,4 +18,18 @@ exports.createRecord = async (playerId, timestamp, score, character, currencyEar
     _ = await UserModel.getUserById(playerId); //discarding, just checking for user, will throw if not found, to be caught in outer scope
     let record = new GameRecords({playerId, timestamp, score, character, currencyEarned});
     return await record.save();
-}
+};
+
+exports.getPlayerHistory = async (playerId) => {
+    const history = await GameRecords.find({playerId: playerId}).sort({timestamp:-1});
+    return history; 
+};
+
+exports.updateRecord = async (id, updatedData) => {
+    const updated = await GameRecords.findByIdAndUpdate(id, updatedData, {new: true});
+    return updated; 
+};
+
+exports.deleteRecord = async (id) => {
+    await GameRecords.findByIdAndDelete(id);
+};
