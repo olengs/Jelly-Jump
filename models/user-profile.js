@@ -10,4 +10,21 @@ const userSchema = new mongoose.Schema({
     bio: {type: String, default: ""}
 }); 
 
-module.exports = mongoose.model("User", userSchema); 
+const User = mongoose.model("User", userSchema);
+
+module.exports = User; 
+
+// get user by id
+module.exports.getUserById = async (userID) => {
+    return await User.findById(userID);
+};
+
+// update user 
+module.exports.updateUser = async (userID, updatedData) => {
+    return await User.findByIdAndUpdate(userID, updatedData, {new: true});
+};
+
+// delete
+module.exports.deleteUser = async (userID) => {
+    await User.findByIdAndDelete(userID);
+};

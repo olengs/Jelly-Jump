@@ -20,4 +20,18 @@ exports.createRecord = async (playerUID, timestamp, score, character, currencyEa
     let recordId = crypto.randomUUID();
     let record = new GameRecords({recordId, playerUID, timestamp, score, character, currencyEarned});
     return await record.save();
-}
+};
+
+exports.getPlayerHistory = async (playerId) => {
+    const history = await GameRecords.find({playerId: playerId}).sort({timestamp:-1});
+    return history; 
+};
+
+exports.updateRecord = async (id, updatedData) => {
+    const updated = await GameRecords.findByIdAndUpdate(id, updatedData, {new: true});
+    return updated; 
+};
+
+exports.deleteRecord = async (id) => {
+    await GameRecords.findByIdAndDelete(id);
+};
