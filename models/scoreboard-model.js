@@ -28,3 +28,7 @@ exports.upsertScore = function(playerId, username, newScore) {
 exports.deleteScore = function(playerId) {
     return Scoreboard.deleteOne({ playerId: playerId });
 };
+
+exports.getFriendScores = function(playerIds) {
+    return Scoreboard.find({playerId: {$in: playerIds}}).sort({highscore: -1});
+};
