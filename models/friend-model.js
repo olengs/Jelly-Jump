@@ -1,9 +1,14 @@
 
 const mongoose = require("mongoose");// talk to MongoDB
 
-const friendSchema = new mongoose.Schema({ // schema --> plan of how ur data look like 
-    user: { type: String, required: true },      // current user
-    friendName: { type: String, required: true } // friend "user": "Brilynn",
+// const friendSchema = new mongoose.Schema({ // schema --> plan of how ur data look like 
+//     user: { type: String, required: true },      // current user
+//     friendName: { type: String, required: true } // friend "user": "Brilynn",
+// });
+
+const friendSchema = new mongoose.Schema({
+    playerId: { type: String, required: true },
+    friendsId: [{ type: String }]
 });
 
 const Friend = mongoose.model("Friend", friendSchema, "friends");
