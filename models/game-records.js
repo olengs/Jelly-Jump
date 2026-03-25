@@ -5,7 +5,7 @@ const errors = require("./errors");
 
 const gameRecordsSchema = new mongoose.Schema({
     playerId: {type: String, required: true},
-    timestamp: {type: Date, required: true, default: Date.now()},
+    timestamp: {type: Date, required: true, default: Date.now},
     score: {type: Number, required: true},
     character: {type: String, required: true, default: "0"},
     currencyEarned: {type: Number, required: true, default: 0},
@@ -30,6 +30,10 @@ exports.updateRecord = async (id, updatedData) => {
     return updated; 
 };
 
-exports.deleteRecord = async (id) => {
-    await GameRecords.findByIdAndDelete(id);
+exports.deleteRecord = async (id, playerId) => {
+    return await GameRecords.findOneAndDelete({_id: id, playerId: playerId});
+};
+
+exports.deleteAllRecordsByUser = async (playerId) => {
+    return await GameRecords.deleteMany({playerId});
 };

@@ -14,13 +14,13 @@
 
     <form action="/profile/edit" method="post">
         <label>Username:</label><br>
-        <input type="text" name="username" value="<%= user.username %>"><br><br>
-
-        <label>Nickname:</label><br>
-        <input type="text" name="nickname" value="<%=user.nickname %>"><br><br>
+        <input type="text" name="username" value="<%= user.username %>" required><br><br>
 
         <label>Bio:</label><br>
         <textarea name="bio"><%= user.bio %></textarea><br><br>
+
+        <button type="submit">Save Changes</button>
+        <a href="/profile">Cancel</a>
     </form>
 
 </body>
