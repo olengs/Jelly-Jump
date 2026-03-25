@@ -74,13 +74,13 @@ class Obstruction extends Object{
 let player;
 let board;
 let context;
-let obstructions = [];
-let gameOver = false;
-let score = 0;
+let obstructions;
+let gameOver;
+let score;
 let playerImage;
 let rockImage1, rockImage2, rockImage3, bgImage;
 let prevtime;
-let bgx = 0;
+let bgx;
 let bgx_speed = 120;
 let midbutton;
 let scale = 1.0;
@@ -99,6 +99,11 @@ window.onload = function() {
 let start = function() {
     midbutton = document.getElementById("midbutton");
     midbutton.hidden = true;
+
+    score = 0;
+    gameOver = false;
+    bgx = 0;
+    obstructions = [];
     
     const character = this.document.getElementById("character").value;
 
@@ -205,6 +210,9 @@ function gameOverEvent() {
 
     // 
     updateHighscore(score);
+
+    midbutton.hidden = false;
+    midbutton.textContent = "Restart";
 }
 
 async function updateHighscore(highscore) {
@@ -227,6 +235,4 @@ async function updateHighscore(highscore) {
     } catch (error) {
         console.log(error);
     }
-
-    
 }
