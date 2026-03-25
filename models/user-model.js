@@ -1,10 +1,5 @@
 const mongoose = require("mongoose");
 
-// i resolved incoming change that removed isDBConnected() + incoming changes removed {sleeP} 
-// function isDBConnected() {
-//     return mongoose.STATES[mongoose.connection.readyState] == "connected"
-// }
-
 const dbcommons = require("./dbcommons");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");

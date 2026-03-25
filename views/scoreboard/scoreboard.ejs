@@ -42,6 +42,36 @@
         <p>No scores yet. Be the first to play!</p>
     <% } %>
 
+    <hr>
+    <h2>👥 Friends Leaderboard</h2>
+    <% if (!user) { %>
+        <p>Log in to see your friends leaderboard.</p>
+    <% } else if (friendsScores && friendsScores.length > 0) { %>
+    <table border="1">
+        <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>High Score</th>
+            <th>Games Played</th>
+        </tr>
+        <% friendsScores.forEach((entry, index) => { %>
+        <tr>
+            <td><%= index + 1 %></td>
+            <td>
+                <%= entry.username %>
+                <% if (entry.playerId === user._id.toString()) { %>
+                    <em>(you)</em>
+                <% } %>
+            </td>
+            <td><%= entry.highscore %></td>
+            <td><%= entry.gamesPlayed %></td>
+        </tr>
+        <% }); %>
+    </table>
+    <% } else { %>
+        <p>No friends scores yet. Add some friends and start playing!</p>
+    <% } %>
+
     <a href="/game">Play Again</a>
 </body>
 </html>
