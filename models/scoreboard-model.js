@@ -4,7 +4,8 @@ const scoreboardSchema = new mongoose.Schema({
     playerId: {type: String, required: true, unique: true},
     username: {type: String, required: true},
     highscore: {type: Number, required: true},
-    gamesPlayed: {type: Number, required: true}
+    gamesPlayed: {type: Number, required: true},
+    lastPlayed: {type: Date, default: Date.now}
 })
 
 const Scoreboard = mongoose.model('Scoreboard', scoreboardSchema);
@@ -17,7 +18,7 @@ exports.upsertScore = function(playerId, username, newScore) {
     return Scoreboard.findOneAndUpdate(
         { playerId: playerId },
         {
-            $set: { username: username },
+            $set: { username: username, lastPlayed: new Date() },
             $max: { highscore: newScore },
             $inc: { gamesPlayed: 1 }
         },
