@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const dbcommons = require("./dbcommons");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
@@ -35,15 +34,15 @@ exports.createUser = async (username, email, password) => {
         throw new errors.EmailAlreadyExistsError(email);
     }
     let passwordHash = await bcrypt.hash(password, Math.floor(Math.random() * 10));
-    let dbuser = new User({username, email, passwordHash});
+    let dbuser = await User.create({username, email, passwordHash});
 
-    return await dbuser.save();
+    return dbuser;
 }
 
 exports.getUserByName = async (username) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    let user = await User.findOne({username});
+    let user = await User.findOne({username}).lean();
     if (!user) throw new errors.UserNotFoundError(username);
 
     return user;
@@ -52,7 +51,7 @@ exports.getUserByName = async (username) => {
 exports.getUserById = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    let user = await User.findById(id);
+    let user = await User.findById(id).lean();
     if (!user) throw new errors.UserNotFoundError(id);
 
     return user;
@@ -62,11 +61,11 @@ exports.getUserById = async (id) => {
 exports.updateUserPassword = async (username, oldPassword, newPassword) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    let user = await User.findOne({username});
+    let user = await User.findOne({username}).lean();
     if (!await bcrypt.compare(oldPassword, user.passwordHash)) throw new errors.InvalidPasswordError();
 
-    user.passwordHash = await bcrypt.hash(newPassword, Math.floor(Math.random() * 10));
-    return await user.save();
+    let newPasswordHash = await bcrypt.hash(newPassword, Math.floor(Math.random() * 10));
+    return await User.updateOne({username}, {passwordHash: newPasswordHash});
 }
 
 // create delete account for delete
@@ -76,7 +75,7 @@ exports.deleteUserPassword = async (username) => {
     return await User.deleteOne({username});
 }
 
-exports.findUsersByStr = async (partialName) => {
+exports.findUsersByStr = async (partialName, filters = {}) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     //using custom leveinstein distance to do search 
@@ -84,7 +83,7 @@ exports.findUsersByStr = async (partialName) => {
     // -- THIS IS ONLY DONE BECAUSE I AM UNABLE TO IMPORT OTHER PACKAGES DUE TO PROJECT CONSTRAINTS
     // - JC
     const filterAfterDistance = 5;
-    let similarNames = (await User.find({})).sort(
+    let similarNames = (await User.find(filters || {})).sort(
         (a, b) => utilities.levenshteinDist(partialName, a) - utilities.levenshteinDist(partialName, b)).filter(
             a => utilities.levenshteinDist(partialName, a) < filterAfterDistance);
     console.log(similarNames);
