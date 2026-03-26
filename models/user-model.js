@@ -17,11 +17,11 @@ exports.User = User;
 
 exports.createUser = async (username, email, password) => {
     if (!dbcommons.isDBConnected()) {
-        throw databaseError;
+        throw dbcommons.databaseError;
     }
 
-    username_exists = User.findOne({username})
-    email_exists = User.findOne({email})
+    const username_exists = User.findOne({username})
+    const email_exists = User.findOne({email})
 
     if (await username_exists) {
         throw new errors.UserAlreadyExistsError(username);
@@ -84,4 +84,16 @@ exports.findUsersByStr = async (partialName, filters = {}) => {
         (a, b) => utilities.levenshteinDist(partialName, a) - utilities.levenshteinDist(partialName, b)).filter(
             a => utilities.levenshteinDist(partialName, a) < filterAfterDistance);
     console.log(similarNames);
+}
+
+exports.updateUser = async (id, username, bio) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await User.findByIdAndUpdate(id, {username, bio}, {new: true});
+}
+
+exports.deleteUser = async (id) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await User.findByIdAndDelete(id);
 }

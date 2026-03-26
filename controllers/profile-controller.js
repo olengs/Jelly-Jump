@@ -9,24 +9,28 @@ async function getProfile(req, res){
         if (!userID){
             return res.redirect("/login");
         }
-        const user = await User.findByID(userID);
-        res.render("profile", {user: user, error: null});
+        const userID = req.session.user._id; 
+        const user = await User.getUserById(userID);
+
+        res.render("user-profile", {user: user, error: null});
     } catch (error) {
         console.error(error);
-        res.render("profile", {user: null, error:"Something went wrong."});
+        res.render("user-profile", {user: null, error:"Something went wrong."});
     }
-}
+};
 
 // update - edit profile form 
 async function getEditProfile(req, res){
     try {
+
         const userID = req.session.user._id; 
 
         if (!userID){
             return res.redirect("/login");
         }
+        const userID = req.session.user._id;
+        const user = await User.getUserById(userID);
 
-        const user = await User.findByID(userID);
         res.render("edit-profile", {user: user, error: null});
     } catch (error) {
         console.error(error);
@@ -43,16 +47,16 @@ async function postEditProfile(req, res){
             return res.redirect("/login")
         }
 
+        const userID = req.session.user._id;
         const username = req.body.username; 
-        const bio = req.body.bio; 
-        const nickname = req.body.nickname; 
+        const bio = req.body.bio;  
 
         if (!username){
-            const user = await findByID(userID);
+            const user = await User.getUserById(userID);
             return res.render("edit-profile", {user: user, error: "Username cannot be empty."});
         }
 
-        await User.findByIDAndUpdate(userID, {username: username, bio: bio, nickname: nickname});
+        await User.updateUser(userID, {username, bio});
 
         res.redirect("/profile");
     } catch (error) {
@@ -70,12 +74,14 @@ async function deleteProfile(req, res){
             return res.redirect("/login");
         }
 
-        await User.findByIDAndDelete(userID);
-        await PlayerHistory.deleteMany({playerId: userID});
+        const userID = req.session.user._id;
+        await GameRecords.deleteAllRecordsByUser(userID.toString());
+        await User.deleteUser(userID);
 
         // clear the session 
-        req.session.destroy();
-        res.redirect("/");
+        req.session.destroy(() => {
+            res.redirect("/")
+        });
     } catch (error) {
         console.error(error);
         res.redirect("/profile");
@@ -85,15 +91,13 @@ async function deleteProfile(req, res){
 // read - get game history page 
 async function getHistory(req, res){
     try {
-        console.log(req.session.user);
-        const userID = req.session.user?.id; 
-
-        if (!userID){
+        if (!req.session.user){
             return res.redirect("/login");
         }
 
-        const user = await User.findByID(userID);
-        const history = await GameRecords.find({playerId: userID}).sort({timestamp: -1}); 
+        const userID = req.session.user._id; 
+        const user = await User.getUserById(userID);
+        const history = await GameRecords.getPlayerHistory(userID.toString());
 
         res.render("player-history", {user: user, history: history, error: null});
     } catch (error) {
@@ -105,17 +109,16 @@ async function getHistory(req, res){
 // delete - delete a single history entity 
 async function deleteHistory(req, res){
     try {
-        const userID = req.session.user.id; 
-
-        if (!userID){
+        if (!req.session.user){
             return res.redirect("/login"); 
         }
 
-        await GameRecords.findByIDAndDelete(req.params.id); 
-        res.redirect("/player-history");
+        const userID = req.session.user._id;
+        await GameRecords.deleteRecord(req.params.id, userID.toString()); 
+        res.redirect("/history");
     } catch (error) {
         console.error(error); 
-        res.redirect("/player-history");
+        res.redirect("/history");
     }
 }
 

@@ -39,7 +39,8 @@ const userRoutes = require("./routes/user_routes");
 const friendRoutes= require('./routes/friends-routes');
 const scoreboardRoutes = require('./routes/scoreboard_routes');
 const homeRoutes = require('./routes/home-routes');
-const profileRoutes = require("./routes/profile-routes");
+const profileRoutes = require('./routes/profile-routes');
+
 
 server.use("/example", example);
 server.use("/game", gameRoutes);
@@ -47,7 +48,7 @@ server.use("/", userRoutes);
 server.use('/',friendRoutes);
 server.use('/scoreboard', scoreboardRoutes);
 server.use("/", homeRoutes);
-server.use("/", profileRoutes);
+server.use('/', profileRoutes);
 //Home page
 server.get("/", (req, res) => {
     res.redirect("/login");
