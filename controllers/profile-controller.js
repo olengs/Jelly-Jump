@@ -1,11 +1,12 @@
-
 const User = require("../models/user-model");
 const GameRecords = require("../models/game-records");
 
 // read - get profile page 
 async function getProfile(req, res){
-    try { 
-        if (!req.session.user){
+    try {
+        // get logged in userid from session (jc login)
+        const userID = req.session.user._id; 
+        if (!userID){
             return res.redirect("/login");
         }
         const userID = req.session.user._id; 
@@ -21,7 +22,10 @@ async function getProfile(req, res){
 // update - edit profile form 
 async function getEditProfile(req, res){
     try {
-        if (!req.session.user){
+
+        const userID = req.session.user._id; 
+
+        if (!userID){
             return res.redirect("/login");
         }
         const userID = req.session.user._id;
@@ -37,7 +41,9 @@ async function getEditProfile(req, res){
 // update - handle edit profile submission 
 async function postEditProfile(req, res){
     try {
-        if (!req.session.user){
+        const userID = req.session.user._id;
+
+        if (!userID){
             return res.redirect("/login")
         }
 
@@ -62,7 +68,9 @@ async function postEditProfile(req, res){
 // delete - delete user account 
 async function deleteProfile(req, res){
     try {
-        if (!req.session.user){
+        const userID = req.session.user._id;
+
+        if (!userID){
             return res.redirect("/login");
         }
 
@@ -108,7 +116,6 @@ async function deleteHistory(req, res){
         const userID = req.session.user._id;
         await GameRecords.deleteRecord(req.params.id, userID.toString()); 
         res.redirect("/history");
-
     } catch (error) {
         console.error(error); 
         res.redirect("/history");
