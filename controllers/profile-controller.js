@@ -1,5 +1,5 @@
 const User = require("../models/user-model");
-const GameHistory = require("../models/game-records");
+const GameRecords = require("../models/game-records");
 
 // read - get profile page 
 async function getProfile(req, res){
@@ -66,7 +66,7 @@ async function deleteProfile(req, res){
         }
 
         const userID = req.session.user._id;
-        await GameHistory.deleteAllRecordsByUser(userID);
+        await GameRecords.deleteAllRecordsByUser(userID.toString());
         await User.deleteUser(userID);
         
         // clear the session 
@@ -88,7 +88,7 @@ async function getHistory(req, res){
 
         const userID = req.session.user._id; 
         const user = await User.getUserById(userID);
-        const history = await GameHistory.getPlayerHistory(userID); 
+        const history = await GameRecords.getPlayerHistory(userID.toString());
 
         res.render("player-history", {user: user, history: history, error: null});
     } catch (error) {
@@ -105,7 +105,7 @@ async function deleteHistory(req, res){
         }
 
         const userID = req.session.user._id;
-        await GameHistory.deleteRecord(req.params.id, userID); 
+        await GameRecords.deleteRecord(req.params.id, userID.toString()); 
         res.redirect("/history");
     } catch (error) {
         console.error(error); 
