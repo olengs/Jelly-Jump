@@ -3,6 +3,9 @@ const dbcommons = require("./dbcommons");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
 
+const email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //match {0-9A-z}1+, then @, then {0-9A-z}1+, then ., then {0-9A-z} 2+
+const username_regex = /^[a-zA-Z0-9]{4,12}$/;
+const password_regex = /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9\s])(?!.*\s).{8,}$/
 
 const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true},
@@ -16,6 +19,17 @@ const User = mongoose.model('User', userSchema, "users");
 exports.User = User;
 
 exports.createUser = async (username, email, password) => {
+    if (!email.match(email_regex)){
+        throw new errors.EmailFormatError();
+    }
+    if (!username.match(username_regex)) {
+        throw new errors.UsernameFormatError();
+    }
+
+    if (!password.match(password_regex)) {
+        throw new errors.PasswordFormatError();
+    }
+
     if (!dbcommons.isDBConnected()) {
         throw dbcommons.databaseError;
     }

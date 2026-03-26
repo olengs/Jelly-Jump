@@ -5,13 +5,13 @@ const GameRecords = require("../models/game-records");
 exports.getProfile = async (req, res) => {
     try {
         // get logged in userid from session (jc login)
-        const userId = req.session?.user?.id;
+        const user = req.session?.user;
 
-        if (!userId){
+        if (!user){
             return res.redirect("/login");
         }
 
-        res.render("user-profile", {user: user, error: null});
+        res.render("user-profile", {user, error: null});
     } catch (error) {
         console.error(error);
         res.render("user-profile", {user: null, error:"Something went wrong."});
@@ -20,38 +20,15 @@ exports.getProfile = async (req, res) => {
 
 // update - edit profile form 
 exports.getEditProfile = async (req, res) => {
-    try {
-        const userID = req.session.user.id; 
-
-        if (!userID){
-            return res.redirect("/login");
-        }
-
-        const user = await User.getUserById(userID);
-        res.render("edit-profile", {user: user, error: null});
-
-    } catch (error) {
-        console.error(error);
-        res.redirect("/profile");
-    }
+    const user = req.session?.user;
+    res.render("edit-profile", {user: user, error: null});
 }
 
 // update - handle edit profile submission 
 exports.postEditProfile = async (req, res) => {
     try {
-        const userID = req.session.user._id;
 
-        if (!userID){
-            return res.redirect("/login")
-        }
-
-        const username = req.body.username; 
-        const bio = req.body.bio;  
-
-        if (!username){
-            const user = await User.getUserById(userID);
-            return res.render("edit-profile", {user: user, error: "Username cannot be empty."});
-        }
+        return res.render("edit-profile", {user: req.session.user, error: "Username cannot be empty."});
 
         await User.updateUser(userID, {username, bio});
 

@@ -20,7 +20,7 @@ server.use(session({
     rolling: true, //will reset cookie lifetime on each request
     cookie: {
         httpOnly: true,
-        maxAge: 30 * 60 * 1000 //10 mins
+        maxAge: 30 * 60 * 1000 //30 mins
         // maxAge: 20 * 1000, //20s for testing
     }
 }));
