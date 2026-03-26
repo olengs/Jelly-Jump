@@ -1,3 +1,4 @@
+
 const User = require("../models/user-model");
 const GameRecords = require("../models/game-records");
 
@@ -49,7 +50,7 @@ async function postEditProfile(req, res){
             return res.render("edit-profile", {user: user, error: "Username cannot be empty."});
         }
 
-        await User.updateUser(userID, username, bio);
+        await User.updateUser(userID, {username, bio});
 
         res.redirect("/profile");
     } catch (error) {
@@ -68,7 +69,7 @@ async function deleteProfile(req, res){
         const userID = req.session.user._id;
         await GameRecords.deleteAllRecordsByUser(userID.toString());
         await User.deleteUser(userID);
-        
+
         // clear the session 
         req.session.destroy(() => {
             res.redirect("/")
@@ -107,6 +108,7 @@ async function deleteHistory(req, res){
         const userID = req.session.user._id;
         await GameRecords.deleteRecord(req.params.id, userID.toString()); 
         res.redirect("/history");
+
     } catch (error) {
         console.error(error); 
         res.redirect("/history");

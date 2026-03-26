@@ -30,8 +30,8 @@ exports.updateRecord = async (id, updatedData) => {
     return updated; 
 };
 
-exports.deleteRecord = async (id, playerId) => {
-    return await GameRecords.findOneAndDelete({_id: id, playerId: playerId});
+exports.deleteRecord = async (id) => {
+    return await GameRecords.findOneAndDelete({_id: id});
 };
 
 exports.deleteAllRecordsByUser = async (playerId) => {
