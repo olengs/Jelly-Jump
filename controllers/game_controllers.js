@@ -1,6 +1,7 @@
 const GameRecords = require("../models/game-records");
 const UserModel = require("../models/user-model");
 const scoreboardModel = require('../models/scoreboard-model');
+const GameRecordModel = require("../models/game-records");
 
 exports.gameViewController = (req, res) => {
     //add customizable shop etc
@@ -21,7 +22,7 @@ exports.EndGameUpdateController = async (req, res) => {
     // insert score into db
     try {
         await scoreboardModel.upsertScore(playerId, user.username, highscore);
-
+        await GameRecordModel.createRecord(playerId, endTime, highscore, character, 0);
         res.json({ success: true });
     } catch (error) {
         console.log(error);

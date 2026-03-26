@@ -2,15 +2,14 @@ const User = require("../models/user-model");
 const GameRecords = require("../models/game-records");
 
 // read - get profile page 
-async function getProfile(req, res){
+exports.getProfile = async (req, res) => {
     try {
         // get logged in userid from session (jc login)
-        const userID = req.session.user._id; 
-        if (!userID){
+        const userId = req.session?.user?.id;
+
+        if (!userId){
             return res.redirect("/login");
         }
-        const userID = req.session.user._id; 
-        const user = await User.getUserById(userID);
 
         res.render("user-profile", {user: user, error: null});
     } catch (error) {
@@ -20,18 +19,17 @@ async function getProfile(req, res){
 };
 
 // update - edit profile form 
-async function getEditProfile(req, res){
+exports.getEditProfile = async (req, res) => {
     try {
-
-        const userID = req.session.user._id; 
+        const userID = req.session.user.id; 
 
         if (!userID){
             return res.redirect("/login");
         }
-        const userID = req.session.user._id;
-        const user = await User.getUserById(userID);
 
+        const user = await User.getUserById(userID);
         res.render("edit-profile", {user: user, error: null});
+
     } catch (error) {
         console.error(error);
         res.redirect("/profile");
@@ -39,7 +37,7 @@ async function getEditProfile(req, res){
 }
 
 // update - handle edit profile submission 
-async function postEditProfile(req, res){
+exports.postEditProfile = async (req, res) => {
     try {
         const userID = req.session.user._id;
 
@@ -47,7 +45,6 @@ async function postEditProfile(req, res){
             return res.redirect("/login")
         }
 
-        const userID = req.session.user._id;
         const username = req.body.username; 
         const bio = req.body.bio;  
 
@@ -66,7 +63,7 @@ async function postEditProfile(req, res){
 }
 
 // delete - delete user account 
-async function deleteProfile(req, res){
+exports.deleteProfile = async (req, res) => {
     try {
         const userID = req.session.user._id;
 
@@ -74,7 +71,6 @@ async function deleteProfile(req, res){
             return res.redirect("/login");
         }
 
-        const userID = req.session.user._id;
         await GameRecords.deleteAllRecordsByUser(userID.toString());
         await User.deleteUser(userID);
 
@@ -89,7 +85,7 @@ async function deleteProfile(req, res){
 }
 
 // read - get game history page 
-async function getHistory(req, res){
+exports.getHistory = async (req, res) => {
     try {
         if (!req.session.user){
             return res.redirect("/login");
@@ -107,13 +103,9 @@ async function getHistory(req, res){
 }
 
 // delete - delete a single history entity 
-async function deleteHistory(req, res){
+exports.deleteHistory = async (req, res) => {
     try {
-        if (!req.session.user){
-            return res.redirect("/login"); 
-        }
-
-        const userID = req.session.user._id;
+        const userID = req.session.user.id;
         await GameRecords.deleteRecord(req.params.id, userID.toString()); 
         res.redirect("/history");
     } catch (error) {
@@ -121,5 +113,3 @@ async function deleteHistory(req, res){
         res.redirect("/history");
     }
 }
-
-module.exports = {getProfile, getEditProfile, postEditProfile, deleteProfile, getHistory, deleteHistory};
