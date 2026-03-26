@@ -5,24 +5,22 @@
     <title>Friends List</title>
 </head>
 <body>
-    <form action="/addfriend" method="post">
+   <form action="/addfriend" method="post">
         Name of Friend:<input type="text" name="friendname"><br><br>
-        User of Friend: <input type="text" name="frienduser"><br><br>
+       
         <button type="submit">submit</button>
-    </form>
+    </form> 
 
+    <% friendslist.forEach(f => { %>
+    <p> <%= f.friendName %></p> <% }) %>
 
-
-    <% AllDataFriends.forEach(f => { %>
-    <p><%= f.user %> → <%= f.friendName %></p>
-
-    <form action="/deletefriend" method="post">
+    <!-- <form action="/deletefriend" method="post">
         <input type="hidden" name="friendid"> 
         <button type="submit">delete</button>
-    </form>
+    </form> -->
 
 
-<% }) %>
+
     
 </body>
 </html>

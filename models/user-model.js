@@ -5,13 +5,16 @@ const errors = require("./errors");
 const bcrypt = require("bcrypt");
 
 
+
 const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true},
     email: {type: String, required: true, unique:true, trim:true},
     passwordHash: {type: String, required: true, unique:true},
     role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
     bio: {type: String, required: true, default: "My bio"},
-})
+    friends :[{
+        friendName:String
+    }] })
 
 const User = mongoose.model('User', userSchema, "users");
 exports.User = User;
