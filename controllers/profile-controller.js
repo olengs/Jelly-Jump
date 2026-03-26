@@ -1,11 +1,11 @@
-const User = require("../models/user-profile");
-const GameHistory = require("../models/player-history");
+const User = require("../models/user-model");
+const GameRecords = require("../models/game-records");
 
 // read - get profile page 
 async function getProfile(req, res){
     try {
         // get logged in userid from session (jc login)
-        const userID = req.session.userID; 
+        const userID = req.session.user._id; 
         if (!userID){
             return res.redirect("/login");
         }
@@ -20,7 +20,7 @@ async function getProfile(req, res){
 // update - edit profile form 
 async function getEditProfile(req, res){
     try {
-        const userID = req.session.userID; 
+        const userID = req.session.user._id; 
 
         if (!userID){
             return res.redirect("/login");
@@ -37,7 +37,7 @@ async function getEditProfile(req, res){
 // update - handle edit profile submission 
 async function postEditProfile(req, res){
     try {
-        const userID = req.session.userID;
+        const userID = req.session.user._id;
 
         if (!userID){
             return res.redirect("/login")
@@ -64,7 +64,7 @@ async function postEditProfile(req, res){
 // delete - delete user account 
 async function deleteProfile(req, res){
     try {
-        const userID = req.session.userId;
+        const userID = req.session.user._id;
 
         if (!userID){
             return res.redirect("/login");
@@ -85,32 +85,33 @@ async function deleteProfile(req, res){
 // read - get game history page 
 async function getHistory(req, res){
     try {
-        const userID = req.session.userID; 
+        console.log(req.session.user);
+        const userID = req.session.user?.id; 
 
         if (!userID){
             return res.redirect("/login");
         }
 
         const user = await User.findByID(userID);
-        const history = await GameHistory.find({playerId: userID}).sort({timestamp: -1}); 
+        const history = await GameRecords.find({playerId: userID}).sort({timestamp: -1}); 
 
-        res.render("/player-history", {user: user, history: history, error: null});
+        res.render("player-history", {user: user, history: history, error: null});
     } catch (error) {
         console.error(error); 
-        res.render("/player-history", {user: null, history: [], error: "Something went wrong."});
+        res.render("player-history", {user: null, history: [], error: "Something went wrong."});
     }
 }
 
 // delete - delete a single history entity 
 async function deleteHistory(req, res){
     try {
-        const userID = req.session.userID; 
+        const userID = req.session.user.id; 
 
         if (!userID){
             return res.redirect("/login"); 
         }
 
-        await GameHistory.findByIDAndDelete(req.params.id); 
+        await GameRecords.findByIDAndDelete(req.params.id); 
         res.redirect("/player-history");
     } catch (error) {
         console.error(error); 

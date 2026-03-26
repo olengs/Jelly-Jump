@@ -1,5 +1,5 @@
 const express = require("express"); 
-const router = express.router();
+const router = express.Router();
 const profileController = require("../controllers/profile-controller");
 
 // read- show profile page 
@@ -15,7 +15,7 @@ router.post("/profile/edit", profileController.postEditProfile);
 router.post("/profile/delete", profileController.deleteProfile);
 
 // read - show player history page 
-route.get("/history", profileController.getHistory); 
+router.get("/history", profileController.getHistory); 
 
 // delete - delete a single history entry
 router.post("/history/delete/:id", profileController.deleteHistory); 
