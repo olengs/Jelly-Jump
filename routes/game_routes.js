@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const userMiddleware = require("../middleware/user-middleware");
-
 const GameControllers = require("../controllers/game_controllers")
 
 router.use(express.json());

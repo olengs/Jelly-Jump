@@ -7,6 +7,7 @@ exports.gameViewController = (req, res) => {
     //add customizable shop etc
     const user = req.session.user;
     const characterID = 0;
+
     res.render("game/gameview", {playerId: user._id, characterID});
 };
 
