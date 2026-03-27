@@ -78,7 +78,7 @@ exports.signup = async (req, res) => {
 exports.logout = async (req, res) => {
     req.session.destroy(err => {
         if (err) {
-            return res.status(500).render("error", {errorMsg: "Failed to logout"});
+            return res.status(500).render("error", {statusCode: 500});
         }
         return res.redirect(302, "/login");
     });

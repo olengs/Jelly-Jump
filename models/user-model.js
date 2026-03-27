@@ -34,8 +34,8 @@ exports.createUser = async (username, email, password) => {
         throw dbcommons.databaseError;
     }
 
-    const username_exists = User.findOne({username})
-    const email_exists = User.findOne({email})
+    const username_exists = User.findOne({username}).lean();
+    const email_exists = User.findOne({email}).lean();
 
     if (await username_exists) {
         throw new errors.UserAlreadyExistsError(username);
@@ -102,6 +102,10 @@ exports.findUsersByStr = async (partialName, filters = {}) => {
 
 exports.updateUser = async (id, username, bio) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    let username_exists = User.findOne({username}).lean();
+
+    if (await username_exists) throw errors.UserAlreadyExistsError();
+    if (!username.match(username_regex)) throw errors.UsernameFormatError();
 
     return await User.findByIdAndUpdate(id, {username, bio}, {new: true});
 }

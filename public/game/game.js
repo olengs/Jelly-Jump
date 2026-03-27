@@ -1,4 +1,5 @@
 //board consts
+const floorHeight = 75;
 const boardHeight = 600;
 const boardWidth = 1200;
 const playerWidth = 90;
@@ -6,7 +7,6 @@ const playerHeight = 95;
 const playerPosX = 50;
 const obstructionHeight = 100;
 const gravity = 1400;
-let obstructionSpeed = 800;
 const rockWidth1 = 50;
 const rockWidth2 = 170;
 const rockWidth3 = 200;
@@ -42,14 +42,14 @@ class Object {
 
 class Player extends Object{
     constructor(img){
-        super(playerPosX, boardHeight - playerHeight, playerWidth, playerHeight, 0, 0, img)
+        super(playerPosX, boardHeight - playerHeight - floorHeight, playerWidth, playerHeight, 0, 0, img)
         this.move = this.move.bind(this);
         this.accX = 0;
         this.accY = 0;
     }
 
     move (e) {
-        if ((e.code == "Space" || e.code == "ArrowUp") && this.y == boardHeight - playerHeight) {
+        if ((e.code == "Space" || e.code == "ArrowUp") && this.y == boardHeight - playerHeight - floorHeight) {
             //console.log("Jump");
             this.accY = airResistance;
             this.velY = -playerJumpStrength;
@@ -60,14 +60,14 @@ class Player extends Object{
         super.update(dt);
         this.accY += gravity * dt;
         this.velY += this.accY * dt;
-        this.y = Math.min(boardHeight - playerHeight, + this.y + this.velY * dt); //apply gravity to player, but makes sure it doesn't go underground
+        this.y = Math.min(boardHeight - playerHeight - floorHeight, + this.y + this.velY * dt); //apply gravity to player, but makes sure it doesn't go underground
         //console.log(player.y);
     }
 }
 
 class Obstruction extends Object{
     constructor(width, img_src){
-        super(boardWidth, boardHeight - obstructionHeight, width, obstructionHeight, -obstructionSpeed, 0, img_src)
+        super(boardWidth, boardHeight - obstructionHeight - floorHeight, width, obstructionHeight, -obstructionSpeed, 0, img_src)
     }
 }
 
@@ -76,14 +76,17 @@ let board;
 let context;
 let obstructions;
 let gameOver;
-let score;
 let playerImage;
 let rockImage1, rockImage2, rockImage3, bgImage;
+
 let prevtime;
+let score;
 let bgx;
-let bgx_speed = 120;
+let bgx_speed;
 let midbutton;
 let scale = 1.0;
+let obstructionSpeed;
+let interval;
 
 window.onload = function() {
     board = document.getElementById("board");
@@ -104,11 +107,14 @@ let start = function() {
     gameOver = false;
     bgx = 0;
     obstructions = [];
+    bgx_speed = 120;
+    obstructionSpeed = 800;
+
     
     const character = this.document.getElementById("character").value;
 
     bgImage = new Image();
-    bgImage.src = "/game/img/gamebg.png";
+    bgImage.src = "/game/img/bg.png";
 
     playerImage = new Image();
     playerImage.src = `/game/img/jelly${character}.png`;
@@ -126,7 +132,7 @@ let start = function() {
     prevtime = this.performance.now();
 
     this.requestAnimationFrame(update);
-    this.setInterval(spawnRock, 1500);
+    interval = this.setInterval(spawnRock, 1000);
     this.document.addEventListener("keydown", player.move);
 }
 
@@ -139,7 +145,7 @@ function update() {
     context.clearRect(0, 0, board.width, board.height);
     context.fillStyle = "black";
     context.fillRect(0, 0, board.width, board.height);
-    context.globalAlpha = 0.2
+    context.globalAlpha = 0.4
     context.drawImage(bgImage, bgx, 0, board.width, board.height);
     context.drawImage(bgImage, board.width + bgx - 5, 0, board.width, board.height);
     context.globalAlpha = 1;
@@ -192,6 +198,7 @@ function spawnRock() {
 
 function gameOverEvent() {
     gameOver = true
+    if (interval) clearInterval(interval);
     obstructions = [];
 
     //redraw bg
@@ -208,7 +215,6 @@ function gameOverEvent() {
     context.fillText(`Game Over`, board.width * 0.45, board.height * 0.5);
     context.fillText(`Score: ${score}`, board.width * 0.45, board.height * 0.5 + 20);
 
-    // 
     updateHighscore(score);
 
     midbutton.hidden = false;

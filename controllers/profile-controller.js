@@ -11,28 +11,26 @@ exports.getProfile = async (req, res) => {
             return res.redirect("/login");
         }
 
-        res.render("user-profile", {user, error: null});
+        res.render("profile/user-profile", {user, error: null});
     } catch (error) {
         console.error(error);
-        res.render("user-profile", {user: null, error:"Something went wrong."});
+        res.render("profile/user-profile", {user: null, error:"Something went wrong."});
     }
 };
 
 // update - edit profile form 
 exports.getEditProfile = async (req, res) => {
     const user = req.session?.user;
-    res.render("edit-profile", {user: user, error: null});
+    res.render("profile/edit-profile", {user: user, error: null});
 }
 
 // update - handle edit profile submission 
 exports.postEditProfile = async (req, res) => {
+    //TODO: missing post body.
+    
     try {
-
-        return res.render("edit-profile", {user: req.session.user, error: "Username cannot be empty."});
-
         await User.updateUser(userID, {username, bio});
-
-        res.redirect("/profile");
+        return res.redirect("/profile");
     } catch (error) {
         console.error(error);
         res.redirect("/profile");
@@ -41,41 +39,34 @@ exports.postEditProfile = async (req, res) => {
 
 // delete - delete user account 
 exports.deleteProfile = async (req, res) => {
+
+    let userId = req.session?.user?._id;
+
     try {
-        const userID = req.session.user._id;
-
-        if (!userID){
-            return res.redirect("/login");
-        }
-
-        await GameRecords.deleteAllRecordsByUser(userID.toString());
-        await User.deleteUser(userID);
+        await GameRecords.deleteAllRecordsByUser(userId.toString());
+        await User.deleteUser(userId);
 
         // clear the session 
         req.session.destroy(() => {
-            res.redirect("/")
+            res.redirect("/signup")
         });
+
     } catch (error) {
         console.error(error);
-        res.redirect("/profile");
+        res.status(500).render("error", {statusCode: 500});
     }
 }
 
 // read - get game history page 
 exports.getHistory = async (req, res) => {
     try {
-        if (!req.session.user){
-            return res.redirect("/login");
-        }
-
         const userID = req.session.user._id; 
         const user = await User.getUserById(userID);
         const history = await GameRecords.getPlayerHistory(userID.toString());
-
-        res.render("player-history", {user: user, history: history, error: null});
+        res.render("profile/player-history", {user: user, history: history, error: null});
     } catch (error) {
         console.error(error); 
-        res.render("player-history", {user: null, history: [], error: "Something went wrong."});
+        res.status(500).render("error", {statusCode: 500});
     }
 }
 
@@ -86,7 +77,7 @@ exports.deleteHistory = async (req, res) => {
         await GameRecords.deleteRecord(req.params.id, userID.toString()); 
         res.redirect("/history");
     } catch (error) {
-        console.error(error); 
-        res.redirect("/history");
+        console.log(error);
+        res.status(500).render("error", {statusCode: 500});
     }
 }
