@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error Page</title>
+</head>
+<body>
+    <h1>Something Went Wrong!</h1>
+
+    <% if (status === 400){ %>
+        <p>400 - Bad Request. The request cannot be fulfilled due to bad syntax.</p>
+    <% } else if (status === 403) { %>
+        <p>403 - Forbidden. You are not allowed to visit this page.</p>
+    <% } else if (status === 404) { %>
+        <p>404 - Not Found. The requested page could not be found.</p>
+    <% } else if (status === 500) { %>
+        <p>500 - Internal Server Error.</p>
+    <% } else { %> 
+        <p>An unexpected error occured.</p>
+    <% } %> 
+
+    <a href="/home">Go Back To Home</a>
+    
+</body>
+</html>
