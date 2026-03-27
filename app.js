@@ -51,8 +51,12 @@ server.use("/", homeRoutes);
 server.use('/', profileRoutes);
 //Home page
 server.get("/", (req, res) => {
-    res.redirect("/login");
+    res.redirect("/home");
 });
+
+server.get("/index.html", (req, res) => {
+    res.redirect(301, "/")
+})
 
 //console.log(process.env.DB_TEST_URI);
 async function main() {
