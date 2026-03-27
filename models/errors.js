@@ -35,10 +35,34 @@ class InvalidPasswordError extends Error {
     }
 }
 
+class EmailFormatError extends Error {
+    constructor() {
+        super("Email of invalid format");
+        this.statusCode = 400;
+    }
+}
+
+class UsernameFormatError extends Error {
+    constructor() {
+        super("Username must be between 4 and 12 characters and only letters and numbers are allowed in username");
+        this.statusCode = 400;
+    }
+}
+
+class PasswordFormatError extends Error {
+    constructor() {
+        super("Passwords must be at least 8 characters and contain at least 1 uppercase, 1 lowercase, 1 digit and 1 special character");
+        this.statusCode = 400;
+    }
+}
+
 module.exports = {
     DatabaseNotConnectedError,
     UserAlreadyExistsError,
     UserNotFoundError,
     EmailAlreadyExistsError,
     InvalidPasswordError,
+    EmailFormatError,
+    UsernameFormatError,
+    PasswordFormatError,
 }
