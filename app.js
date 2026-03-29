@@ -41,6 +41,8 @@ const scoreboardRoutes = require('./routes/scoreboard_routes');
 const homeRoutes = require('./routes/home-routes');
 const profileRoutes = require('./routes/profile-routes');
 
+const userMiddleware = require("./middleware/user-middleware.js");
+server.use(userMiddleware.requireNavbar);
 
 server.use("/example", example);
 server.use("/game", gameRoutes);
@@ -51,7 +53,7 @@ server.use("/", homeRoutes);
 server.use('/', profileRoutes);
 //Home page
 server.get("/", (req, res) => {
-    res.redirect("/home");
+    res.redirect("/");
 });
 
 server.get("/index.html", (req, res) => {
