@@ -29,44 +29,46 @@
         <!-- Global Tab -->
         <div id="tab-global" class="tab-content">
             <% if (topTen && topTen.length > 0) { %>
-            <table id="global-table">
-                <thead>
-                    <tr>
-                        <% if (user && user.role === 'admin') { %><th>Actions</th><% } %>
-                        <th>Rank</th>
-                        <th>Player</th>
-                        <th>High Score</th>
-                        <th>Games Played</th>
-                    </tr>
-                </thead>
-                <tbody id="global-tbody">
-                    <% topTen.forEach((entry, index) => { %>
-                    <tr class="<%= (user && entry.username === user.username) ? 'you-row' : '' %>"
-                        data-username="<%= entry.username %>"
-                        data-score="<%= entry.highscore %>">
-                        <% if (user && user.role === 'admin') { %>
-                            <td>
-                                <form action="/scoreboard/delete/<%= entry.playerId %>" method="POST" onsubmit="return confirm('Delete this entry?')">
-                                    <button type="submit" class="delete-btn">Delete</button>
-                                </form>
-                            </td>
-                        <% } %>
-                        <td class="rank-cell"><%= index + 1 %></td>
-                        <td>
-                            <%= entry.username %>
-                            <% if (user && entry.username === user.username) { %>
-                                <span class="you-tag">(you)</span>
+                <table id="global-table">
+                    <thead>
+                        <tr>
+                            <% if (user && user.role === 'admin') { %>
+                                <th>Actions</th>
                             <% } %>
-                        </td>
-                        <td><%= entry.highscore %></td>
-                        <td><%= entry.gamesPlayed %></td>
-                    </tr>
-                    <% }); %>
-                </tbody>
-            </table>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>High Score</th>
+                            <th>Games Played</th>
+                        </tr>
+                    </thead>
+                    <tbody id="global-tbody">
+                        <% topTen.forEach((entry, index) => { %>
+                        <tr class="<%= (user && entry.username === user.username) ? 'you-row' : '' %>"
+                            data-username="<%= entry.username %>"
+                            data-score="<%= entry.highscore %>">
+                            <% if (user && user.role === 'admin') { %>
+                                <td>
+                                    <form action="/scoreboard/delete/<%= entry.playerId %>" method="POST" onsubmit="return confirm('Delete this entry?')">
+                                        <button type="submit" class="delete-btn">Delete</button>
+                                    </form>
+                                </td>
+                            <% } %>
+                            <td class="rank-cell"><%= index + 1 %></td>
+                            <td>
+                                <%= entry.username %>
+                                <% if (user && entry.username === user.username) { %>
+                                    <span class="you-tag">(you)</span>
+                                <% } %>
+                            </td>
+                            <td><%= entry.highscore %></td>
+                            <td><%= entry.gamesPlayed %></td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
             <p id="global-empty" style="display:none;">No results found.</p>
             <% } else { %>
-            <p>No scores yet. Be the first to play!</p>
+                <p>No scores yet. Be the first to play!</p>
             <% } %>
         </div>
 
@@ -75,36 +77,36 @@
             <% if (!user) { %>
                 <p>Log in to see your friends leaderboard.</p>
             <% } else if (friendsScores && friendsScores.length > 0) { %>
-            <table id="friends-table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Player</th>
-                        <th>High Score</th>
-                        <th>Games Played</th>
-                    </tr>
-                </thead>
-                <tbody id="friends-tbody">
-                    <% friendsScores.forEach((entry, index) => { %>
-                    <tr class="<%= entry.username === user.username ? 'you-row' : '' %>"
-                        data-username="<%= entry.username %>"
-                        data-score="<%= entry.highscore %>">
-                        <td class="rank-cell"><%= index + 1 %></td>
-                        <td>
-                            <%= entry.username %>
-                            <% if (entry.username === user.username) { %>
-                                <span class="you-tag">(you)</span>
-                            <% } %>
-                        </td>
-                        <td><%= entry.highscore %></td>
-                        <td><%= entry.gamesPlayed %></td>
-                    </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-            <p id="friends-empty" style="display:none;">No results found.</p>
+                <table id="friends-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>High Score</th>
+                            <th>Games Played</th>
+                        </tr>
+                    </thead>
+                    <tbody id="friends-tbody">
+                        <% friendsScores.forEach((entry, index) => { %>
+                        <tr class="<%= entry.username === user.username ? 'you-row' : '' %>"
+                            data-username="<%= entry.username %>"
+                            data-score="<%= entry.highscore %>">
+                            <td class="rank-cell"><%= index + 1 %></td>
+                            <td>
+                                <%= entry.username %>
+                                <% if (entry.username === user.username) { %>
+                                    <span class="you-tag">(you)</span>
+                                <% } %>
+                            </td>
+                            <td><%= entry.highscore %></td>
+                            <td><%= entry.gamesPlayed %></td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <p id="friends-empty" style="display:none;">No results found.</p>
             <% } else { %>
-            <p>No friends scores yet. Add some friends and start playing!</p>
+                <p>No friends scores yet. Add some friends and start playing!</p>
             <% } %>
         </div>
 
