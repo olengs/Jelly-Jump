@@ -92,6 +92,7 @@ exports.findUsersByStr = async (partialName, filters = {}, maxFuzz = 0.3) => {
     //using custom leveinstein distance to do search 
     // -- DO NOT USE THIS IN A NORMAL PROJECT, THIS METHOD IS VERY SLOW AS IT QUERIES ALL USERS
     // -- THIS IS ONLY DONE BECAUSE I AM UNABLE TO IMPORT FUZZY SEARCH PACKAGE DUE TO PROJECT CONSTRAINTS
+    // -- THERE WILL BE A BOTTLENECK AT RETRIEVING ALL USERS INSTEAD OF FILTERING
     // - JC
     maxFuzz = Math.max(Math.min(maxFuzz, 1), 0);
     let similarNames = (await User.find(filters || {})).sort(
