@@ -1,39 +1,31 @@
 const Scoreboard = require("../models/scoreboard-model");
-const Friend = require('../models/friend-model');
+const {User} = require('../models/user-model');
 
 exports.getLeaderboard = async (req, res) => {
     try {
         const topTen = await Scoreboard.getTopTen();
+        // use ? to make sure no crash
         const user = req.session?.user || null;
         let friendsScores = [];
-        
+
         if (user) {
-            const friendDoc = await Friend.findOne({playerId: user._id.toString()});
+            // .lean() to get a plain JS object instead of a Mongoose document
+            const userDoc = await User.findById(user._id).lean();
+            const friendNames = [];
+            if (userDoc && userDoc.friends) {
+                for (let i = 0; i < userDoc.friends.length; i++) {
+                    friendNames.push(userDoc.friends[i].friendName);
+                }
+            }
 
-            console.log("user id:", user._id.toString());
-            console.log("friendDoc:", friendDoc);
-
-            console.log("friendsId length:", friendDoc.friendsId.length);
-            console.log("friendsId value:", friendDoc.friendsId);
-
-            if (friendDoc && friendDoc.friendsId && friendDoc.friendsId.length > 0) {
-
-                // spreads friend array + add user's own id at the end
-                const ids = [...friendDoc.friendsId, user._id.toString()];
-                console.log("ids to query:", ids);
-                
-                friendsScores = await Scoreboard.getFriendScores(ids);
-                console.log("friendsScores:", friendsScores);
-                
-            // oop no friend just show own score
-            } else {
-                friendsScores = await Scoreboard.getFriendScores([user._id.toString()]);
-            };
-        };
+            // include the user's own username + all friend usernames
+            const usernames = [...friendNames, user.username];
+            friendsScores = await Scoreboard.getFriendScoresByUsername(usernames);
+        }
 
         res.render('scoreboard/scoreboard', {topTen, user, friendsScores});
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).render('error', { error: error.message });
     }
 };
