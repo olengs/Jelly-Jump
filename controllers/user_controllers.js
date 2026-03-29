@@ -40,7 +40,7 @@ exports.login = async (req, res) => {
         return
     }
 
-    res.redirect(302, "/home");
+    res.redirect(302, "/");
 }
 
 exports.signup = async (req, res) => {

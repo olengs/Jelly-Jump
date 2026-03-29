@@ -20,6 +20,7 @@ exports.requireUser = async (req, res, next) => {
 
 exports.requireNavbar = async (req, res, next) => {
     res.locals.hasUser = req.session && req.session.user ? true : false;
+    return next();
 }
 
 exports.requireAdmin = async (req, res, next) => {
@@ -56,5 +57,5 @@ exports.autoLoginIfAuthenticated = async (req, res, next) => {
         return;
     }
 
-    return res.redirect("/home");
+    return res.redirect("/");
 }
