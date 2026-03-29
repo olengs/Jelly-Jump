@@ -71,6 +71,37 @@ class Obstruction extends Object{
     }
 }
 
+class Spawner {
+    constructor() {
+        this.timeToSpawn = 0;
+    }
+
+    checkSpawn(dt) {
+        this.timeToSpawn -= dt;
+        console.log(this.timeToSpawn);
+        if (this.timeToSpawn <= 0) {
+            this.timeToSpawn = Math.random() + 1;
+            return true;
+        }
+        return false;
+    }
+
+    spawn() {
+        let obj;
+        let typeChance = Math.random();
+
+        if (typeChance < 0.15) {
+            obj = new Obstruction(rockWidth3, rockImage3);
+        } else if (typeChance < 0.45) {
+            obj = new Obstruction(rockWidth2, rockImage2);
+        } else {
+            obj = new Obstruction(rockWidth1, rockImage1);
+        }
+
+        return obj;
+    }
+}
+
 let player;
 let board;
 let context;
@@ -87,6 +118,7 @@ let midbutton;
 let scale = 1.0;
 let obstructionSpeed;
 let interval;
+let spawner;
 
 window.onload = function() {
     board = document.getElementById("board");
@@ -110,6 +142,7 @@ let start = function() {
     bgx_speed = 120;
     obstructionSpeed = 800;
 
+    spawner = new Spawner();
     
     const character = this.document.getElementById("character").value;
 
@@ -132,7 +165,6 @@ let start = function() {
     prevtime = this.performance.now();
 
     this.requestAnimationFrame(update);
-    interval = this.setInterval(spawnRock, 1000);
     this.document.addEventListener("keydown", player.move);
 }
 
@@ -141,6 +173,14 @@ function update() {
     if (gameOver) return;
 
     let dt = (performance.now() - prevtime) / 1000;
+
+    if (spawner.checkSpawn(dt)) {
+        obstructions.push(spawner.spawn());
+
+        if (obstructions.length > 10) {
+            obstructions.shift();
+        }
+    }
 
     context.clearRect(0, 0, board.width, board.height);
     context.fillStyle = "black";
@@ -174,26 +214,6 @@ function update() {
     context.font = "20px courier";
     score++;
     context.fillText(`Score: ${score}`, 5, 20);
-}
-
-function spawnRock() {
-    if (gameOver) return;
-
-    let obj;
-    let typeChance = Math.random();
-
-    if (typeChance < 0.15) {
-        obj = new Obstruction(rockWidth3, rockImage3);
-    } else if (typeChance < 0.45) {
-        obj = new Obstruction(rockWidth2, rockImage2);
-    } else {
-        obj = new Obstruction(rockWidth1, rockImage1);
-    }
-    obstructions.push(obj);
-
-    if (obstructions.length > 10) {
-        obstructions.shift();
-    }
 }
 
 function gameOverEvent() {
