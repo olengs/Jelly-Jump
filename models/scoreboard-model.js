@@ -13,28 +13,28 @@ const Scoreboard = mongoose.model('Scoreboard', scoreboardSchema);
 
 exports.getTopTen = function() {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    return Scoreboard.find().sort({ highscore: -1 }).limit(10);
+    return Scoreboard.find().sort({highscore: -1}).limit(10);
 };
 
 exports.upsertScore = function(playerId, username, newScore) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     return Scoreboard.findOneAndUpdate(
-        { playerId: playerId },
+        {playerId: playerId},
         {
-            $set: { username: username, lastPlayed: new Date() },
-            $max: { highscore: newScore },
-            $inc: { gamesPlayed: 1 }
+            $set: {username: username, lastPlayed: new Date()},
+            $max: {highscore: newScore},
+            $inc: {gamesPlayed: 1}
         },
-        { upsert: true, returnDocument: 'after' }
+        {upsert: true, returnDocument: 'after'}
     );
 };
 
 exports.deleteScore = function(playerId) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    return Scoreboard.deleteOne({ playerId: playerId });
+    return Scoreboard.deleteOne({playerId: playerId});
 };
 
-exports.getFriendScores = function(playerIds) {
+exports.getFriendScoresByUsername = function(usernames) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    return Scoreboard.find({playerId: {$in: playerIds}}).sort({highscore: -1});
+    return Scoreboard.find({username: {$in: usernames}}).sort({highscore: -1});
 };
