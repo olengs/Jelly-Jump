@@ -51,7 +51,7 @@ exports.gachaPullRequest = async (req, res) => {
     let {playerId, pullCount} = req.body;
 
     // make sure that player is able to afford the number of pulls
-    res.json({error: ""})
+    //res.json({error: ""})
 
     let results = Array.from({length: Number(pullCount)}, (_, i) => gachaPull());
     // save gacha results into player inventory first

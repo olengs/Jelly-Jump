@@ -51,6 +51,7 @@ server.use('/',friendRoutes);
 server.use('/scoreboard', scoreboardRoutes);
 server.use("/", homeRoutes);
 server.use('/', profileRoutes);
+
 //Home page
 server.get("/", (req, res) => {
     res.redirect("/");
@@ -62,8 +63,9 @@ server.get("/index.html", (req, res) => {
 
 // error handling route
 server.use((err, req, res, next) => {
-    console.log(`Error encountered: ${err}`);
-    res.render("error", {statusCode: err.statusCode || 500});
+    console.log(`Error encountered:\n${err.stack}`);
+    let statusCode = err.statusCode || 500;
+    res.render("error", {statusCode});
 });
 
 // not found route
@@ -79,7 +81,7 @@ async function main() {
             console.log(`Server running at http://${hostname}:${port}/`);
         });
     } catch (error) {
-        console.log(`Error connecting to db: ${error}`);
+        console.log(`Error connecting to db: \n${error.stack}`);
         return;
     }
 }
