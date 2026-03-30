@@ -6,40 +6,56 @@ exports.friendslist = async(req,res) =>{
 
        const user = await User.findById(req.session.user._id) // looks at the User document and find the id in the bracker
        const friendslist = user.friends || [] // [ { }, { }]
-       res.render('friends/friends',{friendslist,error:''},)
+       res.render('friends/friends',{friendslist,error:''})
 }catch(error){
     console.log('cannot show ')
 } }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 exports.addFriend = async(req,res)=>{
     try{
-
         console.log('req.session.user:', req.session.user);
         if (!req.session.user) {
         return res.status(401).send('You are not logged in');
     }
 
-        const friendname= req.body.friendname // what u key in 
+        const friendName= req.body.friendName?.trim() // what u key in 
+        const userName= req.body.userName?.trim() // what u key in
+
         const user = await User.findById(req.session.user._id) // looks at the User document and find the id in the bracker
-        const friendslist = user.friends // [ { }, { }]
+        const friendslist = user.friends || [] // [ {friendname:----, username,---- }, { }]
         
-        const isFriend = friendslist.some(friend => friendname === friend.friendName) // true or false 
+        const isFriend = friendslist.some(friend=>friend.username ===userName )
+        const userobj= await User.findOne({username:userName}) // if inside, it will show the obj. if not its null--> falsey 
 
-        if (isFriend === false){ // not inside
-            
-            await User.findByIdAndUpdate(
-            req.session.user._id,
-                {
-                    $push: {friends: {friendName:friendname}}
-                } )
-            return res.redirect('/friendslist') // redirect cz if not friendslist is not the updated one
-            }
-        else { // inside
-            
-            return res.render('friends/friends',{error:'already exist',friendslist})
+        if (!friendName || !userName){
+            return res.render('friends/friends',{error:'both cannot be empty',friendslist})
         }
+        if (!userobj){ // if its not oin database
+            return res.render('friends/friends',{error:'not in database',friendslist})
 
+        }
+        if (userName===user.username){
+            return res.render('friends/friends',{error:'cannot add yourself ',friendslist})
+        }
+        if (isFriend){// already exist
+            return res.render('friends/friends',{error:'this username already exists ',friendslist})
+
+        }
+        else{
+            await User.findByIdAndUpdate(
+                req.session.user._id,
+                {
+                    $push:{friends:{friendname:friendName, username:userName}}
+                }
+           
+            )
+             return res.redirect('/friendslist')
+        }
         
+
          
     } catch (error) {
         console.log(error)
@@ -47,16 +63,21 @@ exports.addFriend = async(req,res)=>{
     }
 }
 
+
+
+
+
+
 exports.deleteFriend = async(req,res) =>{
     try{
-        const friendname= req.body.friendname
+        const userName= req.body.userName
         await User.findByIdAndUpdate(
             req.session.user._id ,// which user document 
             {
-                $pull:{friends:{friendName:friendname}}
+                $pull:{friends:{username:userName}}
             }
         )
-        res.redirect('/friendslist')
+        return res.redirect('/friendslist')
     }catch(error){
         console.log(error)
         res.send('error cannot delete') }}

@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
     role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
     bio: {type: String, required: true, default: "My bio"},
     friends :[{
-        friendName:String
+        friendname:String,
+        username:String 
     }] })
 
 const User = mongoose.model('User', userSchema, "users");
