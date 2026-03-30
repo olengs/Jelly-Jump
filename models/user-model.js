@@ -101,14 +101,21 @@ exports.findUsersByStr = async (partialName, filters = {}, maxFuzz = 0.3) => {
     return similarNames;
 }
 
-exports.updateUser = async (id, username, bio) => {
+exports.updateUser = async (id, bio, username = null) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let username_exists = User.findOne({username}).lean();
+    
+    if (username) {    
+        let username_exists = User.findOne({username}).lean();
 
-    if (await username_exists) throw errors.UserAlreadyExistsError();
-    if (!username.match(username_regex)) throw errors.UsernameFormatError();
+        if (await username_exists) throw new errors.UserAlreadyExistsError(username);
+        if (!username.match(username_regex)) throw new errors.UsernameFormatError();
+        await User.findByIdAndUpdate(id, {username, bio});
+        return
+    }
 
-    return await User.findByIdAndUpdate(id, {username, bio}, {new: true});
+    await User.findByIdAndUpdate(id, {bio});
+    return 
+    
 }
 
 exports.deleteUser = async (id) => {

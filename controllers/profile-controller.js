@@ -1,83 +1,53 @@
 const User = require("../models/user-model");
 const GameRecords = require("../models/game-records");
+const errors = require("../models/errors");
 
-// read - get profile page 
 exports.getProfile = async (req, res) => {
-    try {
-        // get logged in userid from session (jc login)
-        const user = req.session?.user;
-
-        if (!user){
-            return res.redirect("/login");
-        }
-
-        res.render("profile/user-profile", {user, error: null});
-    } catch (error) {
-        console.error(error);
-        res.render("profile/user-profile", {user: null, error:"Something went wrong."});
-    }
+    const user = req.session.user;
+    res.render("profile/user-profile", {user});
 };
 
-// update - edit profile form 
 exports.getEditProfile = async (req, res) => {
-    const user = req.session?.user;
+    const user = req.session.user;
     res.render("profile/edit-profile", {user: user, error: null});
 }
 
 // update - handle edit profile submission 
 exports.postEditProfile = async (req, res) => {
-    //TODO: missing post body.
-    
+    const { newUsername , newBio } = req.body;
     try {
-        await User.updateUser(userID, {username, bio});
+        await User.updateUser(req.session.user._id, newBio, req.session.user.username == newUsername ? null : newUsername);
         return res.redirect("/profile");
     } catch (error) {
-        console.error(error);
-        res.redirect("/profile");
+        if (error instanceof errors.UserAlreadyExistsError) {
+            return res.render("profile/edit-profile", {user: req.session.user, errorMsg: error.message});
+        } else if (error instanceof errors.UsernameFormatError) {
+            return res.render("profile/edit-profile", {user: req.session.user, errorMsg: error.message});
+        }
+
+        // rethrow back to main handler
+        throw error;
     }
 }
 
 // delete - delete user account 
 exports.deleteProfile = async (req, res) => {
+    await GameRecords.deleteAllRecordsByUser(req.session.user._id);
+    await User.deleteUser(req.session.user._id);
 
-    let userId = req.session?.user?._id;
-
-    try {
-        await GameRecords.deleteAllRecordsByUser(userId.toString());
-        await User.deleteUser(userId);
-
-        // clear the session 
-        req.session.destroy(() => {
-            res.redirect("/signup")
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).render("error", {statusCode: 500});
-    }
+    res.redirect("/logout");
 }
 
 // read - get game history page 
 exports.getHistory = async (req, res) => {
-    try {
-        const userID = req.session.user._id; 
-        const user = await User.getUserById(userID);
-        const history = await GameRecords.getPlayerHistory(userID.toString());
-        res.render("profile/player-history", {user: user, history: history, error: null});
-    } catch (error) {
-        console.error(error); 
-        res.status(500).render("error", {statusCode: 500});
-    }
+    const userID = req.session.user._id; 
+    const user = await User.getUserById(userID);
+    const history = await GameRecords.getPlayerHistory(userID);
+    res.render("profile/player-history", {user: user, history: history, error: null});
 }
 
 // delete - delete a single history entity 
 exports.deleteHistory = async (req, res) => {
-    try {
-        const userID = req.session.user.id;
-        await GameRecords.deleteRecord(req.params.id, userID.toString()); 
-        res.redirect("/history");
-    } catch (error) {
-        console.log(error);
-        res.status(500).render("error", {statusCode: 500});
-    }
+    await GameRecords.deleteRecord(req.params.id, req.session.user._id); 
+    res.redirect("/history");
 }

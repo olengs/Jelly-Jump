@@ -22,7 +22,7 @@ exports.EndGameUpdateController = async (req, res) => {
     // insert score into db
     try {
         await scoreboardModel.upsertScore(playerId, user.username, highscore);
-        await GameRecordModel.createRecord(playerId, endTime, highscore, character, 0);
+        await GameRecordModel.createRecord(playerId, endTime, highscore, character, Math.floor(highscore / 100));
         res.json({});
     } catch (error) {
         console.log(error);

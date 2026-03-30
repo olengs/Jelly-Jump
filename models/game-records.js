@@ -3,7 +3,7 @@ const dbcommons = require("./dbcommons");
 const UserModel = require("./user-model");
 
 const gameRecordsSchema = new mongoose.Schema({
-    playerId: {type: String, required: true},
+    playerId: {type: mongoose.Types.ObjectId, required: true},
     timestamp: {type: Date, required: true, default: Date.now},
     score: {type: Number, required: true},
     character: {type: String, required: true, default: "0"},

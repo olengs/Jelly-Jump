@@ -8,21 +8,25 @@
     <title>Edit Profile</title>
 </head>
 <body>
-    <h1>Edit Profile</h1>
-    
-    <% if (error) { %>
-        <p><%= error %></p>
-    <% } %>
+    <%- include("../partials/navbar") %>
 
-    <form action="/profile/edit" method="post">
-        <label>Username:</label><br>
-        <input type="text" name="username" value="<%= user.username %>" required><br><br>
+    <div class="centered margin-top-20">
+        <h1 class="margin-bot-20">Edit Profile</h1>
 
-        <label>Bio:</label><br>
-        <textarea name="bio"><%= user.bio %></textarea><br><br>
+        <% if (typeof errorMsg !== "undefined") { %>
+            <div><%= errorMsg %></div>
+        <% } %>
 
-        <button type="submit">Save Changes</button><br><br>
-        <a href="/profile">Cancel</a>
-    </form>
+        <form action="/profile/edit" method="post">
+            <label>Username:</label><br>
+            <input type="text" name="newUsername" value="<%= user.username %>" required><br><br>
+
+            <label>Bio:</label><br>
+            <textarea style="resize: none;" name="newBio"><%= user.bio %></textarea><br><br>
+
+            <button type="submit">Save Changes</button><br><br>
+            <a href="/profile">Cancel</a>
+        </form>
+    </div>
 </body>
 </html>
