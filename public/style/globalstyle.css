@@ -95,8 +95,9 @@ h2.about-title {
 }
 
 .centered {
-    display: flex;
+    text-align: center;
     justify-content: center; /* Centers horizontally */
+    justify-items: auto;
 }
 
 .margin-top-20 {

@@ -26,7 +26,7 @@ exports.getPlayerHistory = async (playerId) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     
     const history = await GameRecords.find({playerId: playerId}).sort({timestamp:-1});
-    if (!record) throw new Error(`Failed to find game records of player: ${playerId}`);
+    if (!history) throw new Error(`Failed to find game records of player: ${playerId}`);
     return history; 
 };
 
