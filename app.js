@@ -63,6 +63,18 @@ server.get("/index.html", (req, res) => {
     res.redirect(301, "/")
 })
 
+// error handling route
+server.use((err, req, res, next) => {
+    console.log(`Error encountered:\n${err.stack}`);
+    let statusCode = err.statusCode || 500;
+    res.render("error", {statusCode});
+});
+
+// not found route
+server.use((req, res, next) => {
+    res.render("error", {statusCode: 404});
+});
+
 //console.log(process.env.DB_TEST_URI);
 async function main() {
     try {
@@ -71,7 +83,7 @@ async function main() {
             console.log(`Server running at http://${hostname}:${port}/`);
         });
     } catch (error) {
-        console.log(`Error connecting to db: ${error}`);
+        console.log(`Error connecting to db: \n${error.stack}`);
         return;
     }
 }

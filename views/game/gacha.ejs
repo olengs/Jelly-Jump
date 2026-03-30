@@ -6,18 +6,18 @@
     <title>Jelly Jump</title>
     <link rel="stylesheet" href="/style/globalstyle.css">
     <link rel="stylesheet" href="/game/game.css">
-    <script src="/game/game.js"></script>
+    <script src="/game/gacha.js"></script>
 </head>
 <body>
     <%- include('../partials/navbar') %>
 
     <canvas id="board"></canvas>
     <div>
-        <button id="startbutton" class="midbutton" onclick="start();">START</button>
+        <button id="draw1button" class="midbutton" onclick="draw1();">Draw 1</button>
+        <button id="draw10button" class="midbutton" onclick="draw10();">Draw 10</button>
     </div>
 
     <input type="hidden" id="playerId" value="<%= playerId %>">
-    <input type="hidden" id="character" value="<%= characterID %>">
 </body>
 </html>
 
