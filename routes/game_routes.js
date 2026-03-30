@@ -11,6 +11,6 @@ router.post("/endgame", GameControllers.EndGameUpdateController);
 
 router.get("/gacha", userMiddleware.requireUser, GameControllers.gachaViewController);
 
-router.post("/gacha", GameControllers.gachaPullRequest);
+router.post("/pull", GameControllers.gachaPullRequest);
 
 module.exports = router;

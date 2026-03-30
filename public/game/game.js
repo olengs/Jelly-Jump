@@ -1,7 +1,8 @@
 //board consts
-const floorHeight = 75;
 const boardHeight = 600;
 const boardWidth = 1200;
+const scale = 1.0;
+const floorHeight = 75;
 const playerWidth = 90;
 const playerHeight = 95;
 const playerPosX = 50;
@@ -12,6 +13,7 @@ const rockWidth2 = 170;
 const rockWidth3 = 200;
 const playerJumpStrength = 800;
 const airResistance = 1200;
+
 
 class Object {
     constructor (x=0, y=0, width=0, height=0, velX=0, velY=0, img) {
@@ -115,7 +117,6 @@ let score;
 let bgx;
 let bgx_speed;
 let midbutton;
-let scale = 1.0;
 let obstructionSpeed;
 let interval;
 let spawner;
@@ -132,7 +133,7 @@ window.onload = () => {
 }
 
 let start = () => {
-    midbutton = document.getElementById("midbutton");
+    midbutton = document.getElementById("startbutton");
     midbutton.hidden = true;
 
     score = 0;

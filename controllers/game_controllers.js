@@ -1,4 +1,3 @@
-const GameRecords = require("../models/game-records");
 const UserModel = require("../models/user-model");
 const scoreboardModel = require('../models/scoreboard-model');
 const GameRecordModel = require("../models/game-records");
@@ -36,11 +35,11 @@ exports.gachaViewController = (req, res) => {
     res.render("game/gacha", {playerId: user._id});
 };
 
-
+const rebateMin = 10;
+const rebateMax = 100;
+const NumCharacters = 12;
+const characterRate = 0.5;
 let gachaPull = () => {
-    const rebateMin = 10;
-    const rebateMax = 100;
-    const NumCharacters = 12;
     let luck = Math.random();
     if (luck < characterRate) {
         return {type: "character", value: Math.floor(Math.random() * NumCharacters)};
@@ -52,11 +51,12 @@ exports.gachaPullRequest = async (req, res) => {
     let {playerId, pullCount} = req.body;
 
     // make sure that player is able to afford the number of pulls
+    res.json({error: ""})
 
     let results = Array.from({length: Number(pullCount)}, (_, i) => gachaPull());
     // save gacha results into player inventory first
 
-
+    console.log(`gacha results for player ${playerId}: count: ${pullCount}, ${JSON.stringify(results)}`)
     // return to frontend for rendering
     res.json({results});
 };
