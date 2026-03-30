@@ -120,7 +120,7 @@ let obstructionSpeed;
 let interval;
 let spawner;
 
-window.onload = function() {
+window.onload = () => {
     board = document.getElementById("board");
 
     //keep resolution, scale linearly
@@ -131,7 +131,7 @@ window.onload = function() {
     board.width = boardWidth * scale;
 }
 
-let start = function() {
+let start = () => {
     midbutton = document.getElementById("midbutton");
     midbutton.hidden = true;
 
@@ -168,7 +168,7 @@ let start = function() {
     this.document.addEventListener("keydown", player.move);
 }
 
-function update() {
+let update = () => {
     requestAnimationFrame(update);
     if (gameOver) return;
 
@@ -216,7 +216,7 @@ function update() {
     context.fillText(`Score: ${score}`, 5, 20);
 }
 
-function gameOverEvent() {
+let gameOverEvent = () => {
     gameOver = true
     if (interval) clearInterval(interval);
     obstructions = [];
@@ -241,11 +241,11 @@ function gameOverEvent() {
     midbutton.textContent = "Restart";
 }
 
-async function updateHighscore(highscore) {
+let updateHighscore = async (highscore) => {
+    let playerId = document.getElementById("playerId").value;
+    const character = this.document.getElementById("character").value;
+    const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
     try {
-        let playerId = document.getElementById("playerId").value;
-        const character = this.document.getElementById("character").value;
-        const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
         let resp = await fetch(`/game/endgame`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

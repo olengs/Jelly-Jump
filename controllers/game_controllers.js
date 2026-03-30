@@ -24,9 +24,39 @@ exports.EndGameUpdateController = async (req, res) => {
     try {
         await scoreboardModel.upsertScore(playerId, user.username, highscore);
         await GameRecordModel.createRecord(playerId, endTime, highscore, character, 0);
-        res.json({ success: true });
+        res.json({});
     } catch (error) {
         console.log(error);
-        res.json({ success: false });
+        res.json({ Error: error });
     }
+};
+
+exports.gachaViewController = (req, res) => {
+    const user = req.session.user;
+    res.render("game/gacha", {playerId: user._id});
+};
+
+
+let gachaPull = () => {
+    const rebateMin = 10;
+    const rebateMax = 100;
+    const NumCharacters = 12;
+    let luck = Math.random();
+    if (luck < characterRate) {
+        return {type: "character", value: Math.floor(Math.random() * NumCharacters)};
+    }
+    return {type: "currency", value: Math.floor(Math.random() * (rebateMax - rebateMin) + rebateMin)};
+};
+
+exports.gachaPullRequest = async (req, res) => {
+    let {playerId, pullCount} = req.body;
+
+    // make sure that player is able to afford the number of pulls
+
+    let results = Array.from({length: Number(pullCount)}, (_, i) => gachaPull());
+    // save gacha results into player inventory first
+
+
+    // return to frontend for rendering
+    res.json({results});
 };

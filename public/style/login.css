@@ -176,12 +176,6 @@ button.login-btn:active {
     margin-bottom: 0 !important;
 }
 
-a.links {
-    text-decoration: underline solid var(--jelly-light-pink) !important;
-    color: var(--jelly-light-pink) !important;
-    line-height: 1.5 !important;
-}
-
 .visible-icon {
     position: relative;
     right: 10%;

@@ -60,6 +60,17 @@ server.get("/index.html", (req, res) => {
     res.redirect(301, "/")
 })
 
+// error handling route
+server.use((err, req, res, next) => {
+    console.log(`Error encountered: ${err}`);
+    res.render("error", {statusCode: err.statusCode || 500});
+});
+
+// not found route
+server.use((req, res, next) => {
+    res.render("error", {statusCode: 404});
+});
+
 //console.log(process.env.DB_TEST_URI);
 async function main() {
     try {
