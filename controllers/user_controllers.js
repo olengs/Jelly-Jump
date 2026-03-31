@@ -1,4 +1,5 @@
 const UserModel = require("../models/user-model");
+const InventoryModel = require("../models/inventory-model.js");
 const Errors = require("../models/errors");
 const bcrypt = require("bcrypt");
 
@@ -56,6 +57,8 @@ exports.signup = async (req, res) => {
     
     try {
         let user = await UserModel.createUser(username, email, password);
+        let inventory = await InventoryModel.createInventory(user.id);
+        console.log(`Inventory created for user id : ${inventory.playerId}`);
         req.session.user = user;
         console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
     } catch (error) {

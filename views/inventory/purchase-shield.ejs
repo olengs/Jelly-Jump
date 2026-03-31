@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase - Jelly Jump</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <header class="game-header">
+    <div class="inventory-bar">
+        <div class="stat-item">
+            <span class="label">GOLD:</span>
+            <span class="value gold"><%= currencyBalance %></span>
+        </div>
+        <div class="stat-item">
+            <span class="label">SHIELDS:</span>
+            <span class="value"><%= shields %></span>
+        </div>
+        <div class="stat-item">
+            <span class="label">COUPONS:</span>
+            <span class="value"><%= numberOfCoupons %></span>
+        </div>
+    </div>
+</header>
+
+    <main>
+        <h1>Welcome to the Store</h1>
+        <table>
+            <tr>
+                <td> </td>
+            </tr>
+        </table>
+
+        <form action="/purchase-shield" method="post">
+            <label>
+                Buy Quantity SHIELDS: 
+                <input type="number" name="numberOfShieldsToBuy" id="numberOfShieldsToBuy" value="1" min="1" step="1">
+            </label>
+
+            <button type="submit">BUY</button>
+        </form>
+    </main>
+    
+</body>
+</html>
