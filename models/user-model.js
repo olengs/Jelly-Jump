@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const dbcommons = require("./dbcommons");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
+const utilities = require("../utilities/utilities");
 
 const email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //match {0-9A-z}1+, then @, then {0-9A-z}1+, then ., then {0-9A-z} 2+
 const username_regex = /^[a-zA-Z0-9]{4,12}$/;

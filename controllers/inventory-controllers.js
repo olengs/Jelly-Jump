@@ -1,1 +1,0 @@
-const Inventory = require("../models/inventory-model");

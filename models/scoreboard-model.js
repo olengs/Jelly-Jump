@@ -17,25 +17,8 @@ exports.getTopLimit = async function(limit, ascending, search) {
     const sortOrder = ascending ? 1 : -1;
         
     let results = await Scoreboard.find().sort({highscore: sortOrder});
-
-    if (search) {
-        let filtered = [];
-        
-        for (let i = 0; i < results.length; i++) {
-            const username = results[i].username.toLowerCase();
-            const dist = utilities.levenshteinDist(search.toLowerCase(), username.substring(0, search.length));
-            if (username.includes(search.toLowerCase()) || dist <= 3) {
-                filtered.push(results[i]);
-            };
-        };
-        results = filtered;
-    };
-
-    let limited = [];
-    for (let i = 0; i < limit && i < results.length; i++) {
-        limited.push(results[i]);
-    }
-    return limited;
+    if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, a => a.username.toLowerCase());
+    return results.filter((_, index) => index < limit);
 };
 
 exports.getCount = function() {

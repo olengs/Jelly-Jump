@@ -37,11 +37,6 @@ exports.addFriend = async(req,res)=>{
     }    
 }
 
-
-
-
-
-
 exports.deleteFriend = async(req,res) =>{
     try{
         const userName= req.body.userName
