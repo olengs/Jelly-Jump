@@ -1,7 +1,8 @@
 //board consts
-const floorHeight = 75;
 const boardHeight = 600;
 const boardWidth = 1200;
+const scale = 1.0;
+const floorHeight = 75;
 const playerWidth = 90;
 const playerHeight = 95;
 const playerPosX = 50;
@@ -12,6 +13,7 @@ const rockWidth2 = 170;
 const rockWidth3 = 200;
 const playerJumpStrength = 800;
 const airResistance = 1200;
+
 
 class Object {
     constructor (x=0, y=0, width=0, height=0, velX=0, velY=0, img) {
@@ -71,6 +73,37 @@ class Obstruction extends Object{
     }
 }
 
+class Spawner {
+    constructor() {
+        this.timeToSpawn = 0;
+    }
+
+    checkSpawn(dt) {
+        this.timeToSpawn -= dt;
+        console.log(this.timeToSpawn);
+        if (this.timeToSpawn <= 0) {
+            this.timeToSpawn = Math.random() + 1;
+            return true;
+        }
+        return false;
+    }
+
+    spawn() {
+        let obj;
+        let typeChance = Math.random();
+
+        if (typeChance < 0.15) {
+            obj = new Obstruction(rockWidth3, rockImage3);
+        } else if (typeChance < 0.45) {
+            obj = new Obstruction(rockWidth2, rockImage2);
+        } else {
+            obj = new Obstruction(rockWidth1, rockImage1);
+        }
+
+        return obj;
+    }
+}
+
 let player;
 let board;
 let context;
@@ -84,11 +117,11 @@ let score;
 let bgx;
 let bgx_speed;
 let midbutton;
-let scale = 1.0;
 let obstructionSpeed;
 let interval;
+let spawner;
 
-window.onload = function() {
+window.onload = () => {
     board = document.getElementById("board");
 
     //keep resolution, scale linearly
@@ -99,8 +132,8 @@ window.onload = function() {
     board.width = boardWidth * scale;
 }
 
-let start = function() {
-    midbutton = document.getElementById("midbutton");
+let start = () => {
+    midbutton = document.getElementById("startbutton");
     midbutton.hidden = true;
 
     score = 0;
@@ -110,6 +143,7 @@ let start = function() {
     bgx_speed = 120;
     obstructionSpeed = 800;
 
+    spawner = new Spawner();
     
     const character = this.document.getElementById("character").value;
 
@@ -132,15 +166,22 @@ let start = function() {
     prevtime = this.performance.now();
 
     this.requestAnimationFrame(update);
-    interval = this.setInterval(spawnRock, 1000);
     this.document.addEventListener("keydown", player.move);
 }
 
-function update() {
+let update = () => {
     requestAnimationFrame(update);
     if (gameOver) return;
 
     let dt = (performance.now() - prevtime) / 1000;
+
+    if (spawner.checkSpawn(dt)) {
+        obstructions.push(spawner.spawn());
+
+        if (obstructions.length > 10) {
+            obstructions.shift();
+        }
+    }
 
     context.clearRect(0, 0, board.width, board.height);
     context.fillStyle = "black";
@@ -176,27 +217,7 @@ function update() {
     context.fillText(`Score: ${score}`, 5, 20);
 }
 
-function spawnRock() {
-    if (gameOver) return;
-
-    let obj;
-    let typeChance = Math.random();
-
-    if (typeChance < 0.15) {
-        obj = new Obstruction(rockWidth3, rockImage3);
-    } else if (typeChance < 0.45) {
-        obj = new Obstruction(rockWidth2, rockImage2);
-    } else {
-        obj = new Obstruction(rockWidth1, rockImage1);
-    }
-    obstructions.push(obj);
-
-    if (obstructions.length > 10) {
-        obstructions.shift();
-    }
-}
-
-function gameOverEvent() {
+let gameOverEvent = () => {
     gameOver = true
     if (interval) clearInterval(interval);
     obstructions = [];
@@ -221,11 +242,11 @@ function gameOverEvent() {
     midbutton.textContent = "Restart";
 }
 
-async function updateHighscore(highscore) {
+let updateHighscore = async (highscore) => {
+    let playerId = document.getElementById("playerId").value;
+    const character = this.document.getElementById("character").value;
+    const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
     try {
-        let playerId = document.getElementById("playerId").value;
-        const character = this.document.getElementById("character").value;
-        const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
         let resp = await fetch(`/game/endgame`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

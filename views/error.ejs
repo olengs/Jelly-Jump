@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error Page</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
+</head>
+<body>
+    <h1 class="centered margin-top-20">Something Went Wrong!</h1>
+    <div class="centered margin-top-20">
+        <br><br>
+        <% if (statusCode === 400){ %>
+            <p>400 - Bad Request. The request cannot be fulfilled due to bad syntax.</p>
+        <% } else if (statusCode === 403) { %>
+            <p>403 - Forbidden. You are not allowed to visit this page.</p>
+        <% } else if (statusCode === 404) { %>
+            <p>404 - Not Found. The requested page could not be found.</p>
+        <% } else if (statusCode === 500) { %>
+            <p>500 - Internal Server Error.</p>
+        <% } else { %> 
+            <p>An unexpected error occured.</p>
+        <% } %> 
+    </div>
+    <div class="centered margin-top-20">
+        <a href="/" class="links">Go Back To Home</a>
+    </div>
+</body>
+</html>

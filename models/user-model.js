@@ -89,28 +89,36 @@ exports.deleteUserPassword = async (username) => {
     return await User.deleteOne({username});
 }
 
-exports.findUsersByStr = async (partialName, filters = {}) => {
+exports.findUsersByStr = async (partialName, filters = {}, maxFuzz = 0.3) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     //using custom leveinstein distance to do search 
-    // -- DO NOT USE THIS IN A NORMAL PROJECT, THIS METHOD IS VERY SLOW AS IT QUERIES THE WHOLE DB
-    // -- THIS IS ONLY DONE BECAUSE I AM UNABLE TO IMPORT OTHER PACKAGES DUE TO PROJECT CONSTRAINTS
+    // -- DO NOT USE THIS IN A NORMAL PROJECT, THIS METHOD IS VERY SLOW AS IT QUERIES ALL USERS
+    // -- THIS IS ONLY DONE BECAUSE I AM UNABLE TO IMPORT FUZZY SEARCH PACKAGE DUE TO PROJECT CONSTRAINTS
+    // -- THERE WILL BE A BOTTLENECK AT RETRIEVING ALL USERS INSTEAD OF FILTERING
     // - JC
-    const filterAfterDistance = 5;
+    maxFuzz = Math.max(Math.min(maxFuzz, 1), 0);
     let similarNames = (await User.find(filters || {})).sort(
         (a, b) => utilities.levenshteinDist(partialName, a) - utilities.levenshteinDist(partialName, b)).filter(
-            a => utilities.levenshteinDist(partialName, a) < filterAfterDistance);
-    console.log(similarNames);
+            a => utilities.levenshteinDist(partialName, a) / Math.max(partialName.length, a.length) < maxFuzz);
+    return similarNames;
 }
 
-exports.updateUser = async (id, username, bio) => {
+exports.updateUser = async (id, bio, username = null) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let username_exists = User.findOne({username}).lean();
+    
+    if (username) {    
+        let username_exists = User.findOne({username}).lean();
 
-    if (await username_exists) throw errors.UserAlreadyExistsError();
-    if (!username.match(username_regex)) throw errors.UsernameFormatError();
+        if (await username_exists) throw new errors.UserAlreadyExistsError(username);
+        if (!username.match(username_regex)) throw new errors.UsernameFormatError();
+        await User.findByIdAndUpdate(id, {username, bio});
+        return
+    }
 
-    return await User.findByIdAndUpdate(id, {username, bio}, {new: true});
+    await User.findByIdAndUpdate(id, {bio});
+    return 
+    
 }
 
 exports.deleteUser = async (id) => {
