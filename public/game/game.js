@@ -1,17 +1,19 @@
 //board consts
 const boardHeight = 600;
 const boardWidth = 1200;
+const scale = 1.0;
+const floorHeight = 75;
 const playerWidth = 90;
 const playerHeight = 95;
 const playerPosX = 50;
 const obstructionHeight = 100;
 const gravity = 1400;
-let obstructionSpeed = 800;
 const rockWidth1 = 50;
 const rockWidth2 = 170;
 const rockWidth3 = 200;
 const playerJumpStrength = 800;
 const airResistance = 1200;
+
 
 class Object {
     constructor (x=0, y=0, width=0, height=0, velX=0, velY=0, img) {
@@ -42,14 +44,14 @@ class Object {
 
 class Player extends Object{
     constructor(img){
-        super(playerPosX, boardHeight - playerHeight, playerWidth, playerHeight, 0, 0, img)
+        super(playerPosX, boardHeight - playerHeight - floorHeight, playerWidth, playerHeight, 0, 0, img)
         this.move = this.move.bind(this);
         this.accX = 0;
         this.accY = 0;
     }
 
     move (e) {
-        if ((e.code == "Space" || e.code == "ArrowUp") && this.y == boardHeight - playerHeight) {
+        if ((e.code == "Space" || e.code == "ArrowUp") && this.y == boardHeight - playerHeight - floorHeight) {
             //console.log("Jump");
             this.accY = airResistance;
             this.velY = -playerJumpStrength;
@@ -60,14 +62,45 @@ class Player extends Object{
         super.update(dt);
         this.accY += gravity * dt;
         this.velY += this.accY * dt;
-        this.y = Math.min(boardHeight - playerHeight, + this.y + this.velY * dt); //apply gravity to player, but makes sure it doesn't go underground
+        this.y = Math.min(boardHeight - playerHeight - floorHeight, + this.y + this.velY * dt); //apply gravity to player, but makes sure it doesn't go underground
         //console.log(player.y);
     }
 }
 
 class Obstruction extends Object{
     constructor(width, img_src){
-        super(boardWidth, boardHeight - obstructionHeight, width, obstructionHeight, -obstructionSpeed, 0, img_src)
+        super(boardWidth, boardHeight - obstructionHeight - floorHeight, width, obstructionHeight, -obstructionSpeed, 0, img_src)
+    }
+}
+
+class Spawner {
+    constructor() {
+        this.timeToSpawn = 0;
+    }
+
+    checkSpawn(dt) {
+        this.timeToSpawn -= dt;
+        console.log(this.timeToSpawn);
+        if (this.timeToSpawn <= 0) {
+            this.timeToSpawn = Math.random() + 1;
+            return true;
+        }
+        return false;
+    }
+
+    spawn() {
+        let obj;
+        let typeChance = Math.random();
+
+        if (typeChance < 0.15) {
+            obj = new Obstruction(rockWidth3, rockImage3);
+        } else if (typeChance < 0.45) {
+            obj = new Obstruction(rockWidth2, rockImage2);
+        } else {
+            obj = new Obstruction(rockWidth1, rockImage1);
+        }
+
+        return obj;
     }
 }
 
@@ -76,16 +109,19 @@ let board;
 let context;
 let obstructions;
 let gameOver;
-let score;
 let playerImage;
 let rockImage1, rockImage2, rockImage3, bgImage;
-let prevtime;
-let bgx;
-let bgx_speed = 120;
-let midbutton;
-let scale = 1.0;
 
-window.onload = function() {
+let prevtime;
+let score;
+let bgx;
+let bgx_speed;
+let midbutton;
+let obstructionSpeed;
+let interval;
+let spawner;
+
+window.onload = () => {
     board = document.getElementById("board");
 
     //keep resolution, scale linearly
@@ -96,19 +132,23 @@ window.onload = function() {
     board.width = boardWidth * scale;
 }
 
-let start = function() {
-    midbutton = document.getElementById("midbutton");
+let start = () => {
+    midbutton = document.getElementById("startbutton");
     midbutton.hidden = true;
 
     score = 0;
     gameOver = false;
     bgx = 0;
     obstructions = [];
+    bgx_speed = 120;
+    obstructionSpeed = 800;
+
+    spawner = new Spawner();
     
     const character = this.document.getElementById("character").value;
 
     bgImage = new Image();
-    bgImage.src = "/game/img/gamebg.png";
+    bgImage.src = "/game/img/bg.png";
 
     playerImage = new Image();
     playerImage.src = `/game/img/jelly${character}.png`;
@@ -126,20 +166,27 @@ let start = function() {
     prevtime = this.performance.now();
 
     this.requestAnimationFrame(update);
-    this.setInterval(spawnRock, 1500);
     this.document.addEventListener("keydown", player.move);
 }
 
-function update() {
+let update = () => {
     requestAnimationFrame(update);
     if (gameOver) return;
 
     let dt = (performance.now() - prevtime) / 1000;
 
+    if (spawner.checkSpawn(dt)) {
+        obstructions.push(spawner.spawn());
+
+        if (obstructions.length > 10) {
+            obstructions.shift();
+        }
+    }
+
     context.clearRect(0, 0, board.width, board.height);
     context.fillStyle = "black";
     context.fillRect(0, 0, board.width, board.height);
-    context.globalAlpha = 0.2
+    context.globalAlpha = 0.4
     context.drawImage(bgImage, bgx, 0, board.width, board.height);
     context.drawImage(bgImage, board.width + bgx - 5, 0, board.width, board.height);
     context.globalAlpha = 1;
@@ -170,28 +217,9 @@ function update() {
     context.fillText(`Score: ${score}`, 5, 20);
 }
 
-function spawnRock() {
-    if (gameOver) return;
-
-    let obj;
-    let typeChance = Math.random();
-
-    if (typeChance < 0.15) {
-        obj = new Obstruction(rockWidth3, rockImage3);
-    } else if (typeChance < 0.45) {
-        obj = new Obstruction(rockWidth2, rockImage2);
-    } else {
-        obj = new Obstruction(rockWidth1, rockImage1);
-    }
-    obstructions.push(obj);
-
-    if (obstructions.length > 10) {
-        obstructions.shift();
-    }
-}
-
-function gameOverEvent() {
+let gameOverEvent = () => {
     gameOver = true
+    if (interval) clearInterval(interval);
     obstructions = [];
 
     //redraw bg
@@ -208,18 +236,17 @@ function gameOverEvent() {
     context.fillText(`Game Over`, board.width * 0.45, board.height * 0.5);
     context.fillText(`Score: ${score}`, board.width * 0.45, board.height * 0.5 + 20);
 
-    // 
     updateHighscore(score);
 
     midbutton.hidden = false;
     midbutton.textContent = "Restart";
 }
 
-async function updateHighscore(highscore) {
+let updateHighscore = async (highscore) => {
+    let playerId = document.getElementById("playerId").value;
+    const character = this.document.getElementById("character").value;
+    const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
     try {
-        let playerId = document.getElementById("playerId").value;
-        const character = this.document.getElementById("character").value;
-        const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
         let resp = await fetch(`/game/endgame`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

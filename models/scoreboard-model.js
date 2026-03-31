@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const dbcommons = require("./dbcommons");
+const utilities = require("../utilities/utilities");
 
 const scoreboardSchema = new mongoose.Schema({
     playerId: {type: String, required: true, unique: true},
@@ -11,30 +12,60 @@ const scoreboardSchema = new mongoose.Schema({
 
 const Scoreboard = mongoose.model('Scoreboard', scoreboardSchema);
 
-exports.getTopTen = function() {
+exports.getTopLimit = async function(limit, ascending, search) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    return Scoreboard.find().sort({ highscore: -1 }).limit(10);
+    const sortOrder = ascending ? 1 : -1;
+        
+    let results = await Scoreboard.find().sort({highscore: sortOrder});
+
+    if (search) {
+        let filtered = [];
+        
+        for (let i = 0; i < results.length; i++) {
+            const username = results[i].username.toLowerCase();
+            const dist = utilities.levenshteinDist(search.toLowerCase(), username.substring(0, search.length));
+            if (username.includes(search.toLowerCase()) || dist <= 3) {
+                filtered.push(results[i]);
+            };
+        };
+        results = filtered;
+    };
+
+    let limited = [];
+    for (let i = 0; i < limit && i < results.length; i++) {
+        limited.push(results[i]);
+    }
+    return limited;
+};
+
+exports.getCount = function() {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    return Scoreboard.countDocuments();
 };
 
 exports.upsertScore = function(playerId, username, newScore) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     return Scoreboard.findOneAndUpdate(
-        { playerId: playerId },
+        {playerId: playerId},
         {
-            $set: { username: username, lastPlayed: new Date() },
-            $max: { highscore: newScore },
-            $inc: { gamesPlayed: 1 }
+            $set: {username: username, lastPlayed: new Date()},
+            $max: {highscore: newScore},
+            $inc: {gamesPlayed: 1}
         },
-        { upsert: true, returnDocument: 'after' }
+        {upsert: true, returnDocument: 'after'}
     );
 };
 
 exports.deleteScore = function(playerId) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    return Scoreboard.deleteOne({ playerId: playerId });
+    return Scoreboard.deleteOne({playerId: playerId});
 };
 
-exports.getFriendScores = function(playerIds) {
+exports.getFriendScoresByUsername = function(usernames, ascending = false) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    return Scoreboard.find({playerId: {$in: playerIds}}).sort({highscore: -1});
+
+    // 1 = ascending, -1 = descending 
+    const sortOrder = ascending ? 1 : -1; 
+    // $in finds documents where the field matches any value in the array
+    return Scoreboard.find({username: {$in: usernames}}).sort({highscore: sortOrder});
 };

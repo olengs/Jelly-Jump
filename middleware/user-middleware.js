@@ -1,15 +1,37 @@
-const userModel = require("../models/user-model");
+const UserModel = require("../models/user-model");
 
-exports.requireUser = (req, res, next) => {
+exports.requireUser = async (req, res, next) => {
     if (req.session && req.session.user) {
+        //update user
+        try {
+            req.session.user = await UserModel.getUserById(req.session.user._id);
+        } catch (error) {
+            req.session.destroy(() => {
+                return res.redirect(302, "/login");
+            });
+            return;
+        }
+
         return next();
     }
 
     res.redirect(302, "/login");
 }
 
-exports.requireAdmin = (req, res, next) => {
-    if (!req.session && !req.session.user && !req.session.user.role) {
+exports.requireNavbar = async (req, res, next) => {
+    res.locals.hasUser = req.session && req.session.user ? true : false;
+    return next();
+}
+
+exports.requireAdmin = async (req, res, next) => {
+    if (!req.session || !req.session.user || !req.session.user.role) {
+        return res.redirect(302, "/login");
+    }
+
+    //update user
+    try {
+        req.session.user = await UserModel.getUserById(req.session.user._id);
+    } catch (error) {
         return res.redirect(302, "/login");
     }
 
@@ -17,12 +39,23 @@ exports.requireAdmin = (req, res, next) => {
         return next();
     }
 
-    res.status(403).render("error", {errorMsg: "access denied"});
+    res.status(403).render("error", {statusCode: 403});
 }
 
-exports.autoLoginIfAuthenticated = (req, res, next) => {
-    if (req.session && req.session.user) {
-        return res.redirect("/home");
+exports.autoLoginIfAuthenticated = async (req, res, next) => {
+    if (!req.session || !req.session.user) {
+        return next();
     }
-    next();
+
+    //update user
+    try {
+        req.session.user = await UserModel.getUserById(req.session.user._id);
+    } catch (error) {
+        req.session.destroy(() => {
+            return res.redirect(302, "/login");
+        });
+        return;
+    }
+
+    return res.redirect("/");
 }

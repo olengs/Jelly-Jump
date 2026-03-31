@@ -3,6 +3,9 @@ const dbcommons = require("./dbcommons");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
 
+const email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //match {0-9A-z}1+, then @, then {0-9A-z}1+, then ., then {0-9A-z} 2+
+const username_regex = /^[a-zA-Z0-9]{4,12}$/;
+const password_regex = /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9\s])(?!.*\s).{8,}$/
 
 
 const userSchema = new mongoose.Schema({
@@ -24,12 +27,23 @@ const User = mongoose.model('User', userSchema, "users");
 exports.User = User;
 
 exports.createUser = async (username, email, password) => {
-    if (!dbcommons.isDBConnected()) {
-        throw databaseError;
+    if (!email.match(email_regex)){
+        throw new errors.EmailFormatError();
+    }
+    if (!username.match(username_regex)) {
+        throw new errors.UsernameFormatError();
     }
 
-    username_exists = User.findOne({username})
-    email_exists = User.findOne({email})
+    if (!password.match(password_regex)) {
+        throw new errors.PasswordFormatError();
+    }
+
+    if (!dbcommons.isDBConnected()) {
+        throw dbcommons.databaseError;
+    }
+
+    const username_exists = User.findOne({username}).lean();
+    const email_exists = User.findOne({email}).lean();
 
     if (await username_exists) {
         throw new errors.UserAlreadyExistsError(username);
@@ -80,14 +94,15 @@ exports.deleteUserPassword = async (username) => {
     return await User.deleteOne({username});
 }
 
-exports.findUsersByStr = async (partialName, filters = {}) => {
+exports.findUsersByStr = async (partialName, filters = {}, maxFuzz = 0.3) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     //using custom leveinstein distance to do search 
-    // -- DO NOT USE THIS IN A NORMAL PROJECT, THIS METHOD IS VERY SLOW AS IT QUERIES THE WHOLE DB
-    // -- THIS IS ONLY DONE BECAUSE I AM UNABLE TO IMPORT OTHER PACKAGES DUE TO PROJECT CONSTRAINTS
+    // -- DO NOT USE THIS IN A NORMAL PROJECT, THIS METHOD IS VERY SLOW AS IT QUERIES ALL USERS
+    // -- THIS IS ONLY DONE BECAUSE I AM UNABLE TO IMPORT FUZZY SEARCH PACKAGE DUE TO PROJECT CONSTRAINTS
+    // -- THERE WILL BE A BOTTLENECK AT RETRIEVING ALL USERS INSTEAD OF FILTERING
     // - JC
-    const filterAfterDistance = 5;
+    maxFuzz = Math.max(Math.min(maxFuzz, 1), 0);
     let similarNames = (await User.find(filters || {})).sort(
         (a, b) => utilities.levenshteinDist(partialName, a) - utilities.levenshteinDist(partialName, b)).filter(
             a => utilities.levenshteinDist(partialName, a) < filterAfterDistance);

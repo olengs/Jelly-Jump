@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/style/home.css">
+    <link rel="stylesheet" href="/style/globalstyle.css">
+
+    <title>Edit Profile</title>
+</head>
+<body>
+    <%- include("../partials/navbar") %>
+
+    <div class="centered margin-top-20">
+        <h1 class="margin-bot-20">Edit Profile</h1>
+
+        <% if (typeof errorMsg !== "undefined") { %>
+            <div><%= errorMsg %></div>
+        <% } %>
+
+        <form action="/profile/edit" method="post">
+            <label>Username:</label><br>
+            <input type="text" name="newUsername" value="<%= user.username %>" required><br><br>
+
+            <label>Bio:</label><br>
+            <textarea style="resize: none;" name="newBio"><%= user.bio %></textarea><br><br>
+
+            <button type="submit">Save Changes</button><br><br>
+            <a href="/profile">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

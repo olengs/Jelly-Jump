@@ -20,7 +20,7 @@ server.use(session({
     rolling: true, //will reset cookie lifetime on each request
     cookie: {
         httpOnly: true,
-        maxAge: 30 * 60 * 1000 //10 mins
+        maxAge: 30 * 60 * 1000 //30 mins
         // maxAge: 20 * 1000, //20s for testing
     }
 }));
@@ -39,6 +39,12 @@ const userRoutes = require("./routes/user_routes");
 const friendRoutes= require('./routes/friends-routes');
 const scoreboardRoutes = require('./routes/scoreboard_routes');
 const homeRoutes = require('./routes/home-routes');
+const profileRoutes = require('./routes/profile-routes');
+const inventoryRoutes = require('./routes/inventory-routes'); 
+
+
+const userMiddleware = require("./middleware/user-middleware.js");
+server.use(userMiddleware.requireNavbar);
 
 server.use("/example", example);
 server.use("/game", gameRoutes);
@@ -46,10 +52,27 @@ server.use("/", userRoutes);
 server.use('/',friendRoutes);
 server.use('/scoreboard', scoreboardRoutes);
 server.use("/", homeRoutes);
+server.use('/', profileRoutes);
 
 //Home page
 server.get("/", (req, res) => {
-    res.redirect("/login");
+    res.redirect("/");
+});
+
+server.get("/index.html", (req, res) => {
+    res.redirect(301, "/")
+})
+
+// error handling route
+server.use((err, req, res, next) => {
+    console.log(`Error encountered:\n${err.stack}`);
+    let statusCode = err.statusCode || 500;
+    res.render("error", {statusCode});
+});
+
+// not found route
+server.use((req, res, next) => {
+    res.render("error", {statusCode: 404});
 });
 
 //console.log(process.env.DB_TEST_URI);
@@ -60,7 +83,7 @@ async function main() {
             console.log(`Server running at http://${hostname}:${port}/`);
         });
     } catch (error) {
-        console.log(`Error connecting to db: ${error}`);
+        console.log(`Error connecting to db: \n${error.stack}`);
         return;
     }
 }

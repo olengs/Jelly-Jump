@@ -58,6 +58,7 @@ nav {
 }
 
 .nav-links {
+    margin-top: 1rem;
     list-style: none;
     display: flex;
     gap: 2rem;
@@ -77,15 +78,10 @@ nav {
     text-shadow: 0 0 15px #FF4DFF;
 }
 
-
 ul {
     list-style-type: disc; 
     padding-left: 2rem;    
     margin-bottom: 1rem;   
-}
-
-li {
-    margin-bottom: 0.5rem; 
 }
 
 h2.about-title {
@@ -96,4 +92,24 @@ h2.about-title {
 .container {
     max-width: 1000px;
     margin: 0 auto;
+}
+
+.centered {
+    text-align: center;
+    justify-content: center; /* Centers horizontally */
+    justify-items: auto;
+}
+
+.margin-top-20 {
+    margin-top: 20px;
+}
+
+.margin-bot-20 {
+    margin-bottom: 20px;
+}
+
+a.links {
+    text-decoration: underline solid var(--jelly-light-pink) !important;
+    color: var(--jelly-light-pink) !important;
+    line-height: 1.5 !important;
 }

@@ -1,121 +1,53 @@
-const User = require("../models/user-profile");
-const GameHistory = require("../models/player-history");
+const User = require("../models/user-model");
+const GameRecords = require("../models/game-records");
+const errors = require("../models/errors");
 
-// read - get profile page 
-async function getProfile(req, res){
-    try {
-        // get logged in userid from session (jc login)
-        const userID = req.session.userID; 
-        if (!userID){
-            return res.redirect("/login");
-        }
-        const user = await User.findByID(userID);
-        res.render("profile", {user: user, error: null});
-    } catch (error) {
-        console.error(error);
-        res.render("profile", {user: null, error:"Something went wrong."});
-    }
-}
+exports.getProfile = async (req, res) => {
+    const user = req.session.user;
+    res.render("profile/user-profile", {user});
+};
 
-// update - edit profile form 
-async function getEditProfile(req, res){
-    try {
-        const userID = req.session.userID; 
-
-        if (!userID){
-            return res.redirect("/login");
-        }
-
-        const user = await User.findByID(userID);
-        res.render("edit-profile", {user: user, error: null});
-    } catch (error) {
-        console.error(error);
-        res.redirect("/profile");
-    }
+exports.getEditProfile = async (req, res) => {
+    const user = req.session.user;
+    res.render("profile/edit-profile", {user: user, error: null});
 }
 
 // update - handle edit profile submission 
-async function postEditProfile(req, res){
+exports.postEditProfile = async (req, res) => {
+    const { newUsername , newBio } = req.body;
     try {
-        const userID = req.session.userID;
-
-        if (!userID){
-            return res.redirect("/login")
-        }
-
-        const username = req.body.username; 
-        const bio = req.body.bio; 
-        const nickname = req.body.nickname; 
-
-        if (!username){
-            const user = await findByID(userID);
-            return res.render("edit-profile", {user: user, error: "Username cannot be empty."});
-        }
-
-        await User.findByIDAndUpdate(userID, {username: username, bio: bio, nickname: nickname});
-
-        res.redirect("/profile");
+        await User.updateUser(req.session.user._id, newBio, req.session.user.username == newUsername ? null : newUsername);
+        return res.redirect("/profile");
     } catch (error) {
-        console.error(error);
-        res.redirect("/profile");
+        if (error instanceof errors.UserAlreadyExistsError) {
+            return res.render("profile/edit-profile", {user: req.session.user, errorMsg: error.message});
+        } else if (error instanceof errors.UsernameFormatError) {
+            return res.render("profile/edit-profile", {user: req.session.user, errorMsg: error.message});
+        }
+
+        // rethrow back to main handler
+        throw error;
     }
 }
 
 // delete - delete user account 
-async function deleteProfile(req, res){
-    try {
-        const userID = req.session.userId;
+exports.deleteProfile = async (req, res) => {
+    await GameRecords.deleteAllRecordsByUser(req.session.user._id);
+    await User.deleteUser(req.session.user._id);
 
-        if (!userID){
-            return res.redirect("/login");
-        }
-
-        await User.findByIDAndDelete(userID);
-        await PlayerHistory.deleteMany({playerId: userID});
-
-        // clear the session 
-        req.session.destroy();
-        res.redirect("/");
-    } catch (error) {
-        console.error(error);
-        res.redirect("/profile");
-    }
+    res.redirect("/logout");
 }
 
 // read - get game history page 
-async function getHistory(req, res){
-    try {
-        const userID = req.session.userID; 
-
-        if (!userID){
-            return res.redirect("/login");
-        }
-
-        const user = await User.findByID(userID);
-        const history = await GameHistory.find({playerId: userID}).sort({timestamp: -1}); 
-
-        res.render("/player-history", {user: user, history: history, error: null});
-    } catch (error) {
-        console.error(error); 
-        res.render("/player-history", {user: null, history: [], error: "Something went wrong."});
-    }
+exports.getHistory = async (req, res) => {
+    const userID = req.session.user._id; 
+    const user = await User.getUserById(userID);
+    const history = await GameRecords.getPlayerHistory(userID);
+    res.render("profile/player-history", {user: user, history: history, error: null});
 }
 
 // delete - delete a single history entity 
-async function deleteHistory(req, res){
-    try {
-        const userID = req.session.userID; 
-
-        if (!userID){
-            return res.redirect("/login"); 
-        }
-
-        await GameHistory.findByIDAndDelete(req.params.id); 
-        res.redirect("/player-history");
-    } catch (error) {
-        console.error(error); 
-        res.redirect("/player-history");
-    }
+exports.deleteHistory = async (req, res) => {
+    await GameRecords.deleteRecord(req.params.id, req.session.user._id); 
+    res.redirect("/history");
 }
-
-module.exports = {getProfile, getEditProfile, postEditProfile, deleteProfile, getHistory, deleteHistory};

@@ -1,40 +1,33 @@
 const Scoreboard = require("../models/scoreboard-model");
-const Friend = require('../models/friend-model');
+const User = require('../models/user-model');
 
 exports.getLeaderboard = async (req, res) => {
     try {
-        const topTen = await Scoreboard.getTopTen();
-        const user = req.session?.user || null;
+        const total = await Scoreboard.getCount();
+        const limit = req.query.limit || 10;
+        const ascending = req.query.sort === 'asc' ? true : false;
+        const search = req.query.search || '';
+
+        const topLimit = await Scoreboard.getTopLimit(limit, ascending, search);
+        const user = req.session && req.session.user ? req.session.user : null;
         let friendsScores = [];
-        
+
         if (user) {
-            const friendDoc = await Friend.findOne({playerId: user._id.toString()});
+            // .lean() to get a plain JS object instead of a Mongoose document
+            const userDoc = await User.getUserById(user._id);
+            const friendNames = userDoc.friends?.map(f => f.username) || [];
 
-            console.log("user id:", user._id.toString());
-            console.log("friendDoc:", friendDoc);
+            // include the user's own username + all friend usernames
+            friendNames.push(user.username); 
+            const usernames = friendNames;
 
-            console.log("friendsId length:", friendDoc.friendsId.length);
-            console.log("friendsId value:", friendDoc.friendsId);
+            friendsScores = await Scoreboard.getFriendScoresByUsername(usernames);
+        }
 
-            if (friendDoc && friendDoc.friendsId && friendDoc.friendsId.length > 0) {
-
-                // spreads friend array + add user's own id at the end
-                const ids = [...friendDoc.friendsId, user._id.toString()];
-                console.log("ids to query:", ids);
-                
-                friendsScores = await Scoreboard.getFriendScores(ids);
-                console.log("friendsScores:", friendsScores);
-                
-            // oop no friend just show own score
-            } else {
-                friendsScores = await Scoreboard.getFriendScores([user._id.toString()]);
-            };
-        };
-
-        res.render('scoreboard/scoreboard', {topTen, user, friendsScores});
+        res.render('scoreboard/scoreboard', {topLimit, total, limit, sort: req.query.sort || 'desc', search, user, friendsScores});
     } catch (error) {
-        console.log(error)
-        res.status(500).render('error', { error: error.message });
+        console.log(error);
+        res.status(500).render('error', {error: error.message});
     }
 };
 
