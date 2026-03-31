@@ -16,7 +16,11 @@ const userSchema = new mongoose.Schema({
     bio: {type: String, required: true, default: "My bio"},
     friends :[{
         friendname:String,
-        username:String 
+        username:String ,
+        friendid: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }
     }] })
 
 const User = mongoose.model('User', userSchema, "users");
