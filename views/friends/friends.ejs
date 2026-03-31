@@ -11,10 +11,10 @@
 
    <form action="/addfriend" method="post">
         Name of Friend:<input type="text" name="friendName"><br><br>
-        Username :<input type="text" name="userName"><br><br>
         <button type="submit">add friend</button>
-    </form> 
-    <br><h3>Friends List</h3>
+    </form><br>
+    
+    <h3>Friends List</h3>
     <% friendslist.forEach(f => { %>
     <p> <%= f.friendname %></p> 
 
