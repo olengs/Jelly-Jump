@@ -10,15 +10,16 @@
     <% } %> <br><br>
 
    <form action="/addfriend" method="post">
-        Name of Friend:<input type="text" name="friendname"><br><br>
+        Name of Friend:<input type="text" name="friendName"><br><br>
+        Username :<input type="text" name="userName"><br><br>
         <button type="submit">add friend</button>
     </form> 
     <br><h3>Friends List</h3>
     <% friendslist.forEach(f => { %>
-    <p> <%= f.friendName %></p> 
+    <p> <%= f.friendname %></p> 
 
     <form action="/deletefriend" method="post">
-        <input type="hidden" name='friendname' value="<%=f.friendName %>"> 
+        <input type="hidden" name='userName' value="<%=f.username %>"> 
         <button type="submit">delete</button>
     </form>
     <% }) %>

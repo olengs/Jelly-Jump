@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
     role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
     bio: {type: String, required: true, default: "My bio"},
     friends :[{
-        friendName:String
+        friendname:String,
+        username:String 
     }] })
 
 const User = mongoose.model('User', userSchema, "users");
@@ -100,29 +101,28 @@ exports.findUsersByStr = async (partialName, filters = {}, maxFuzz = 0.3) => {
     maxFuzz = Math.max(Math.min(maxFuzz, 1), 0);
     let similarNames = (await User.find(filters || {})).sort(
         (a, b) => utilities.levenshteinDist(partialName, a) - utilities.levenshteinDist(partialName, b)).filter(
-            a => utilities.levenshteinDist(partialName, a) / Math.max(partialName.length, a.length) < maxFuzz);
-    return similarNames;
+            a => utilities.levenshteinDist(partialName, a) < filterAfterDistance);
+    console.log(similarNames);
 }
 
-exports.updateUser = async (id, bio, username = null) => {
+exports.findUserByUsername = async (username) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     
-    if (username) {    
-        let username_exists = User.findOne({username}).lean();
+    return await User.findOne({ username });
+};
 
-        if (await username_exists) throw new errors.UserAlreadyExistsError(username);
-        if (!username.match(username_regex)) throw new errors.UsernameFormatError();
-        await User.findByIdAndUpdate(id, {username, bio});
-        return
-    }
-
-    await User.findByIdAndUpdate(id, {bio});
-    return 
-    
-}
-
-exports.deleteUser = async (id) => {
+exports.addFriend = async (id, friendName, userName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    return await User.findByIdAndDelete(id);
-}
+    return await User.findByIdAndUpdate(id, {
+        $push: { friends: { friendname: friendName, username: userName } }
+    });
+};
+
+exports.deleteFriend = async (id, userName) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await User.findByIdAndUpdate(id, {
+        $pull: { friends: { username: userName } }
+    });
+};
