@@ -44,10 +44,10 @@ exports.addFriend = async(req,res)=>{
             return res.render('friends/friends',{error:'this username already exists ',friendslist})
 
         }
-        else{
-            userModel.addFriend(req.session.user._id, friendName, userName)
-             return res.redirect('/friendslist')
-        }
+        
+        await userModel.addFriend(req.session.user._id, friendName, userName,userobj._id)
+        return res.redirect('/friendslist')
+        
         
 
          
