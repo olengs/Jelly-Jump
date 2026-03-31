@@ -24,4 +24,4 @@ exports.levenshteinDist = (a, b) => {
         }
     }
     return m[b.length][a.length];
-}
+};

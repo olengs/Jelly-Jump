@@ -165,3 +165,18 @@ tr.you-row:last-child td:last-child {
     background-color: var(--jelly-pink);
     color: var(--space-bg);
 }
+
+.apply-btn {
+    background-color: var(--jelly-pink);
+    color: var(--space-bg);
+    border: none;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+}
+
+.apply-btn:hover {
+    background-color: var(--jelly-light-pink);
+}

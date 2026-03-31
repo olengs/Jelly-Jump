@@ -19,16 +19,24 @@
 
         <!-- Filters -->
         <div class="filters">
-            <input type="text" id="search-input" placeholder="Search username..." oninput="applyFilters()" />
-            <select id="sort-select" onchange="applyFilters()">
-                <option value="desc">High Score ↓</option>
-                <option value="asc">High Score ↑</option>
-            </select>
+            <form method='GET' action="/scoreboard" style="display:inline" id="filter-form">
+                <input type="text" name="search" placeholder="Search username..." value="<%= search || '' %>" />
+
+                <select name='sort' id="sort-select">
+                    <option value="desc" <%= sort === 'desc' ? 'selected' : '' %>>High Score ↓</option>
+                    <option value="asc" <%= sort === 'asc' ? 'selected' : '' %>>High Score ↑</option>
+                </select>
+
+                <label for="limit">Show</label>
+                <input type="number" name="limit" min="1" max="<%= total %>" value="<%= limit %>" style="width: 60px">
+
+                <button type="submit" class="apply-btn">Apply</button>
+            </form>
         </div>
 
         <!-- Global Tab -->
         <div id="tab-global" class="tab-content">
-            <% if (topTen && topTen.length > 0) { %>
+            <% if (topLimit && topLimit.length > 0) { %>
                 <table id="global-table">
                     <thead>
                         <tr>
@@ -42,7 +50,7 @@
                         </tr>
                     </thead>
                     <tbody id="global-tbody">
-                        <% topTen.forEach((entry, index) => { %>
+                        <% topLimit.forEach((entry, index) => { %>
                         <tr class="<%= (user && entry.username === user.username) ? 'you-row' : '' %>"
                             data-username="<%= entry.username %>"
                             data-score="<%= entry.highscore %>">
