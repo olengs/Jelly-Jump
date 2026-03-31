@@ -89,3 +89,25 @@ exports.findUsersByStr = async (partialName, filters = {}) => {
             a => utilities.levenshteinDist(partialName, a) < filterAfterDistance);
     console.log(similarNames);
 }
+
+exports.findUserByUsername = async (username) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    
+    return await User.findOne({ username });
+};
+
+exports.addFriend = async (id, friendName, userName) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await User.findByIdAndUpdate(id, {
+        $push: { friends: { friendname: friendName, username: userName } }
+    });
+};
+
+exports.deleteFriend = async (id, userName) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await User.findByIdAndUpdate(id, {
+        $pull: { friends: { username: userName } }
+    });
+};

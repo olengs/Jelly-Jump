@@ -1,10 +1,10 @@
-const {User} = require("../models/user-model") //import Friend from model
+const userModel = require("../models/user-model") //import Friend from model
 
 
 exports.friendslist = async(req,res) =>{
     try {
 
-       const user = await User.findById(req.session.user._id) // looks at the User document and find the id in the bracker
+       const user = await userModel.getUserById(req.session.user._id) // looks at the User document and find the id in the bracker
        const friendslist = user.friends || [] // [ { }, { }]
        res.render('friends/friends',{friendslist,error:''})
 }catch(error){
@@ -24,11 +24,11 @@ exports.addFriend = async(req,res)=>{
         const friendName= req.body.friendName?.trim() // what u key in 
         const userName= req.body.userName?.trim() // what u key in
 
-        const user = await User.findById(req.session.user._id) // looks at the User document and find the id in the bracker
+        const user = await userModel.getUserById(req.session.user._id) // looks at the User document and find the id in the bracker
         const friendslist = user.friends || [] // [ {friendname:----, username,---- }, { }]
         
         const isFriend = friendslist.some(friend=>friend.username ===userName )
-        const userobj= await User.findOne({username:userName}) // if inside, it will show the obj. if not its null--> falsey 
+        const userobj= await userModel.findUserByUsername(userName) // if inside, it will show the obj. if not its null--> falsey 
 
         if (!friendName || !userName){
             return res.render('friends/friends',{error:'both cannot be empty',friendslist})
@@ -45,13 +45,7 @@ exports.addFriend = async(req,res)=>{
 
         }
         else{
-            await User.findByIdAndUpdate(
-                req.session.user._id,
-                {
-                    $push:{friends:{friendname:friendName, username:userName}}
-                }
-           
-            )
+            userModel.addFriend(req.session.user._id, friendName, userName)
              return res.redirect('/friendslist')
         }
         
@@ -71,12 +65,8 @@ exports.addFriend = async(req,res)=>{
 exports.deleteFriend = async(req,res) =>{
     try{
         const userName= req.body.userName
-        await User.findByIdAndUpdate(
-            req.session.user._id ,// which user document 
-            {
-                $pull:{friends:{username:userName}}
-            }
-        )
+        await userModel.deleteFriend(req.session.user._id, userName)
+
         return res.redirect('/friendslist')
     }catch(error){
         console.log(error)
