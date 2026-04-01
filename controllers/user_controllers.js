@@ -13,7 +13,6 @@ exports.signupView = (req, res) => {
 
 exports.login = async (req, res) => {
     const {username, password} = req.body;
-    console.log(username, password);
 
     try {
         if (!username || !password) throw new Error("Empty login field(s)");
@@ -24,8 +23,8 @@ exports.login = async (req, res) => {
         if (!password_valid) throw new Errors.InvalidPasswordError();
         
         req.session.user = user;
-
         console.log(`Logged in with ${username}, ${password}`);
+
     } catch (error) {
         if (error instanceof Errors.UserNotFoundError) {
             res.render("IAM/login", {errorMsg: error.message});
@@ -37,8 +36,7 @@ exports.login = async (req, res) => {
             return;
         }
 
-        console.log(error);
-        return
+        throw error;
     }
 
     res.redirect(302, "/");
@@ -55,25 +53,24 @@ exports.signup = async (req, res) => {
         return res.render("IAM/signup", {email, username, errorMsg: "Passwords do not match"});
     }
     
+    let user;
     try {
-        let user = await UserModel.createUser(username, email, password);
-        let inventory = await InventoryModel.createInventory(user.id);
-        console.log(`Inventory created for user id : ${inventory.playerId}`);
+        user = await UserModel.createUser(username, email, password);
+        await InventoryModel.createInventory(user.id);
         req.session.user = user;
         console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
     } catch (error) {
+
+        if (user) UserModel.deleteUser(user._id);
+
         if (error instanceof Errors.UserAlreadyExistsError || error instanceof Errors.UsernameFormatError) {
             return res.render("IAM/signup", {email, errorMsg: error.message});
-        }
-        else if (error instanceof Errors.EmailAlreadyExistsError || error instanceof Errors.EmailFormatError) {
+        } else if (error instanceof Errors.EmailAlreadyExistsError || error instanceof Errors.EmailFormatError) {
             return res.render("IAM/signup", {username, errorMsg: error.message});
-        }
-        else if (error instanceof Errors.PasswordFormatError) {
+        } else if (error instanceof Errors.PasswordFormatError) {
             return res.render("IAM/signup", {username, email, errorMsg: error.message});
         }
-        res.status(500).render("error", {error: "access denied"});
-        console.log(error);
-        return
+        throw error;
     }
     res.redirect(302, `/login`);
 }
@@ -81,7 +78,7 @@ exports.signup = async (req, res) => {
 exports.logout = async (req, res) => {
     req.session.destroy(err => {
         if (err) {
-            return res.status(500).render("error", {statusCode: 500});
+            throw err;
         }
         return res.redirect(302, "/login");
     });
