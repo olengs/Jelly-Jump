@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const FriendsControllers = require("../controllers/friends_controllers");
+const userMiddleware = require("../middleware/user-middleware");
+const friendControllers = require("../controllers/friends_controllers");
 
-router.get("/friendslist", FriendsControllers.friendslist);
-router.post('/addfriend',FriendsControllers.addFriend)
-router.post('/deletefriend',FriendsControllers.deleteFriend)
+router.get("/friendslist", userMiddleware.requireUser, friendControllers.friendslist);
+router.post('/friendslist', userMiddleware.requireUser, friendControllers.addFriend);
+router.post('/deletefriend', userMiddleware.requireUser, friendControllers.deleteFriend);
 
 module.exports = router;

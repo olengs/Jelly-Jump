@@ -1,28 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-    <title>Friends List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friends List - Jelly Jump</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
+    <link rel="stylesheet" href="/style/friends.css">
 </head>
 <body>
-    <form action="/addfriend" method="post">
-        Name of Friend:<input type="text" name="friendname"><br><br>
-        User of Friend: <input type="text" name="frienduser"><br><br>
-        <button type="submit">submit</button>
-    </form>
+    <%- include('../partials/navbar') %>
 
+    <div class="friends-wrapper">
+        <h1>👾 Friends</h1>
 
+        <% if (error){ %>
+            <p class="error-msg"><%= error %></p>
+        <% } %>
+        <br><br>
 
-    <% AllDataFriends.forEach(f => { %>
-    <p><%= f.user %> → <%= f.friendName %></p>
+        <form action="" method="post" class="add-friend-form">
+            <label for="friendName">Name of Friend:</label>
+            <input type="text" id="friendName" name="friendName">
+            <br><br>
+            
+            <button type="submit">Add</button>
+        </form>
+        <br>
+        
+        <h3>Friends List</h3>
 
-    <form action="/deletefriend" method="post">
-        <input type="hidden" name="friendid"> 
-        <button type="submit">delete</button>
-    </form>
+        <% if (friendslist === []) { %>
+            <p class="empty-msg">Add a new friend!</p>
+        <% } %>
 
+        <% friendslist.forEach(f => { %>
+            <div class="friend-card">
+                <p class="friend-name"><%= f %></p> 
 
-<% }) %>
+                <form action="/deletefriend" method="post">
+                    <input type="hidden" name='friendName' value="<%= f %>"> 
+                    <button type="submit" class="delete-btn">delete</button>
+                </form>
+            </div>
+        <% }); %>
+
+    </div>
     
 </body>
 </html>
