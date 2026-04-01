@@ -40,7 +40,11 @@ exports.getLeaderboard = async (req, res) => {
             };
         };
 
-    res.render('scoreboard/scoreboard', {topLimit, total, limit, sort: req.query.sort || 'desc', search, user, friendsScores});
+        res.render('scoreboard/scoreboard', {topLimit, total, limit, sort: req.query.sort || 'desc', search, user, friendsScores});
+    } catch (error) {
+        console.log(error);
+        res.status(500).render('error', {error: error.message, statusCode: 500});
+    };
 };
 
 exports.deleteScore = async (req, res) => {

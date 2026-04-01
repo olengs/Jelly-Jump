@@ -18,6 +18,12 @@ exports.getTopLimit = async function(limit, ascending, search) {
     const sortOrder = ascending ? 1 : -1;
         
     let results = await Scoreboard.find().sort({highscore: sortOrder});
+
+    for (let i = 0; i < results.length; i++) {
+        const user = await User.getUserById(results[i].playerId);
+        results[i].username = user.username;
+    };
+
     if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
     return results.slice(0, limit);
 };
