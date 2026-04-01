@@ -1,30 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Friends List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friends List - Jelly Jump</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
+    <link rel="stylesheet" href="/style/friends.css">
 </head>
 <body>
-    <% if (error){ %>
-        <%= error %>
-    <% } %> <br><br>
+    <%- include('../partials/navbar') %>
 
-   <form action="/addfriend" method="post">
-        <label for="friendName">Name of Friend:</label>
-        <input type="text" id="friendName" name="friendName"><br><br>
-        <button type="submit">add friend</button>
-    </form><br>
-    
-    <h3>Friends List</h3>
-    <% friendslist.forEach(f => { %>
-        <p><%= f %></p> 
+    <div class="friends-wrapper">
+        <h1>👾 Friends</h1>
 
-        <form action="/deletefriend" method="post">
-            <input type="hidden" name='friendName' value="<%= f %>"> 
-            <button type="submit">delete</button>
+        <% if (error){ %>
+            <p class="error-msg"><%= error %></p>
+        <% } %>
+        <br><br>
+
+        <form action="/addfriend" method="post" class="add-friend-form">
+            <label for="friendName">Name of Friend:</label>
+            <input type="text" id="friendName" name="friendName">
+            <br><br>
+            
+            <button type="submit">Add</button>
         </form>
-    <% }); %>
+        <br>
+        
+        <h3>Friends List</h3>
 
+        <% if (friendslist === []) { %>
+            <p class="empty-msg">Add a new friend!</p>
+        <% } %>
 
+        <% friendslist.forEach(f => { %>
+            <div class="friend-card">
+                <p class="friend-name"><%= f %></p> 
+
+                <form action="/deletefriend" method="post">
+                    <input type="hidden" name='friendName' value="<%= f %>"> 
+                    <button type="submit" class="delete-btn">delete</button>
+                </form>
+            </div>
+        <% }); %>
+
+    </div>
     
 </body>
 </html>

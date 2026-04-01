@@ -13,7 +13,7 @@ exports.friendslist = async(req,res) => { // looks at the User document and find
         
         for (let friendId of friendIds) {
             let friend = await userModel.User.findById(friendId).lean();
-            friendslist.push(friend);
+            friendslist.push(friend.username);
         };
 
         res.render('friends/friends', {friendslist, error:''});
