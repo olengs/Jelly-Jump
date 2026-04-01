@@ -40,7 +40,6 @@ exports.addFriend = async(req,res)=>{
     try {
         const friend = await userModel.findUserByUsername(friendName); // if inside, it will show the obj. if not its null--> falsey 
         const isFriend = friendslist.some(id => id.toString() === friend._id.toString());
-
         if (isFriend){// already exist
             return res.render('friends/friends',{error:'already friends',friendslist})
         } else {
@@ -49,8 +48,16 @@ exports.addFriend = async(req,res)=>{
 
             return res.redirect('/friendslist')
         };   
-    } catch (error) {
-        if (error instanceof errors.UserNotFoundError) return res.render('friends/friends', {error:'user not found', friendslist});
+    } catch (error) { 
+        let name_friendslist = [];
+        
+        for (let friendId of friendslist) {
+            let f = await userModel.User.findById(friendId).lean();
+            name_friendslist.push(f.username);
+        };
+        
+        console.log('FRIENDSLIST: ', name_friendslist)
+        if (error instanceof errors.UserNotFoundError) return res.render('friends/friends', {error:'user not found', friendslist: name_friendslist});
         throw error;
     };
 };

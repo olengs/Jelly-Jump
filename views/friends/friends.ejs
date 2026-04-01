@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <title>Friends List</title>
 </head>
 <body>
@@ -17,13 +16,13 @@
     
     <h3>Friends List</h3>
     <% friendslist.forEach(f => { %>
-        <p><%= f.username %></p> 
+        <p><%= f %></p> 
 
         <form action="/deletefriend" method="post">
-            <input type="hidden" name='friendName' value="<%= f.username %>"> 
+            <input type="hidden" name='friendName' value="<%= f %>"> 
             <button type="submit">delete</button>
         </form>
-    <% }) %>
+    <% }); %>
 
 
     
