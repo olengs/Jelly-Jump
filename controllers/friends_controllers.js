@@ -4,7 +4,7 @@ const errors = require("../models/errors");
 exports.friendslist = async(req,res) => { // looks at the User document and find the id in the bracker
     // const friendslist = req.session.user.friends || [] // [ { }, { }]
     // res.render('friends/friends',{friendslist,error:''})
-    res.render('friends/friends', {friendslist: await userModel.getFriendUsernamesForUser(user), error: ""});
+    res.render('friends/friends', {friendslist: await userModel.getFriendUsernamesForUser(req.session.user), error: ""});
 };
 
 exports.addFriend = async (req,res) => {
@@ -22,7 +22,7 @@ exports.addFriend = async (req,res) => {
     
     try {
         const friend = await userModel.getUserByName(friendName); // if inside, it will show the obj. if not its null--> falsey 
-        const isFriend = friendIds.some(id => id.toString() === friend._id.toString());
+        const isFriend = req.session.user.friends.some(id => id.toString() === friend._id.toString());
         if (isFriend) {// already exist
             return res.render('friends/friends', {error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user)});
         }

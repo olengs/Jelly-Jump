@@ -12,15 +12,15 @@ exports.getProfile = async (req, res) => {
         return res.redirect(302, "/profile");
     }
 
-    //show highscore only
-    let highscore = await Scoreboard.getHighscore();
+    // //show highscore only
+    // let highscore = await Scoreboard.getHighscore();
 
     res.render("profile/user-profile", {user: await User.getUserById(req.params.id), highscore});
 };
 
 exports.getOwnProfile = async (req, res) => {
-    let inventory = await Inventory.getInventory();
-    let highscore = await Scoreboard.getHighscore();
+    // let inventory = await Inventory.getInventory();
+    // let highscore = await Scoreboard.getHighscore();
     //show inventory stuff
     
     res.render("profile/user-profile", {user: req.session.user, highscore, inventory});
