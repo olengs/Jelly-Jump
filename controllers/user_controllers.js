@@ -13,7 +13,6 @@ exports.signupView = (req, res) => {
 
 exports.login = async (req, res) => {
     const {username, password} = req.body;
-    console.log(username, password);
 
     try {
         if (!username || !password) throw new Error("Empty login field(s)");
@@ -24,8 +23,8 @@ exports.login = async (req, res) => {
         if (!password_valid) throw new Errors.InvalidPasswordError();
         
         req.session.user = user;
-
         console.log(`Logged in with ${username}, ${password}`);
+
     } catch (error) {
         if (error instanceof Errors.UserNotFoundError) {
             res.render("IAM/login", {errorMsg: error.message});
@@ -37,8 +36,7 @@ exports.login = async (req, res) => {
             return;
         }
 
-        console.log(error);
-        return
+        throw error;
     }
 
     res.redirect(302, "/");
@@ -71,9 +69,7 @@ exports.signup = async (req, res) => {
         else if (error instanceof Errors.PasswordFormatError) {
             return res.render("IAM/signup", {username, email, errorMsg: error.message});
         }
-        res.status(500).render("error", {error: "access denied"});
-        console.log(error);
-        return
+        throw error;
     }
     res.redirect(302, `/login`);
 }
@@ -81,7 +77,7 @@ exports.signup = async (req, res) => {
 exports.logout = async (req, res) => {
     req.session.destroy(err => {
         if (err) {
-            return res.status(500).render("error", {statusCode: 500});
+            throw err;
         }
         return res.redirect(302, "/login");
     });

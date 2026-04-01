@@ -38,3 +38,10 @@ exports.getFriendScores = function(playerIds) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     return Scoreboard.find({playerId: {$in: playerIds}}).sort({highscore: -1});
 };
+
+exports.getHighscore = async (playerId) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    
+    let data = await Scoreboard.findOne({playerId}).lean();
+    return data.highscore;
+}
