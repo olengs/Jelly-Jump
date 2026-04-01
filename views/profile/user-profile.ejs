@@ -10,7 +10,7 @@
     <%- include('../partials/navbar') %>
 
     <div class="centered margin-top-20">
-        <h1 class="margin-bot-20">My Profile</h1>
+        <h1 class="margin-bot-20"><%= user.username %>'s Profile</h1>
         <p><strong>Username:</strong> <%= user.username %></p><br>
         <p><strong>Email:</strong> <%= user.email %></p><br>
         <p><strong>Bio:</strong> <%= user.bio || 'No bio yet.' %></p><br>

@@ -52,3 +52,10 @@ exports.getFriendScoresByUsername = function(usernames, ascending = false) {
     // $in finds documents where the field matches any value in the array
     return Scoreboard.find({username: {$in: usernames}}).sort({highscore: sortOrder});
 };
+
+exports.getHighscore = async (playerId) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    
+    let data = await Scoreboard.findOne({playerId}).lean();
+    return data.highscore;
+}

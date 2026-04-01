@@ -52,6 +52,10 @@ exports.createUser = async (username, email, password) => {
     let passwordHash = await bcrypt.hash(password, Math.floor(Math.random() * 10));
     let dbuser = await User.create({username, email, passwordHash});
 
+    if (!dbuser) {
+        throw new Error("Failed to create user in db");
+    }
+
     return dbuser;
 }
 
