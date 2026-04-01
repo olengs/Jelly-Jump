@@ -56,6 +56,13 @@ class PasswordFormatError extends Error {
     }
 }
 
+class CannotGetFriendsListError extends Error {
+    constructor() {
+        super("Cannot get friends list");
+        this.statusCode = 500; // status: internal server error
+    }
+}
+
 module.exports = {
     DatabaseNotConnectedError,
     UserAlreadyExistsError,
@@ -65,4 +72,5 @@ module.exports = {
     EmailFormatError,
     UsernameFormatError,
     PasswordFormatError,
+    CannotGetFriendsListError
 }
