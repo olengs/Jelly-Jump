@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const dbcommons = require("./dbcommons");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
+const utilities = require("../utilities/utilities");
+const Inventory = require("./inventory-model");
+const Scoreboard = require("./scoreboard-model");
 
 const email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //match {0-9A-z}1+, then @, then {0-9A-z}1+, then ., then {0-9A-z} 2+
 const username_regex = /^[a-zA-Z0-9]{4,12}$/;
@@ -86,11 +89,12 @@ exports.updateUserPassword = async (username, oldPassword, newPassword) => {
 }
 
 // create delete account for delete
-exports.deleteUserPassword = async (username) => {
+exports.deleteUser = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-
-    return await User.deleteOne({username});
-}
+    await User.deleteOne({_id: id});
+    //TODO: DELETE ALL DEPENDANT COMPONENTS
+    return 
+};
 
 exports.findUsersByStr = async (partialName, filters = {}, maxFuzz = 0.3) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
@@ -107,35 +111,40 @@ exports.findUsersByStr = async (partialName, filters = {}, maxFuzz = 0.3) => {
     console.log(similarNames);
 }
 
-exports.findUserByUsername = async (username) => {
-    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    
-    let user = await User.findOne({ username });
-    if (!user) throw new errors.UserNotFoundError(username);
-
-    return user;
-};
-
 exports.addFriend = async (id, friendName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    const friend = await User.findOne({username: friendName});
+    const friend = await User.findOne({username: friendName}).lean();
 
-    if (!friend) throw new errors.UserNotFoundError(friendName);        
+    if (!friend) throw new errors.UserNotFoundError(friendName);    
 
     return await User.findByIdAndUpdate(id, {
         $push: {friends: friend._id}
     });
-};
+}
 
 exports.deleteFriend = async (id, friendName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     const friend = await User.findOne({username: friendName});
-
     if (!friend) throw new errors.UserNotFoundError(friendName);        
 
     return await User.findByIdAndUpdate(id, {
         $pull: {friends: friend._id}
     });
-};
+}
+
+exports.getUsersByIds = async (ids) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    const users = await User.find({_id: { $in: ids }});
+
+    return users || [];
+}
+
+exports.getFriendUsernamesForUser = async (user) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    if (!user) throw new Error("User is not found");
+    const friends = (await this.getUsersByIds(user.friends)) || [];
+    return friends.map(a => a.username);
+}

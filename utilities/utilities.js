@@ -25,3 +25,15 @@ exports.levenshteinDist = (a, b) => {
     }
     return m[b.length][a.length];
 };
+
+exports.fuzzySearch = (searchTerm, arr, sort = true, accessFunc = undefined, maxDistance = 3) => {
+    if (!accessFunc) accessFunc = a => a;
+    if (!sort) return arr.filter(a => this.levenshteinDist(searchTerm, accessFunc(a)) < maxDistance);
+    return arr.sort(
+        (a, b) => this.levenshteinDist(searchTerm, accessFunc(a)) - this.levenshteinDist(searchTerm, accessFunc(b))
+    ).filter(
+        a => this.levenshteinDist(searchTerm, accessFunc(a)) < maxDistance
+    );
+}
+
+// console.log(this.fuzzySearch("test", ["tes", "tabc", "test2", "tewt"]));

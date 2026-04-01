@@ -17,31 +17,9 @@ exports.getTopLimit = async function(limit, ascending, search) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     const sortOrder = ascending ? 1 : -1;
         
-    let results = await Scoreboard.find().sort({highscore: sortOrder}).lean();
-
-    if (search) {
-        let filtered = [];
-        
-        for (let i = 0; i < results.length; i++) {
-            const user = await User.getUserById(results[i].playerId);
-            const username = user.username.toLowerCase();
-            const dist = utilities.levenshteinDist(search.toLowerCase(), username.substring(0, search.length));
-            
-            if (username.includes(search.toLowerCase()) || dist <= 3) {
-                results[i].username = user.username;
-                filtered.push(results[i]);
-            };
-        };
-
-        results = filtered;
-    };
-
-    let limited = [];
-    for (let i = 0; i < limit && i < results.length; i++) {
-        limited.push(results[i]);
-    }; 
-
-    return limited;
+    let results = await Scoreboard.find().sort({highscore: sortOrder});
+    if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
+    return results.slice(0, limit);
 };
 
 exports.getCount = function() {
