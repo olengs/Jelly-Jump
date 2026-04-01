@@ -48,6 +48,7 @@ class Player extends Object{
         this.move = this.move.bind(this);
         this.accX = 0;
         this.accY = 0;
+        this.jumpCounter = 0;
     }
 
     move (e) {
@@ -55,6 +56,7 @@ class Player extends Object{
             //console.log("Jump");
             this.accY = airResistance;
             this.velY = -playerJumpStrength;
+            this.jumpCounter += 1;
         }
     }
 
@@ -82,7 +84,7 @@ class Spawner {
         this.timeToSpawn -= dt;
         console.log(this.timeToSpawn);
         if (this.timeToSpawn <= 0) {
-            this.timeToSpawn = Math.random() + 1;
+            this.timeToSpawn = Math.random() * 1.5 + 0.3;
             return true;
         }
         return false;
@@ -206,7 +208,7 @@ let update = () => {
         if (player.checkCollision(rock)) {
             //console.log(player.x, player.y, player.width, player.height);
             //console.log(rock.x, rock.y, rock.width, rock.height);
-            gameOverEvent();
+            gameOverEvent(player);
             return;
         }
     }
@@ -217,7 +219,7 @@ let update = () => {
     context.fillText(`Score: ${score}`, 5, 20);
 }
 
-let gameOverEvent = () => {
+let gameOverEvent = (player) => {
     gameOver = true
     if (interval) clearInterval(interval);
     obstructions = [];
@@ -236,16 +238,16 @@ let gameOverEvent = () => {
     context.fillText(`Game Over`, board.width * 0.45, board.height * 0.5);
     context.fillText(`Score: ${score}`, board.width * 0.45, board.height * 0.5 + 20);
 
-    updateHighscore(score);
+    updateHighscore(score, player.jumpCounter);
 
     midbutton.hidden = false;
     midbutton.textContent = "Restart";
 }
 
-let updateHighscore = async (highscore) => {
+let updateHighscore = async (highscore, jumps) => {
     let playerId = document.getElementById("playerId").value;
     const character = this.document.getElementById("character").value;
-    const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character});
+    const data = JSON.stringify({playerId, highscore, gameEndTime: Date.now(), character, jumps});
     try {
         let resp = await fetch(`/game/endgame`, {
             method: 'POST',
