@@ -15,14 +15,8 @@ const userSchema = new mongoose.Schema({
     passwordHash: {type: String, required: true, unique:true},
     role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
     bio: {type: String, required: true, default: "My bio"},
-    friends :[{
-        friendname:String,
-        username:String ,
-        friendid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }
-    }] })
+    friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
+});
 
 const User = mongoose.model('User', userSchema, "users");
 exports.User = User;
@@ -113,21 +107,32 @@ exports.findUsersByStr = async (partialName, filters = {}, maxFuzz = 0.3) => {
 exports.findUserByUsername = async (username) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     
-    return await User.findOne({ username });
+    let user = await User.findOne({ username });
+    if (!user) throw new errors.UserNotFoundError(username);
+
+    return user;
 };
 
-exports.addFriend = async (id, friendName, userName) => {
+exports.addFriend = async (id, friendName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
+    const friend = await User.findOne({username: friendName});
+
+    if (!friend) throw new errors.UserNotFoundError(friendName);        
+
     return await User.findByIdAndUpdate(id, {
-        $push: { friends: { friendname: friendName, username: userName } }
+        $push: {friends: friend._id}
     });
 };
 
-exports.deleteFriend = async (id, userName) => {
+exports.deleteFriend = async (id, friendName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
+    const friend = await User.findOne({username: friendName});
+
+    if (!friend) throw new errors.UserNotFoundError(friendName);        
+
     return await User.findByIdAndUpdate(id, {
-        $pull: { friends: { username: userName } }
+        $pull: {friends: friend._id}
     });
 };
