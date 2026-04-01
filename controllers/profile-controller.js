@@ -13,17 +13,17 @@ exports.getProfile = async (req, res) => {
     }
 
     //show highscore only
-    let highscore = Scoreboard.
+    let highscore = await Scoreboard.getHighscore();
 
-    res.render("profile/user-profile", {user: await User.getUserById(req.params.id)});
+    res.render("profile/user-profile", {user: await User.getUserById(req.params.id), highscore});
 };
 
 exports.getOwnProfile = async (req, res) => {
     let inventory = await Inventory.getInventory();
-
+    let highscore = await Scoreboard.getHighscore();
     //show inventory stuff
     
-    res.render("profile/user-profile", {user: req.session.user});
+    res.render("profile/user-profile", {user: req.session.user, highscore, inventory});
 }
 
 exports.getEditProfile = async (req, res) => {
