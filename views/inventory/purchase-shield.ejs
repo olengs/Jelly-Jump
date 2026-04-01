@@ -8,7 +8,6 @@
 </head>
 <body>
     <%- include('../partials/navbar') %>
-    <header class="game-header">
     <div class="inventory-bar">
         <div class="stat-item">
             <span class="label">GOLD:</span>
@@ -23,25 +22,21 @@
             <span class="value"><%= numberOfCoupons %></span>
         </div>
     </div>
-</header>
 
-    <main>
+    <div>
         <h1>Welcome to the Store</h1>
-        <table>
-            <tr>
-                <td> </td>
-            </tr>
-        </table>
+
+        <div><%= typeof errorMsg !== "undefined" ? errorMsg : "" %></div>
 
         <form action="/purchase-shield" method="post">
-            <label>
-                Buy Quantity SHIELDS: 
-                <input type="number" name="numberOfShieldsToBuy" id="numberOfShieldsToBuy" value="1" min="1" step="1">
-            </label>
+            <label for="numberOfShieldsToBuy"> Buy Quantity SHIELDS:  </label>
+            <input type="number" name="numberOfShieldsToBuy" id="numberOfShieldsToBuy" value="1" min="1" step="1">
 
             <button type="submit">BUY</button>
         </form>
-    </main>
+    </div>
+
+    <form action="/purchase"><button type="submit">Go back</button></form>
     
 </body>
 </html>
