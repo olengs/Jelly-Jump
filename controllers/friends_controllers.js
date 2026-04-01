@@ -1,7 +1,6 @@
 const userModel = require("../models/user-model");
 const errors = require("../models/errors");
 
-
 exports.friendslist = async(req,res) => { // looks at the User document and find the id in the bracker
     // const friendslist = req.session.user.friends || [] // [ { }, { }]
     // res.render('friends/friends',{friendslist,error:''})
@@ -26,11 +25,10 @@ exports.addFriend = async (req,res) => {
         const isFriend = friendIds.some(id => id.toString() === friend._id.toString());
         if (isFriend) {// already exist
             return res.render('friends/friends', {error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user)});
-        } else {
-            await userModel.addFriend(req.session.user._id, friendName);
-            await userModel.addFriend(friend._id, user.username);
-            return res.redirect('/friendslist');
-        };   
+        }
+        await userModel.addFriend(req.session.user._id, friendName);
+        await userModel.addFriend(friend._id, user.username);
+        return res.redirect('/friendslist');
     } catch (error) {         
         if (error instanceof errors.UserNotFoundError) {
             console.log(error);
