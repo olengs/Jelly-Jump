@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase - Jelly Jump</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <div class="inventory-bar">
+        <div class="stat-item">
+            <span class="label">GOLD:</span>
+            <span class="value gold"><%= currencyBalance %></span>
+        </div>
+        <div class="stat-item">
+            <span class="label">SHIELDS:</span>
+            <span class="value"><%= shields %></span>
+        </div>
+        <div class="stat-item">
+            <span class="label">COUPONS:</span>
+            <span class="value"><%= numberOfCoupons %></span>
+        </div>
+    </div>
+
+    <div>
+        <h1>Welcome to the Store</h1>
+
+        <div><%= typeof errorMsg !== "undefined" ? errorMsg : ""%> </div>
+
+        <form action="/purchase-coupon" method="post">
+            <label for="numberOfCouponsToBuy">Buy Quantity COUPONS: </label>
+            <input type="number" name="numberOfCouponsToBuy" id="numberOfCouponsToBuy" value="1" min="1" step="1">
+
+            <button type="submit">BUY</button>
+        </form>
+    </div>
+
+    <form action="/purchase"><button type="submit">Go back</button></form>
+    
+</body>
+</html>
