@@ -3,79 +3,51 @@ const errors = require("../models/errors");
 
 
 exports.friendslist = async(req,res) => { // looks at the User document and find the id in the bracker
-    try {
-        // const friendslist = req.session.user.friends || [] // [ { }, { }]
-        // res.render('friends/friends',{friendslist,error:''})
-
-        const user = await userModel.User.findById(req.session.user._id).lean();
-        const friendIds = user.friends; 
-        let friendslist = [];
-        
-        for (let friendId of friendIds) {
-            let friend = await userModel.User.findById(friendId).lean();
-            friendslist.push(friend.username);
-        };
-
-        res.render('friends/friends', {friendslist, error:''});
-    } catch (error) {
-        if (error instanceof errors.CannotGetFriendsListError) return res.render('friends/friends',{error:'cannot get friends list',friendslist});
-        throw error;
-    };
+    // const friendslist = req.session.user.friends || [] // [ { }, { }]
+    // res.render('friends/friends',{friendslist,error:''})
+    res.render('friends/friends', {friendslist: await userModel.getFriendUsernamesForUser(user), error: ""});
 };
 
-exports.addFriend = async(req,res)=>{
-    const friendName= req.body.friendName?.trim(); 
+exports.addFriend = async (req,res) => {
+    const friendName = req.body.friendName?.trim(); 
+    const user = req.session.user;
 
-    if (!friendName) {
-        return res.render('friends/friends',{error:'why empty cannot be empty', friendslist: []});
+    if (!friendName) {    
+        return res.render('friends/friends', {error:'friend name cannot be empty', friendslist: await userModel.getFriendUsernamesForUser(user)});
     }; 
 
     if (friendName === req.session.user.username) {
-        return res.render('friends/friends', {error:'cannot add yourself', friendslist: []});
+        res.locals.error = "cannot add yourself";
+        return res.render('friends/friends', {error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user)});
     };
     
-    const user = await userModel.User.findById(req.session.user._id).lean();
-    const friendslist = user.friends || []; // [ {friendname:----, username,---- }, { }]
-    
     try {
-        const friend = await userModel.findUserByUsername(friendName); // if inside, it will show the obj. if not its null--> falsey 
-        const isFriend = friendslist.some(id => id.toString() === friend._id.toString());
-        if (isFriend){// already exist
-            return res.render('friends/friends',{error:'already friends',friendslist})
+        const friend = await userModel.getUserByName(friendName); // if inside, it will show the obj. if not its null--> falsey 
+        const isFriend = friendIds.some(id => id.toString() === friend._id.toString());
+        if (isFriend) {// already exist
+            return res.render('friends/friends', {error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user)});
         } else {
             await userModel.addFriend(req.session.user._id, friendName);
             await userModel.addFriend(friend._id, user.username);
-
-            return res.redirect('/friendslist')
+            return res.redirect('/friendslist');
         };   
-    } catch (error) { 
-        let name_friendslist = [];
-        
-        for (let friendId of friendslist) {
-            let f = await userModel.User.findById(friendId).lean();
-            name_friendslist.push(f.username);
-        };
-        
-        console.log('FRIENDSLIST: ', name_friendslist)
-        if (error instanceof errors.UserNotFoundError) return res.render('friends/friends', {error:'user not found', friendslist: name_friendslist});
+    } catch (error) {         
+        if (error instanceof errors.UserNotFoundError) {
+            console.log(error);
+            return res.render('friends/friends', {error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user)});
+        }
         throw error;
     };
 };
 
 exports.deleteFriend = async(req,res) =>{
-    try {
-        const user = await userModel.User.findById(req.session.user._id).lean();
-        const friendName = req.body.friendName?.trim(); 
-        const friend = await userModel.findUserByUsername(friendName);
+    const friendName = req.body.friendName?.trim(); 
+    const friend = await userModel.getUserByName(friendName);
 
-        await userModel.deleteFriend(req.session.user._id, friendName);
-        await userModel.deleteFriend(friend._id, user.username);
+    await userModel.deleteFriend(req.session.user._id, friendName);
+    await userModel.deleteFriend(friend._id, req.session.user.username);
 
-        return res.redirect('/friendslist');
-    } catch(error) {
-        console.log(error)
-        res.send('error: cannot delete') 
-    }
+    return res.redirect('/friendslist');
 };
 
 
