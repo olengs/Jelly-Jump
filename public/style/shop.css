@@ -1,0 +1,21 @@
+.shop-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none; /* Removes the underline */
+    color: white;
+    border-radius: 8px;
+    transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #c5e8ff; /* Blue for defense */
+    border-bottom: 4px solid #1c5982;
+}
+
+
+.shop-btn:hover {
+    transform: translateY(-2px); /* Moves up slightly */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(110%); /* Makes it slightly lighter */
+}

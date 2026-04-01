@@ -53,6 +53,7 @@ server.use('/',friendRoutes);
 server.use('/scoreboard', scoreboardRoutes);
 server.use("/", homeRoutes);
 server.use('/', profileRoutes);
+server.use('/', inventoryRoutes);
 
 //Home page
 server.get("/", (req, res) => {
