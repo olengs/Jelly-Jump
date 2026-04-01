@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Jelly Jump</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/globalstyle.css">
+    <style>
+        body {
+            background: #1a0a2e;
+            color: #fff;
+            font-family: 'Pixelify Sans', sans-serif;
+            padding: 20px;
+        }
+        h1 { color: #ff69b4; text-shadow: 0 0 10px #ff69b4; }
+        h2 { color: #00d4ff; text-shadow: 0 0 8px #00d4ff; margin-top: 40px; }
+
+        .btn {
+            font-family: 'Pixelify Sans', sans-serif;
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-pink  { background: #ff69b4; color: #1a0a2e; }
+        .btn-blue  { background: #00d4ff; color: #1a0a2e; }
+        .btn-red   { background: #ff4466; color: #fff; }
+        .btn:hover { opacity: 0.85; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        th {
+            background: #2d0a4e;
+            color: #ff69b4;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ff69b440;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ffffff20;
+            vertical-align: middle;
+        }
+        tr:hover td { background: #ffffff08; }
+
+        .badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-high   { background: #ff4466; color: #fff; }
+        .badge-medium { background: #ffaa00; color: #1a0a2e; }
+        .badge-low    { background: #00d4ff; color: #1a0a2e; }
+
+        .actions form { display: inline; }
+        .actions { display: flex; gap: 8px; align-items: center; }
+    </style>
+</head>
+<body>
+
+    <h1>🛠️ Admin Dashboard</h1>
+    <p>Welcome, <strong><%= req.session.user.username %></strong> | <a href="/" style="color:#00d4ff">← Back to Game</a></p>
+
+    <!-- ── ANNOUNCEMENTS ──────────────────────────────── -->
+    <h2>📢 Announcements</h2>
+    <a href="/admin/announcements/new" class="btn btn-pink" style="margin-bottom:12px;">+ New Announcement</a>
+
+    <% if (announcements.length === 0) { %>
+        <p style="color:#aaa;">No announcements yet.</p>
+    <% } else { %>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Message</th>
+                <th>Urgency</th>
+                <th>Date Posted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% announcements.forEach(a => { %>
+            <tr>
+                <td><%= a.title %></td>
+                <td><%= a.message.length > 60 ? a.message.substring(0, 60) + '…' : a.message %></td>
+                <td><span class="badge badge-<%= a.urgency %>"><%= a.urgency.toUpperCase() %></span></td>
+                <td><%= new Date(a.datePosted).toLocaleDateString() %></td>
+                <td class="actions">
+                    <a href="/admin/announcements/<%= a._id %>/edit" class="btn btn-blue">Edit</a>
+                    <form action="/admin/announcements/<%= a._id %>/delete" method="POST"
+                          onsubmit="return confirm('Delete this announcement?')">
+                        <button type="submit" class="btn btn-red">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    <% } %>
+
+    <!-- ── PLAYERS ─────────────────────────────────────── -->
+    <h2>🎮 Players</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>High Score</th>
+                <th>Games Played</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (players.length === 0) { %>
+            <tr><td colspan="5" style="color:#aaa; text-align:center;">No players found.</td></tr>
+            <% } %>
+            <% players.forEach(p => { %>
+            <tr>
+                <td><%= p.username %></td>
+                <td><%= p.email %></td>
+                <td style="color:#ff69b4;"><%= p.highScore %></td>
+                <td><%= p.totalGamesPlayed %></td>
+                <td>
+                    <a href="/admin/players/<%= p._id %>" class="btn btn-blue">View History</a>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+</body>
+</html>
