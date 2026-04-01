@@ -17,8 +17,8 @@ exports.getTopLimit = async function(limit, ascending, search) {
     const sortOrder = ascending ? 1 : -1;
         
     let results = await Scoreboard.find().sort({highscore: sortOrder});
-    if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, a => a.username.toLowerCase());
-    return results.filter((_, index) => index < limit);
+    if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
+    return results.slice(0, limit);
 };
 
 exports.getCount = function() {
