@@ -1,5 +1,6 @@
 const express = require("express"); 
 const profileController = require("../controllers/profile-controller");
+const userController = require("../controllers/user_controllers");
 const UserMiddleware = require("../middleware/user-middleware");
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get("/edit", UserMiddleware.requireUser, profileController.getEditProfile
 router.post("/edit", UserMiddleware.requireUser, profileController.postEditProfile);
 
 // delete - delete account 
-router.post("/delete", UserMiddleware.requireUser, profileController.deleteProfile);
+router.post("/delete", UserMiddleware.requireUser, userController.deleteUser);
 
 // read - show player history page 
 router.get("/history", UserMiddleware.requireUser, profileController.getHistory);

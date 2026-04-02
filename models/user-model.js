@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true},
     email: {type: String, required: true, unique:true, trim:true},
     passwordHash: {type: String, required: true, unique:true},
-    role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
+    role: {type: String, required: true, enum: ["sysadmin", "admin", "player"], default:"player"},
     bio: {type: String, required: true, default: "My bio"},
     friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
 });
@@ -89,7 +89,6 @@ exports.updateUserPassword = async (username, oldPassword, newPassword) => {
 exports.deleteUser = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     await User.deleteOne({_id: id});
-    return 
 };
 
 exports.addFriend = async (id, friendName) => {
@@ -99,7 +98,7 @@ exports.addFriend = async (id, friendName) => {
 
     if (!friend) throw new errors.UserNotFoundError(friendName);    
 
-    return await User.findByIdAndUpdate(id, {
+    await User.updateOne({_id: id}, {
         $push: {friends: friend._id}
     });
 }
@@ -139,3 +138,11 @@ exports.getTopUsers = async function(search, userId, friendslist) {
     // remove self from search and current friends from search
     return results.filter(user => user._id !== userId || friendslist.indexOf(user.username) === -1);
 };
+
+exports.checkAndCreateSysadminUser = async () => {
+    let user = User.findOne({role: "sysadmin"});
+    if (user) return;
+
+    user = User.create({email: "sysadmin@jellyjump.com", passwordHash: bcrypt.hash("JJAdmin@1"), username: "sysadmin", role: "sysadmin"});
+    if (!user) throw new Error("Unable to create sysadmin");
+}

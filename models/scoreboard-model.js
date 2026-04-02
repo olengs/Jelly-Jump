@@ -4,11 +4,11 @@ const dbcommons = require("./dbcommons");
 const utilities = require("../utilities/utilities");
 
 const scoreboardSchema = new mongoose.Schema({
-    playerId: {type: String, required: true, unique: true},
+    playerId: {type: String, required: true, unique: true, ref: "User"},
     highscore: {type: Number, required: true},
     gamesPlayed: {type: Number, required: true},
     lastPlayed: {type: Date, default: Date.now},
-    jumps: {type: Number, required: true, default: 0}
+    jumps: {type: Number, required: true, default: 0},
 });
 
 const Scoreboard = mongoose.model('Scoreboard', scoreboardSchema);
@@ -17,14 +17,10 @@ exports.getTopLimit = async function(limit, ascending, search) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     const sortOrder = ascending ? 1 : -1;
         
-    let results = await Scoreboard.find().sort({highscore: sortOrder});
-
-    for (let i = 0; i < results.length; i++) {
-        const user = await User.getUserById(results[i].playerId);
-        results[i].username = user.username;
-    };
-
-    if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
+    let results = await Scoreboard.find().sort({highscore: sortOrder}).populate("playerId").lean();
+    //console.log(JSON.stringify(results));
+    
+    if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.playerId.username.toLowerCase());
     return results.slice(0, limit);
 };
 
@@ -52,10 +48,13 @@ exports.deleteScore = function(playerId) {
     return Scoreboard.deleteOne({playerId: playerId});
 };
 
-exports.getFriendScoresByPlayerIds = function(playerIds, ascending = false) {
+exports.getFriendScoresByPlayerIds = function(playerIds, ascending = false, requireUsername = false) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     
     const sortOrder = ascending ? 1 : -1;
+    
+    if (requireUsername) return Scoreboard.find({playerId: {$in: playerIds}}).populate("playerId").sort({highscore: sortOrder});
+    
     return Scoreboard.find({playerId: {$in: playerIds}}).sort({highscore: sortOrder});
 };
 

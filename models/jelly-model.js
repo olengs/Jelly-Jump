@@ -50,13 +50,8 @@ exports.getJelliesByPlayerId = async (playerId) =>{
     return jellies;
 }   
 
-exports.incrementJellyFragments = async (playerId, data) => {
-    frequencies = data.reduce((acc, curr) => {
-        acc[curr] = (acc[curr] || 0) + 1;
-        return acc;
-    }, {});
-
-    let updated = await Jelly.findOneAndUpdate({playerId}, {$inc: frequencies}, {returnDocument: "after"});
+exports.incrementJellyFragments = async (playerId, fragments) => {
+    let updated = await Jelly.findOneAndUpdate({playerId}, {$inc: fragments}, {returnDocument: "after"});
     if (!updated) throw new Error("Failed to update jelly earned");
 }
 
