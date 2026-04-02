@@ -18,6 +18,29 @@
         <% } %>
         <br><br>
 
+        <!-- search friend AND THEN ADD FRIEND -->
+        <form action="friendslist" method="get" class="add-friend-form">
+            <label for="friendName">Name of Friend:</label>
+            <input type="text" id="friendName" name="search" placeholder="Search username..." value="<%= typeof search !== undefined ? search : '' %>">
+            <br><br>
+            
+            <button type="submit">Find</button>
+        </form>
+
+        <% if (typeof result !== undefined) { result.forEach(r => { %>
+            <form action="friendslist" method="post" style="max-width: 400px; align-items: center; margin: 0 auto">
+                <div class="friend-card">
+                    <p class="friend-name"><%= r.username %></p>                   
+                    <a class="btn" href="/profile/view/<%= r._id %>"> View Profile</a>
+                    <input type="hidden" name="friendName" value="<%= r.username %>">
+                    <button type="submit" class="btn">Add</button>
+                </div>
+            </form>
+        <% }); } %>
+        <br>
+
+        <h2>Friends List</h2>
+
         <% if (friendslist.length < 1) { %>
             <p class="empty-msg">Add new friends!</p>
         <% } %>
@@ -28,22 +51,12 @@
 
                 <form action="/deletefriend" method="post">
                     <input type="hidden" name='friendName' value="<%= f %>"> 
-                    <button type="submit" class="delete-btn">delete</button>
+                    <button type="submit" class="btn">delete</button>
                 </form>
             </div>
         <% }); %>
 
         <br><br><br>
-        <h2>Add New Friends</h2>
-
-        <form action="friendslist" method="post" class="add-friend-form">
-            <label for="friendName">Name of Friend:</label>
-            <input type="text" id="friendName" name="friendName">
-            <br><br>
-            
-            <button type="submit">Add</button>
-        </form>
-        <br>
 
     </div>
 </body>

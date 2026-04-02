@@ -100,9 +100,10 @@
 .friend-name {
     color: var(--text-color);
     font-size: 0.9rem;
+    text-align: center;
 }
 
-.delete-btn {
+.btn {
     background: none;
     border: 1px solid var(--jelly-pink);
     color: var(--jelly-pink);
@@ -112,9 +113,10 @@
     font-family: inherit;
     font-size: 0.75rem;
     transition: 0.2s;
+    text-decoration: none;
 }
 
-.delete-btn:hover {
+.btn:hover {
     background-color: var(--jelly-pink);
     color: var(--space-bg);
 }

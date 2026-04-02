@@ -130,10 +130,12 @@ exports.getFriendUsernamesForUser = async (user) => {
     return friends.map(a => a.username);
 }
 
-exports.getTopUsers = async function(limit = 0, search) {
-    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;            
+exports.getTopUsers = async function(search, userId, friendslist) {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     let results = await User.find();
 
     if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
-    return results.slice(0, limit);
+    
+    // remove self from search and current friends from search
+    return results.filter(user => user._id !== userId || friendslist.indexOf(user.username) === -1);
 };
