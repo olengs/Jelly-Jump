@@ -8,6 +8,8 @@ router.get("/signup", userMiddleware.autoLoginIfAuthenticated, userControllers.s
 router.post("/login", userControllers.login);
 router.post("/signup", userControllers.signup);
 router.get("/logout", userMiddleware.requireUser, userControllers.logout);
+router.get("/forgot-password", userControllers.forgotPasswordView);
+router.post("/forgot-password", userControllers.forgotPassword);
 
 //temp route
 // router.get("/", userMiddleware.requireUser, (req, res) => {
