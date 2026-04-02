@@ -93,6 +93,7 @@ exports.deleteUser = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     await User.deleteOne({_id: id});
     //TODO: DELETE ALL DEPENDANT COMPONENTS
+    await Inventory.deleteOne({playerId: id});
     return 
 };
 
