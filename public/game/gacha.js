@@ -73,8 +73,8 @@ let draw10 = async () => {
         for (let j = 0; j < 5; ++j) {
             let x = Math.floor(boardWidth * (0.13 + 0.18 * j) - cardWidth * 0.5);
             let y = Math.floor(boardHeight * (0.33 + 0.33 * i) - cardHeight * 0.5);
-            console.log(x, y);
-            ret = new Card(results[i * 2 + j]);
+            //console.log(x, y);
+            ret = new Card(results[i * 5 + j]);
             ret.draw(context, x, y);
         }
     }
