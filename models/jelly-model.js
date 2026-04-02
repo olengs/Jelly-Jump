@@ -77,3 +77,7 @@ exports.upgradeJelly = async (playerId, jellyId) => {
 
     throw new Error("Insufficient Fragments");
 }
+
+exports.deleteJellies = async (playerId) => {
+    return await Jelly.deleteOne({playerId});
+}
