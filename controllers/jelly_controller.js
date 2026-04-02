@@ -4,7 +4,7 @@ exports.showJellies = async (req,res) => {
     const jellyData = await jellyModel.getJelliesByPlayerId(req.session.user._id);
     console.log("jelly data: ", jellyData);
 
-    return res.render('jelly', {jellyData, error:''});
+    return res.render('jelly', {jellyData: JSON.stringify(jellyData), error:''});
 }
 
 exports.upgrade = async (req, res) => {

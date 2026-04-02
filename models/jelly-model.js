@@ -26,16 +26,13 @@ exports.Jelly = Jelly;
 
 exports.createJellyStore = async (playerId) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let ranks = Array.from({length: jellyNames}).fill(0);
+    let ranks = new Array(Object.keys(jellyNames).length).fill(0);
     ranks[0] = 1;
 
-    console.log(Array.from(jellyNames));
-    console.log(Array.from({length: jellyNames}).fill(0));
-
     let store = Jelly.create({playerId, 
-        characterNicknames: Array.from(jellyNames),
+        characterNicknames: Object.values(jellyNames),
         characterRank: ranks,
-        characterXp: Array.from({length: jellyNames}).fill(0),
+        characterXp: new Array(Object.keys(jellyNames).length).fill(0),
     });
 
     if (!store) throw new Error("Failed to create jelly for player");

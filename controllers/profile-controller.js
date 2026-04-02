@@ -3,6 +3,7 @@ const GameRecords = require("../models/game-records");
 const errors = require("../models/errors");
 const Inventory = require("../models/inventory-model");
 const Scoreboard = require("../models/scoreboard-model");
+const Jellies = require("../models/jelly-model");
 
 exports.getProfile = async (req, res) => {
     const user = req.session.user;
@@ -49,8 +50,13 @@ exports.postEditProfile = async (req, res) => {
 
 // delete - delete user account 
 exports.deleteProfile = async (req, res) => {
-    await GameRecords.deleteAllRecordsByUser(req.session.user._id);
-    await User.deleteUser(req.session.user._id);
+
+    const userid = req.session.user._id;
+    await GameRecords.deleteAllRecordsByUser(userid);
+    await Inventory.deleteInventory(userid);
+    await Jellies.deleteJellies(userid);
+    await Scoreboard.deleteScore(userid);
+    await User.deleteUser(userid);
 
     res.redirect("/logout");
 }
