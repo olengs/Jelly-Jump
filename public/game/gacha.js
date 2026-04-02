@@ -97,10 +97,15 @@ let draw = async (count) => {
         }
         let respjson = await resp.json();
         if (respjson.Error) {
-            throw new Error(`Gacha pull error: ${resp.Error || "Unknown Error"}`);
+            throw new Error(`Gacha pull error: ${JSON.stringify(respjson.Error, null, 2)}`);
         }
         draw1button.hidden = false;
         draw10button.hidden = false;
+        const coupon_count_elem = document.getElementById("coupon_count");
+        const remainder = Number(coupon_count_elem.textContent) - Number(count);
+        coupon_count_elem.textContent = remainder;
+        if (remainder < 1) draw1button.disabled = true;
+        if (remainder < 10) draw10button.disabled = true;
         return respjson;
     } catch (error) {
         console.log(error);

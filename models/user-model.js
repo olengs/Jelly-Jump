@@ -91,27 +91,26 @@ exports.deleteUser = async (id) => {
     await User.deleteOne({_id: id});
 };
 
-exports.addFriend = async (id, friendName) => {
+exports.addFriend = async (id, friendName, session = null) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     const friend = await User.findOne({username: friendName}).lean();
 
     if (!friend) throw new errors.UserNotFoundError(friendName);    
 
-    await User.updateOne({_id: id}, {
-        $push: {friends: friend._id}
-    });
+    if (session) return await User.updateOne({_id: id}, {$push: {friends: friend._id}}, {session});
+    return await User.updateOne({_id: id}, {$push: {friends: friend._id}});
+
 }
 
-exports.deleteFriend = async (id, friendName) => {
+exports.deleteFriend = async (id, friendName, session = null) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     const friend = await User.findOne({username: friendName});
     if (!friend) throw new errors.UserNotFoundError(friendName);        
 
-    return await User.findByIdAndUpdate(id, {
-        $pull: {friends: friend._id}
-    });
+    if (session) return await User.findByIdAndUpdate(id, {$pull: {friends: friend._id}}, {session});
+    return await User.findByIdAndUpdate(id, {$pull: {friends: friend._id}});
 }
 
 exports.getUsersByIds = async (ids) => {

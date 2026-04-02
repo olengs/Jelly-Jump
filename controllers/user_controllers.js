@@ -5,7 +5,7 @@ const InventoryModel = require("../models/inventory-model.js");
 const Jellies = require("../models/jelly-model.js");
 const GameRecords = require("../models/game-records.js");
 const Scoreboard = require("../models/scoreboard-model.js");
-const mongoose = require("mongoose");
+const dbcommons = require("../models/dbcommons.js");
 
 exports.loginView = (req, res) => {
     res.render("IAM/login", {});
@@ -57,18 +57,16 @@ exports.signup = async (req, res) => {
         return res.render("IAM/signup", {email, username, errorMsg: "Passwords do not match"});
     }
     
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-        let user = await UserModel.createUser(username, email, password);
-        await InventoryModel.createInventory(user._id);
-        await Jellies.createJellyStore(user._id);
-        req.session.user = user;
-        //console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
-        await session.commitTransaction();
-    } catch (error) {
-        await session.abortTransaction();
 
+    try {
+        await dbcommons.runInTransaction(async () => {
+            let user = await UserModel.createUser(username, email, password);
+            await InventoryModel.createInventory(user._id);
+            await Jellies.createJellyStore(user._id);
+            req.session.user = user;
+            //console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
+        });
+    } catch (error) {
         if (error instanceof Errors.UserAlreadyExistsError || error instanceof Errors.UsernameFormatError) {
             return res.render("IAM/signup", {email, errorMsg: error.message});
         } else if (error instanceof Errors.EmailAlreadyExistsError || error instanceof Errors.EmailFormatError) {
@@ -79,8 +77,6 @@ exports.signup = async (req, res) => {
 
         console.log(error);
         return res.render("IAM/signup", {errorMsg: "Failed to create user"});
-    } finally {
-        await session.endSession();
     }
     res.redirect(302, `/login`);
 }
@@ -100,21 +96,14 @@ exports.checkSysadminUser = () => {
 
 exports.deleteUser = async (req, res) => {
     const userid = req.session.user._id;
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
+
+    await dbcommons.runInTransaction(async () => {
         await GameRecords.deleteAllRecordsByUser(userid);
         await InventoryModel.deleteInventory(userid);
         await Jellies.deleteJellies(userid);
         await Scoreboard.deleteScore(userid);
         await UserModel.deleteUser(userid);
-        await session.commitTransaction();
-    } catch (error) {
-        await session.abortTransaction();
-        throw error;
-    } finally {
-        session.endSession();
-    }
+    });
 
     res.redirect("/logout");
 }
