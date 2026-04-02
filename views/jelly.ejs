@@ -1,10 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Document</title>
+    <meta charset="UTF-8">
+    <title>Jelly</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
 </head>
 <body>
-   <%= jellyData %>
+    <%- include('partials/navbar') %>
+    <table border="2" class="centered">
+        <tr>
+            <td> IMAGE</td>
+            <td> XP </td>
+        </tr>
+        <% for (let i=0; i<11; i++) { %>
+            <tr>
+                <!-- image -->
+                <td><img src ="/game/img/jelly<%= i %>.png" height="40"></td>
+                <!-- XP -->
+                <td>
+                    
+                </td>
+                <!-- upgrade button -->
+                <form action="/upgrade" method="post">
+                    <input type="hidden" name="jellyId" value="jelly<%= i %>">
+                    <td><button type="submit">upgrade</button></td>
+                </form>
+        <% } %>
+       
+    </table>
    
 </body>
 </html>

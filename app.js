@@ -58,6 +58,7 @@ server.use('/', inventoryRoutes);
 server.use('/announcement', announcementRoutes);
 server.use("/jellies", jellyRoutes);
 
+
 //Home page
 server.get("/", (req, res) => {
     res.redirect("/");

@@ -89,6 +89,11 @@ exports.updateUserPassword = async (username, oldPassword, newPassword) => {
 exports.deleteUser = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     await User.deleteOne({_id: id});
+<<<<<<< jw2
+    //TODO: DELETE ALL DEPENDANT COMPONENTS
+    await Inventory.deleteOne({playerId: id});
+=======
+>>>>>>> main
     return 
 };
 
