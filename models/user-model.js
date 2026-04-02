@@ -150,3 +150,11 @@ exports.getFriendUsernamesForUser = async (user) => {
     const friends = (await this.getUsersByIds(user.friends)) || [];
     return friends.map(a => a.username);
 }
+
+exports.getTopUsers = async function(limit = 0, search) {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;            
+    let results = await User.find();
+
+    if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
+    return results.slice(0, limit);
+};
