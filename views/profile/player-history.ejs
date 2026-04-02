@@ -5,7 +5,7 @@
     <title>Player History</title>
 </head>
 <body>
-    <h1>Player History</h1>
+    <h1>Game Records</h1>
     
     <% if (error) { %>
         <p><%= error %></p>
@@ -30,6 +30,9 @@
                 <td>Jelly <%= entry.character || '-' %></td>
                 <td><%= entry.currencyEarned %></td>
                 <td>
+                    <form action="/history/edit/<%= entry._id %>" method="get">
+                        <button type="submit">Edit</button>
+                    </form>
                     <form action="/history/delete/<%= entry._id %>" method="post">
                         <button type="submit">Delete</button>
                     </form>
