@@ -29,7 +29,7 @@ exports.EndGameUpdateController = async (req, res) => {
         res.json({});
     } catch (error) {
         console.log(error);
-        res.json({ Error: error });
+        res.json({Error: error});
     }
 };
 
