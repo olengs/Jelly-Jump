@@ -63,13 +63,14 @@ exports.upgradeJelly = async (playerId, jellyId) => {
     const currjellies = await Jelly.findOne({playerId}).lean();
 
     let upgradeCost = this.getJellyUpgradeCost(currjellies.characterRank[jellyId]);
+    let queryBuffer = {
+        [`characterRank.${jellyId}`]: 1,
+        [`characterXp.${jellyId}`]: -upgradeCost
+    };
     if (currjellies.characterXp[jellyId] >= upgradeCost) {
-        let ret = Jelly.updateOne({playerId}, {
-            $inc: {
-                characterRank: 1,
-                characterXp: -upgradeCost
-            }
-        });
+        let ret = await Jelly.updateOne({playerId}, {
+            $inc: queryBuffer
+        }, {new: true});
         console.log(ret);
         return;
     }
@@ -79,4 +80,33 @@ exports.upgradeJelly = async (playerId, jellyId) => {
 
 exports.deleteJellies = async (playerId) => {
     return await Jelly.deleteOne({playerId});
+}
+
+exports.renameJelly = async (playerId, jellyId, newNickname) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await Jelly.updateOne({playerId}, {[`characterNicknames.${jellyId}`]: newNickname});
+}
+
+exports.addUpgradeRequirementsForJellies = (jellyData) => {
+    
+
+    jellyData.upgradeRequirements = new Array(jellyData.characterRank.length).fill(0);
+
+    for (let i = 0; i < jellyData.characterRank.length; ++i) {
+        jellyData.upgradeRequirements[i] = this.getJellyUpgradeCost(jellyData.characterRank[i]);
+    }
+    return jellyData;
+}
+
+exports.updateCurrentJelly = async (playerId, jellyId) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await Jelly.updateOne({playerId}, {currentlyEquippedCharacter: jellyId});
+}
+
+exports.getCurrentJelly = async (playerId) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return (await Jelly.findOne({playerId}).lean()).currentlyEquippedCharacter;
 }
