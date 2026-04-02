@@ -44,19 +44,18 @@
             <p class="empty-msg">Add new friends!</p>
         <% } %>
 
-        <% friendslist.forEach(f => { %>
+        <% friendslist.forEach((f,index) => { %>
             <div class="friend-card">
                 <p class="friend-name"><%= f %></p> 
+
+                <a href="/profile/view/<%= idArray[index] %>">view</a>
 
                 <form action="/deletefriend" method="post">
                     <input type="hidden" name='friendName' value="<%= f %>"> 
                     <button type="submit" class="btn">delete</button>
                 </form>
+                
             </div>
-        <% }); %>
-
-        <br><br><br>
-
-    </div>
+        <% }); %>    
 </body>
 </html>

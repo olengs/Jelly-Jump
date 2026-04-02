@@ -17,7 +17,7 @@ exports.friendslist = async(req,res) => { // looks at the User document and find
         return res.render('friends/friends', {friendslist, search, result: topLimit, error});
     };
 
-    return res.render('friends/friends', {friendslist, search, result: [], error: ""});
+    return res.render('friends/friends', {idArray:[], friendslist, search, result: [], error: ""});
 };
 
 exports.addFriend = async (req,res) => {
@@ -26,29 +26,29 @@ exports.addFriend = async (req,res) => {
     const search = req.query.search || '';
 
     if (!friendName) {    
-        return res.render('friends/friends', {error:'friend name cannot be empty', friendslist: await userModel.getFriendUsernamesForUser(user), search});
+        return res.render('friends/friends', {idArray:[],error:'friend name cannot be empty', friendslist: await userModel.getFriendUsernamesForUser(user)});
     }; 
 
     if (friendName === user.username) {
-        return res.render('friends/friends', {error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user), search});
+        return res.render('friends/friends', {idArray:[],error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user)});
     };
     
     try {
         const friend = await userModel.getUserByName(friendName); // if inside, it will show the obj. if not its null--> falsey 
         const isFriend = user.friends.some(id => id.toString() === friend._id.toString());
         
-        if (isFriend)
-            return res.render('friends/friends', {error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user), search});
-
+        if (isFriend) {// already exist
+            return res.render('friends/friends', {idArray:[], error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user)});
+        }
         await userModel.addFriend(user._id, friendName);
         await userModel.addFriend(friend._id, user.username);
         return res.redirect('/friendslist');
+        
     } catch (error) {
         if (error instanceof errors.UserNotFoundError) {
             console.log(error);
-            return res.render('friends/friends', {error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user), search});
-        };
-
+            return res.render('friends/friends', {idArray:[], error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user), search});
+        }
         throw error;
     };
 };
@@ -62,6 +62,18 @@ exports.deleteFriend = async(req,res) =>{
 
     return res.redirect('/friendslist');
 };
+
+exports.whatsProfile = async(req,res)=>{
+    let idArray=[]
+    const friendslist=  await userModel.getFriendUsernamesForUser(req.session.user) // [ben,mary ]
+    for ( let aname of friendslist){
+        const new1= await userModel.getUserByName(aname)// entire user
+        idArray.push(new1._id)
+
+    }
+    res.render('friends/friends',{idArray, error:'',friendslist})
+    
+}
 
 
 // for the addfriend. can use for each is can but need to do the isthere= false and isthere= true because foreach will loop through everything . EBERYTHING bfr it ends. thats why use .some can already

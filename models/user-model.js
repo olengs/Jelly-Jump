@@ -160,3 +160,13 @@ exports.getTopUsers = async function(search, userId, friendslist) {
     // remove self from search and current friends from search
     return results.filter(user => user._id !== userId || friendslist.indexOf(user.username) === -1);
 };
+// [{'name': _id}]
+
+exports.getIdfromFriends = async(friendslist) =>{
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    if (!user) throw new Error("User is not found");
+    friendslist.forEach(obj =>{
+        
+    })
+    
+}
