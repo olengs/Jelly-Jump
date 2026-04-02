@@ -6,10 +6,10 @@ const Jellies = require("../models/jelly-model");
 const dbcommons = require("../models/dbcommons");
 const InventoryErrors = require("../models/inventory-errors");
 
-exports.gameViewController = (req, res) => {
+exports.gameViewController = async (req, res) => {
     //add customizable shop etc
     const user = req.session.user;
-    const characterID = 0;
+    const characterID = await Jellies.getCurrentJelly(user._id);
 
     res.render("game/gameview", {playerId: user._id, characterID});
 };

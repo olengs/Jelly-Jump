@@ -9,22 +9,41 @@
     <%- include('partials/navbar') %>
     <table border="2" class="centered">
         <tr>
-            <td> IMAGE</td>
-            <td> XP </td>
+            <th> Nickname </th>
+            <th> Rank</th>
+            <th> Image </th>
+            <th> EXP </th>
+            <th> Upgrade</th>
+            <th> Equip</th>
         </tr>
-        <% for (let i=0; i<11; i++) { %>
+        <% for (let i=0; i < jellyData.characterNicknames.length; ++i) { %>
             <tr>
-                <!-- image -->
-                <td><img src ="/game/img/jelly<%= i %>.png" height="40"></td>
-                <!-- XP -->
                 <td>
-                    
+                    <form action="/jellies/edit" method="post">
+                        <input type="hidden" name="jellyId" value="<%= i %>">
+                        <input type="text" name="newNickname" id="newNickname" value="<%= jellyData.characterNicknames[i] %>" style="text-align: center;">
+                    </form>
+                </td>
+                <td><%= jellyData.characterRank[i] %></td>
+                <td><img src ="/game/img/jelly<%= i %>.png" height="40"></td>
+                <td>
+                    <%= jellyData.characterXp[i] %>/ <%= jellyData.upgradeRequirements[i] %>
                 </td>
                 <!-- upgrade button -->
-                <form action="/upgrade" method="post">
-                    <input type="hidden" name="jellyId" value="jelly<%= i %>">
-                    <td><button type="submit">upgrade</button></td>
+                <form action="/jellies/upgrade" method="post">
+                    <input type="hidden" name="jellyId" value="<%= i %>">
+                    <td><button type="submit" 
+                        <%= jellyData.characterXp[i] < jellyData.upgradeRequirements[i] ? "disabled" : "" %>
+                    >upgrade</button></td>
                 </form>
+                <td>
+                    <% if (i !== jellyData.currentlyEquippedCharacter) {%>
+                        <form action="/jellies/updateChar" method="post">
+                            <input type="hidden" name="jellyId" value="<%= i %>">
+                            <button type="submit">Equip</button>
+                        </form>
+                    <% } %>
+                </td>
         <% } %>
        
     </table>
