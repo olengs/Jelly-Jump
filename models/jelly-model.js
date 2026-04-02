@@ -26,13 +26,13 @@ exports.Jelly = Jelly;
 
 exports.createJellyStore = async (playerId) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let ranks = Array.from({length: jellyNames}).fill(0);
+    let ranks = new Array(Object.keys(jellyNames).length).fill(0);
     ranks[0] = 1;
 
     let store = Jelly.create({playerId, 
-        characterNicknames: Array.from(jellyNames),
+        characterNicknames: Object.values(jellyNames),
         characterRank: ranks,
-        characterXp: Array.from({length: jellyNames}).fill(0),
+        characterXp: new Array(Object.keys(jellyNames).length).fill(0),
     });
 
     if (!store) throw new Error("Failed to create jelly for player");
@@ -76,4 +76,8 @@ exports.upgradeJelly = async (playerId, jellyId) => {
     }
 
     throw new Error("Insufficient Fragments");
+}
+
+exports.deleteJellies = async (playerId) => {
+    return await Jelly.deleteOne({playerId});
 }
