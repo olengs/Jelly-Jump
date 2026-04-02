@@ -73,8 +73,8 @@ let draw10 = async () => {
         for (let j = 0; j < 5; ++j) {
             let x = Math.floor(boardWidth * (0.13 + 0.18 * j) - cardWidth * 0.5);
             let y = Math.floor(boardHeight * (0.33 + 0.33 * i) - cardHeight * 0.5);
-            console.log(x, y);
-            ret = new Card(results[i * 2 + j]);
+            //console.log(x, y);
+            ret = new Card(results[i * 5 + j]);
             ret.draw(context, x, y);
         }
     }
@@ -97,10 +97,15 @@ let draw = async (count) => {
         }
         let respjson = await resp.json();
         if (respjson.Error) {
-            throw new Error(`Gacha pull error: ${resp.Error || "Unknown Error"}`);
+            throw new Error(`Gacha pull error: ${JSON.stringify(respjson.Error, null, 2)}`);
         }
         draw1button.hidden = false;
         draw10button.hidden = false;
+        const coupon_count_elem = document.getElementById("coupon_count");
+        const remainder = Number(coupon_count_elem.textContent) - Number(count);
+        coupon_count_elem.textContent = remainder;
+        if (remainder < 1) draw1button.disabled = true;
+        if (remainder < 10) draw10button.disabled = true;
         return respjson;
     } catch (error) {
         console.log(error);

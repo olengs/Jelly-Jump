@@ -1,8 +1,11 @@
 const UserModel = require("../models/user-model");
-const InventoryModel = require("../models/inventory-model.js");
 const Errors = require("../models/errors");
 const bcrypt = require("bcrypt");
-const JelliesModel = require("../models/jelly-model.js");
+const InventoryModel = require("../models/inventory-model.js");
+const Jellies = require("../models/jelly-model.js");
+const GameRecords = require("../models/game-records.js");
+const Scoreboard = require("../models/scoreboard-model.js");
+const dbcommons = require("../models/dbcommons.js");
 
 exports.loginView = (req, res) => {
     res.render("IAM/login", {});
@@ -54,19 +57,16 @@ exports.signup = async (req, res) => {
         return res.render("IAM/signup", {email, username, errorMsg: "Passwords do not match"});
     }
     
-    let user; let inventory;
+
     try {
-        user = await UserModel.createUser(username, email, password);
-        inventory = await InventoryModel.createInventory(user._id);
-        jellies = await JelliesModel.createJellyStore(user._id);
-        req.session.user = user;
-        console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
+        await dbcommons.runInTransaction(async () => {
+            let user = await UserModel.createUser(username, email, password);
+            await InventoryModel.createInventory(user._id);
+            await Jellies.createJellyStore(user._id);
+            req.session.user = user;
+            //console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
+        });
     } catch (error) {
-
-        if (jellies) await JelliesModel.deleteUser(user._id);
-        if (inventory) await InventoryModel.deleteUser(user._id);
-        if (user) await UserModel.deleteUser(user._id);
-
         if (error instanceof Errors.UserAlreadyExistsError || error instanceof Errors.UsernameFormatError) {
             return res.render("IAM/signup", {email, errorMsg: error.message});
         } else if (error instanceof Errors.EmailAlreadyExistsError || error instanceof Errors.EmailFormatError) {
@@ -88,4 +88,22 @@ exports.logout = async (req, res) => {
         }
         return res.redirect(302, "/");
     });
+}
+
+exports.checkSysadminUser = () => {
+    return UserModel.checkAndCreateSysadminUser();
+}
+
+exports.deleteUser = async (req, res) => {
+    const userid = req.session.user._id;
+
+    await dbcommons.runInTransaction(async () => {
+        await GameRecords.deleteAllRecordsByUser(userid);
+        await InventoryModel.deleteInventory(userid);
+        await Jellies.deleteJellies(userid);
+        await Scoreboard.deleteScore(userid);
+        await UserModel.deleteUser(userid);
+    });
+
+    res.redirect("/logout");
 }

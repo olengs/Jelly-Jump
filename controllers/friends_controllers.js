@@ -1,10 +1,10 @@
 const userModel = require("../models/user-model");
 const errors = require("../models/errors");
+const dbcommons = require("../models/dbcommons");
 
 exports.friendslist = async(req,res) => { // looks at the User document and find the id in the bracker
     // const friendslist = req.session.user.friends || [] // [ { }, { }]
     // res.render('friends/friends',{friendslist,error:''})
-
     const search = req.query.search || '';
     const user = req.session && req.session.user ? req.session.user : null;
     const friendslist = await userModel.getFriendUsernamesForUser(req.session.user)
@@ -30,33 +30,37 @@ exports.addFriend = async (req,res) => {
     if (friendName === user.username) {
         return res.render('friends/friends', {error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user), search});
     };
-    
+
     try {
-        const friend = await userModel.getUserByName(friendName); // if inside, it will show the obj. if not its null--> falsey 
+        const friend = await userModel.getUserByName(friendName);
+        // if inside, it will show the obj. if not its null--> falsey 
         const isFriend = user.friends.some(id => id.toString() === friend._id.toString());
-        
         if (isFriend)
             return res.render('friends/friends', {error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user), search});
 
-        await userModel.addFriend(user._id, friendName);
-        await userModel.addFriend(friend._id, user.username);
+        await dbcommons.runInTransaction(async () => {
+            await userModel.addFriend(user._id, friendName);
+            await userModel.addFriend(friend._id, user.username);
+        });
+        
         return res.redirect('/friendslist');
     } catch (error) {
         if (error instanceof errors.UserNotFoundError) {
             console.log(error);
             return res.render('friends/friends', {error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user), search});
         };
-
         throw error;
-    };
+    }
 };
 
 exports.deleteFriend = async(req,res) =>{
     const friendName = req.body.friendName?.trim(); 
     const friend = await userModel.getUserByName(friendName);
 
-    await userModel.deleteFriend(req.session.user._id, friendName);
-    await userModel.deleteFriend(friend._id, req.session.user.username);
+    await dbcommons.runInTransaction(async () => {
+        await userModel.deleteFriend(req.session.user._id, friendName);
+        await userModel.deleteFriend(friend._id, req.session.user.username);
+    });
 
     return res.redirect('/friendslist');
 };

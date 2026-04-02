@@ -48,19 +48,6 @@ exports.postEditProfile = async (req, res) => {
     return res.redirect("/profile");
 }
 
-// delete - delete user account 
-exports.deleteProfile = async (req, res) => {
-
-    const userid = req.session.user._id;
-    await GameRecords.deleteAllRecordsByUser(userid);
-    await Inventory.deleteInventory(userid);
-    await Jellies.deleteJellies(userid);
-    await Scoreboard.deleteScore(userid);
-    await User.deleteUser(userid);
-
-    res.redirect("/logout");
-}
-
 // read - get game history page 
 exports.getHistory = async (req, res) => {
     const userID = req.session.user._id; 

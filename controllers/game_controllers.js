@@ -2,6 +2,9 @@ const UserModel = require("../models/user-model");
 const scoreboardModel = require('../models/scoreboard-model');
 const GameRecordModel = require("../models/game-records");
 const InventoryModel = require("../models/inventory-model");
+const Jellies = require("../models/jelly-model");
+const dbcommons = require("../models/dbcommons");
+const InventoryErrors = require("../models/inventory-errors");
 
 exports.gameViewController = (req, res) => {
     //add customizable shop etc
@@ -21,11 +24,14 @@ exports.EndGameUpdateController = async (req, res) => {
     console.log(`${endTime.toISOString()}: Updating uname: ${user.username} and highscore: ${highscore} with character: ${character} into DB`);
     let amtEarned = Math.floor(highscore / 100);
 
+
     // insert score into db
     try {
-        await scoreboardModel.upsertScore(playerId, highscore, jumps);
-        await GameRecordModel.createRecord(playerId, endTime, highscore, character, amtEarned);
-        await InventoryModel.addCurrency(playerId, amtEarned);
+        await dbcommons.runInTransaction(async () => {
+            await scoreboardModel.upsertScore(playerId, highscore, jumps);
+            await GameRecordModel.createRecord(playerId, endTime, highscore, character, amtEarned);
+            await InventoryModel.addCurrency(playerId, amtEarned);
+        });
         res.json({});
     } catch (error) {
         console.log(error);
@@ -33,9 +39,11 @@ exports.EndGameUpdateController = async (req, res) => {
     }
 };
 
-exports.gachaViewController = (req, res) => {
+exports.gachaViewController = async (req, res) => {
     const user = req.session.user;
-    res.render("game/gacha", {playerId: user._id});
+    const inventory = await InventoryModel.getInventory(user._id);
+
+    res.render("game/gacha", {playerId: user._id, coupon_count: inventory.numberOfCoupons });
 };
 
 const rebateMin = 10;
@@ -53,13 +61,37 @@ let gachaPull = () => {
 exports.gachaPullRequest = async (req, res) => {
     let {playerId, pullCount} = req.body;
 
-    // make sure that player is able to afford the number of pulls
-    //res.json({error: ""})
-
     let results = Array.from({length: Number(pullCount)}, (_, i) => gachaPull());
-    // save gacha results into player inventory first
+    let currencySum = results.reduce((acc, item) => {
+        return acc + (item.type === "currency" ? item.value : 0);
+    }, 0);
+    let fragments = results.reduce((acc, item) => {
+        if (item.type === "currency") return acc;
+        acc[item.value] = (acc[item.value] || 0) + 1;
+        return acc;
+    }, {});
 
-    console.log(`gacha results for player ${playerId}: count: ${pullCount}, ${JSON.stringify(results)}`)
-    // return to frontend for rendering
-    res.json({results});
+    console.log(currencySum, fragments);
+
+    try {
+        await dbcommons.runInTransaction(async () => {
+            // make sure that player is able to afford the number of pulls
+            await InventoryModel.deductCoupons(playerId, pullCount);
+            // save gacha results into player inventory
+            await InventoryModel.addCurrency(playerId, currencySum);
+            await Jellies.incrementJellyFragments(playerId, fragments);
+            //console.log(`gacha results for player ${playerId}: count: ${pullCount}, ${JSON.stringify(results)}`)
+            // return to frontend for rendering
+            res.json({results});
+        });
+    } catch (error) {
+        if (error instanceof InventoryErrors.InsufficientCouponsError) {
+            return res.json({Action: "refresh"});
+        }
+
+        res.json({Error: error});
+        throw error;
+    }
+
+
 };
