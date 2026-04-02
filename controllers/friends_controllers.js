@@ -24,28 +24,29 @@ exports.addFriend = async (req,res) => {
     const search = req.query.search || '';
 
     if (!friendName) {    
-        return res.render('friends/friends', {error:'friend name cannot be empty', friendslist: await userModel.getFriendUsernamesForUser(user), search, result:[]});
+        return res.render('friends/friends', {error:'friend name cannot be empty', friendslist: await userModel.getFriendUsernamesForUser(user), search});
     }; 
 
-    if (friendName === req.session.user.username) {
-        res.locals.error = "cannot add yourself";
-        return res.render('friends/friends', {error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user), search, result: []});
+    if (friendName === user.username) {
+        return res.render('friends/friends', {error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user), search});
     };
     
     try {
         const friend = await userModel.getUserByName(friendName); // if inside, it will show the obj. if not its null--> falsey 
-        const isFriend = req.session.user.friends.some(id => id.toString() === friend._id.toString());
-        if (isFriend) {// already exist
-            return res.render('friends/friends', {error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user), search, result: []});
-        }
-        await userModel.addFriend(req.session.user._id, friendName);
+        const isFriend = user.friends.some(id => id.toString() === friend._id.toString());
+        
+        if (isFriend)
+            return res.render('friends/friends', {error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user), search});
+
+        await userModel.addFriend(user._id, friendName);
         await userModel.addFriend(friend._id, user.username);
         return res.redirect('/friendslist');
-    } catch (error) {         
+    } catch (error) {
         if (error instanceof errors.UserNotFoundError) {
             console.log(error);
-            return res.render('friends/friends', {error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user), search, result: []});
+            return res.render('friends/friends', {error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user), search});
         };
+
         throw error;
     };
 };

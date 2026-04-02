@@ -157,11 +157,6 @@ exports.getTopUsers = async function(search, userId, friendslist) {
 
     if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
     
-    // remove logged in user from search 
-    results = results.filter(user => user._id.toString() !== userId.toString());
-
-    // remove current friends from search 
-    results = results.filter(user => friendslist.indexOf(user.username) === -1);
-  
-    return results;
+    // remove self from search and current friends from search
+    return results.filter(user => user._id !== userId || friendslist.indexOf(user.username) === -1);
 };
