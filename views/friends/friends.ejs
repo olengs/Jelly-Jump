@@ -41,16 +41,18 @@
 
         <h2>Friends List</h2>
 
-        <% if (friendslist.length < 1) { %>
+        <% if (friendsIdlist.length < 1) { %>
             <p class="empty-msg">Add new friends!</p>
         <% } %>
 
-        <% friendslist.forEach(f => { %>
+        <% friendsIdlist.forEach(f => { %>
             <div class="friend-card">
-                <p class="friend-name"><%= f %></p> 
+                <p class="friend-name"><%= f.name %></p> 
+
+                <a class="btn" href="/profile/view/<%= f.id %>"> View Profile</a>
 
                 <form action="/deletefriend" method="post">
-                    <input type="hidden" name='friendName' value="<%= f %>"> 
+                    <input type="hidden" name='friendName' value="<%= f.name %>"> 
                     <button type="submit" class="btn">delete</button>
                 </form>
             </div>

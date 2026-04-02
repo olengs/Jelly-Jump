@@ -136,6 +136,9 @@ exports.getTopUsers = async function(search, userId, friendslist) {
 
     if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
     
-    // remove self from search and current friends from search
-    return results.filter(user => user._id !== userId || friendslist.indexOf(user.username) === -1);
+    // remove self from search and current friends from search -> cannot combine -> will cause ERROR
+    results = results.filter(user => user._id.toString() !== userId.toString());
+    results = results.filter(user => friendslist.indexOf(user.username) === -1);
+
+    return results
 };
