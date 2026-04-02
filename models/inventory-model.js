@@ -116,3 +116,9 @@ exports.deductCoupons = async (playerId, spendCount) => {
     }
     return inventory;
 }
+
+exports.deleteInventory = async (playerId) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await Inventory.deleteOne({playerId});
+}
