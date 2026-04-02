@@ -54,7 +54,7 @@ server.use('/scoreboard', scoreboardRoutes);
 server.use("/", homeRoutes);
 server.use('/profile', profileRoutes);
 server.use('/', inventoryRoutes);
-server.use("/jellies", jellyRoutes);
+server.use("/jelly", jellyRoutes);
 
 //Home page
 server.get("/", (req, res) => {
