@@ -11,8 +11,10 @@ exports.friendslist = async(req,res) => { // looks at the User document and find
 
     if (search != '') {
         const topLimit = await userModel.getTopUsers(search, user._id, friendslist);
+        
+        const error = topLimit.length > 0 ? '' : 'No search result!'
 
-        return res.render('friends/friends', {friendslist, search, result: topLimit, error: ''});
+        return res.render('friends/friends', {friendslist, search, result: topLimit, error});
     };
 
     return res.render('friends/friends', {friendslist, search, result: [], error: ""});

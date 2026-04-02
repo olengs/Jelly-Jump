@@ -17,7 +17,7 @@ exports.getTopLimit = async function(limit, ascending, search) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     const sortOrder = ascending ? 1 : -1;
         
-    let results = await Scoreboard.find().sort({highscore: sortOrder});
+    let results = await Scoreboard.find().sort({highscore: sortOrder}).lean();
 
     for (let i = 0; i < results.length; i++) {
         const user = await User.getUserById(results[i].playerId);
@@ -56,7 +56,7 @@ exports.getFriendScoresByPlayerIds = function(playerIds, ascending = false) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     
     const sortOrder = ascending ? 1 : -1;
-    return Scoreboard.find({playerId: {$in: playerIds}}).sort({highscore: sortOrder});
+    return Scoreboard.find({playerId: {$in: playerIds}}).sort({highscore: sortOrder}).lean();
 };
 
 exports.getHighscore = async (playerId) => {

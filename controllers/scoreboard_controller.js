@@ -40,7 +40,9 @@ exports.getLeaderboard = async (req, res) => {
             };
         };
 
-        res.render('scoreboard/scoreboard', {topLimit, total, limit, sort: req.query.sort || 'desc', search, user, friendsScores});
+        const error = (search && topLimit.length === 0) ? 'No search result!' : ''
+
+        res.render('scoreboard/scoreboard', {topLimit, total, limit, sort: req.query.sort || 'desc', search, user, friendsScores, error});
     } catch (error) {
         console.log(error);
         res.status(500).render('error', {error: error.message, statusCode: 500});
