@@ -2,6 +2,7 @@ const UserModel = require("../models/user-model");
 const InventoryModel = require("../models/inventory-model.js");
 const Errors = require("../models/errors");
 const bcrypt = require("bcrypt");
+const JelliesModel = require("../models/jelly-model.js");
 
 exports.loginView = (req, res) => {
     res.render("IAM/login", {});
@@ -56,13 +57,15 @@ exports.signup = async (req, res) => {
     let user; let inventory;
     try {
         user = await UserModel.createUser(username, email, password);
-        inventory = await InventoryModel.createInventory(user.id);
+        inventory = await InventoryModel.createInventory(user._id);
+        jellies = await JelliesModel.createJellyStore(user._id);
         req.session.user = user;
         console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
     } catch (error) {
 
-        if (user) UserModel.deleteUser(user._id);
-        if (inventory) InventoryModel.deleteUser(user._id);
+        if (jellies) await JelliesModel.deleteUser(user._id);
+        if (inventory) await InventoryModel.deleteUser(user._id);
+        if (user) await UserModel.deleteUser(user._id);
 
         if (error instanceof Errors.UserAlreadyExistsError || error instanceof Errors.UsernameFormatError) {
             return res.render("IAM/signup", {email, errorMsg: error.message});
