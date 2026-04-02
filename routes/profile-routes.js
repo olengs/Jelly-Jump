@@ -4,8 +4,8 @@ const UserMiddleware = require("../middleware/user-middleware");
 const router = express.Router();
 
 // read- show profile page 
-router.get("/", UserMiddleware.requireUser, profileController.getOwnProfile);
-router.get("/:id", UserMiddleware.requireUser, profileController.getProfile);
+router.get("/view", UserMiddleware.requireUser, profileController.getOwnProfile);
+router.get("/view/:id", UserMiddleware.requireUser, profileController.getProfile);
 
 // update - show edit profile form 
 router.get("/edit", UserMiddleware.requireUser, profileController.getEditProfile);
@@ -17,9 +17,15 @@ router.post("/edit", UserMiddleware.requireUser, profileController.postEditProfi
 router.post("/delete", UserMiddleware.requireUser, profileController.deleteProfile);
 
 // read - show player history page 
-router.get("/history", UserMiddleware.requireUser, profileController.getHistory); 
+router.get("/history", UserMiddleware.requireUser, profileController.getHistory);
+
+// update - show edit history form 
+router.get("/history/edit/:id", UserMiddleware.requireUser, profileController.getEditHistory);
+
+// update - edit history 
+router.post("/history/edit/:id", UserMiddleware.requireUser, profileController.postEditHistory);
 
 // delete - delete a single history entry
-router.post("/history/delete/:id", UserMiddleware.requireUser, profileController.deleteHistory); 
+router.post("/history/delete/:id", UserMiddleware.requireUser, profileController.deleteHistory);
 
 module.exports = router; 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Game Record</title>
+</head>
+<body>
+    <h1>Edit Game Record</h1>
+    
+    <% if (error) { %>
+        <p><%= error %></p>
+    <% } %> 
+
+    <form action="/history/edit/<%= record._id %>" method="post">
+        <label>Score:</label><br>
+        <input type="number" name="score" value="<%= record.score %>" required><br><br>
+
+        <label>Character:</label><br>
+        <input type="text" name="character" value="<%= record.character %>"><br><br>
+
+        <label>Currency Earned:</label>
+        <input type="number" name="currencyEarned" value="<%= record.currencyEarned %>"><br><br>
+
+        <button type="submit">Save Changes</button>
+        <a href="/history">Cancel</a>
+    </form>
+
+</body>
+</html>
