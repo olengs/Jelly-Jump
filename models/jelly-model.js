@@ -29,6 +29,9 @@ exports.createJellyStore = async (playerId) => {
     let ranks = Array.from({length: jellyNames}).fill(0);
     ranks[0] = 1;
 
+    console.log(Array.from(jellyNames));
+    console.log(Array.from({length: jellyNames}).fill(0));
+
     let store = Jelly.create({playerId, 
         characterNicknames: Array.from(jellyNames),
         characterRank: ranks,

@@ -3,13 +3,10 @@ const dbcommons = require("./dbcommons");
 const errors = require("./errors");
 const bcrypt = require("bcrypt");
 const utilities = require("../utilities/utilities");
-const Inventory = require("./inventory-model");
-const Scoreboard = require("./scoreboard-model");
 
 const email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //match {0-9A-z}1+, then @, then {0-9A-z}1+, then ., then {0-9A-z} 2+
 const username_regex = /^[a-zA-Z0-9]{4,12}$/;
-const password_regex = /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9\s])(?!.*\s).{8,}$/
-
+const password_regex = /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9\s])(?!.*\s).{8,}$/;
 
 const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true},
@@ -92,9 +89,6 @@ exports.updateUserPassword = async (username, oldPassword, newPassword) => {
 exports.deleteUser = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     await User.deleteOne({_id: id});
-    //TODO: DELETE ALL DEPENDANT COMPONENTS
-    await Scoreboard.deleteScore({playerId: id});
-
     return 
 };
 
