@@ -14,7 +14,9 @@ const userSchema = new mongoose.Schema({
     passwordHash: {type: String, required: true, unique:true},
     role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
     bio: {type: String, required: true, default: "My bio"},
-    friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
+    friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    loginAttempts: {type: Number, default: 0}, 
+    isLocked: {type: Boolean, default: false}
 });
 
 const User = mongoose.model('User', userSchema, "users");
@@ -137,3 +139,20 @@ exports.getTopUsers = async function(limit = 0, search) {
     if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
     return results.slice(0, limit);
 };
+
+// lock account after 3 failed login attempts 
+exports.incrementLoginAttempts = async (username) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError; 
+    let user = await User.findOne({username});
+    user.loginAttempts += 1;
+    if (user.loginAttempts >= 3) {
+        user.isLocked=true;
+    }
+    return await user.save(); 
+}
+
+// unlock account 
+exports.resetLoginAttempts = async (username) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    return await User.updateOne({username}, {loginAttempts: 0, isLocked: false});
+}
