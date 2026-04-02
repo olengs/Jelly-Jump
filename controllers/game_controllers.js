@@ -24,7 +24,7 @@ exports.EndGameUpdateController = async (req, res) => {
     // insert score into db
     try {
         await scoreboardModel.upsertScore(playerId, user.username, highscore);
-        await GameRecordModel.createRecord(playerId, endTime, highscore, character, amtEarned);
+        await GameRecordModel.createRecord(playerId, endTime, highscore, character, amtEarned, jumps);
         await InventoryModel.addCurrency(playerId, amtEarned);
         res.json({});
     } catch (error) {

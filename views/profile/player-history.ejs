@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Player History</title>
+    <title>Game Records</title>
 </head>
 <body>
     <h1>Game Records</h1>
@@ -20,6 +20,7 @@
                 <th>Score</th>
                 <th>Character</th>
                 <th>Currency Earned</th>
+                <th>Jumps</th>
                 <th>Action</th>
             </tr>
 
@@ -29,6 +30,7 @@
                 <td><%= entry.score %></td>
                 <td>Jelly <%= entry.character || '-' %></td>
                 <td><%= entry.currencyEarned %></td>
+                <td><%= entry.jumps %></td>
                 <td>
                     <form action="/history/edit/<%= entry._id %>" method="get">
                         <button type="submit">Edit</button>
