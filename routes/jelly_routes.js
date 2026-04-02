@@ -3,5 +3,5 @@ const router = express.Router();
 const jellyControllers = require("../controllers/jelly_controller");
 const middleware = require("../middleware/user-middleware");
 
-router.get("/jelly", middleware.requireUser, jellyControllers.showJellies);
+router.get("/", middleware.requireUser, jellyControllers.showJellies);
 module.exports = router;

@@ -42,6 +42,7 @@ const homeRoutes = require('./routes/home-routes');
 const profileRoutes = require('./routes/profile-routes');
 const inventoryRoutes = require("./routes/inventory-routes.js");
 const announcementRoutes = require('./routes/announcement_routes.js');
+const jellyRoutes = require("./routes/jelly_routes.js");
 
 const userMiddleware = require("./middleware/user-middleware.js");
 server.use(userMiddleware.requireNavbar);
@@ -55,6 +56,7 @@ server.use("/", homeRoutes);
 server.use('/profile', profileRoutes);
 server.use('/', inventoryRoutes);
 server.use('/announcement', announcementRoutes);
+server.use("/jellies", jellyRoutes);
 
 //Home page
 server.get("/", (req, res) => {
