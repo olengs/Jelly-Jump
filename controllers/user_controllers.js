@@ -53,15 +53,16 @@ exports.signup = async (req, res) => {
         return res.render("IAM/signup", {email, username, errorMsg: "Passwords do not match"});
     }
     
-    let user;
+    let user; let inventory;
     try {
         user = await UserModel.createUser(username, email, password);
-        await InventoryModel.createInventory(user.id);
+        inventory = await InventoryModel.createInventory(user.id);
         req.session.user = user;
         console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
     } catch (error) {
 
         if (user) UserModel.deleteUser(user._id);
+        if (inventory) InventoryModel.deleteUser(user._id);
 
         if (error instanceof Errors.UserAlreadyExistsError || error instanceof Errors.UsernameFormatError) {
             return res.render("IAM/signup", {email, errorMsg: error.message});
@@ -70,7 +71,9 @@ exports.signup = async (req, res) => {
         } else if (error instanceof Errors.PasswordFormatError) {
             return res.render("IAM/signup", {username, email, errorMsg: error.message});
         }
-        throw error;
+
+        console.log(error);
+        return res.render("IAM/signup", {errorMsg: "Failed to create user"});
     }
     res.redirect(302, `/login`);
 }
@@ -80,6 +83,6 @@ exports.logout = async (req, res) => {
         if (err) {
             throw err;
         }
-        return res.redirect(302, "/login");
+        return res.redirect(302, "/");
     });
 }
