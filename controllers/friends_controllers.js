@@ -4,7 +4,7 @@ const errors = require("../models/errors");
 exports.friendslist = async(req,res) => { // looks at the User document and find the id in the bracker
     // const friendslist = req.session.user.friends || [] // [ { }, { }]
     // res.render('friends/friends',{friendslist,error:''})
-    res.render('friends/friends', {friendslist: await userModel.getFriendUsernamesForUser(req.session.user), error: ""});
+    res.render('friends/friends', {idArray:[],friendslist: await userModel.getFriendUsernamesForUser(req.session.user), error: ""}); // ["ben","mary"]
 };
 
 exports.addFriend = async (req,res) => {
@@ -12,19 +12,19 @@ exports.addFriend = async (req,res) => {
     const user = req.session.user;
 
     if (!friendName) {    
-        return res.render('friends/friends', {error:'friend name cannot be empty', friendslist: await userModel.getFriendUsernamesForUser(user)});
+        return res.render('friends/friends', {idArray:[],error:'friend name cannot be empty', friendslist: await userModel.getFriendUsernamesForUser(user)});
     }; 
 
     if (friendName === req.session.user.username) {
         res.locals.error = "cannot add yourself";
-        return res.render('friends/friends', {error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user)});
+        return res.render('friends/friends', {idArray:[],error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user)});
     };
     
     try {
         const friend = await userModel.getUserByName(friendName); // if inside, it will show the obj. if not its null--> falsey 
         const isFriend = req.session.user.friends.some(id => id.toString() === friend._id.toString());
         if (isFriend) {// already exist
-            return res.render('friends/friends', {error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user)});
+            return res.render('friends/friends', {idArray:[], error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user)});
         }
         await userModel.addFriend(req.session.user._id, friendName);
         await userModel.addFriend(friend._id, user.username);
@@ -32,7 +32,7 @@ exports.addFriend = async (req,res) => {
     } catch (error) {         
         if (error instanceof errors.UserNotFoundError) {
             console.log(error);
-            return res.render('friends/friends', {error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user)});
+            return res.render('friends/friends', {idArray:[], error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user)});
         }
         throw error;
     };
@@ -47,6 +47,18 @@ exports.deleteFriend = async(req,res) =>{
 
     return res.redirect('/friendslist');
 };
+
+exports.whatsProfile = async(req,res)=>{
+    let idArray=[]
+    const friendslist=  await userModel.getFriendUsernamesForUser(req.session.user) // [ben,mary ]
+    for ( let aname of friendslist){
+        const new1= await userModel.getUserByName(aname)// entire user
+        idArray.push(new1._id)
+
+    }
+    res.render('friends/friends',{idArray, error:'',friendslist})
+    
+}
 
 
 // for the addfriend. can use for each is can but need to do the isthere= false and isthere= true because foreach will loop through everything . EBERYTHING bfr it ends. thats why use .some can already

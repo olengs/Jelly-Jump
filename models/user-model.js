@@ -150,3 +150,14 @@ exports.getFriendUsernamesForUser = async (user) => {
     const friends = (await this.getUsersByIds(user.friends)) || [];
     return friends.map(a => a.username);
 }
+
+// [{'name': _id}]
+
+exports.getIdfromFriends = async(friendslist) =>{
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    if (!user) throw new Error("User is not found");
+    friendslist.forEach(obj =>{
+        
+    })
+    
+}
