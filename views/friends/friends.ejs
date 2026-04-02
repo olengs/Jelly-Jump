@@ -18,19 +18,8 @@
         <% } %>
         <br><br>
 
-        <form action="" method="post" class="add-friend-form">
-            <label for="friendName">Name of Friend:</label>
-            <input type="text" id="friendName" name="friendName">
-            <br><br>
-            
-            <button type="submit">Add</button>
-        </form>
-        <br>
-        
-        <h3>Friends List</h3>
-
-        <% if (friendslist === []) { %>
-            <p class="empty-msg">Add a new friend!</p>
+        <% if (friendslist.length < 1) { %>
+            <p class="empty-msg">Add new friends!</p>
         <% } %>
 
         <% friendslist.forEach(f => { %>
@@ -44,7 +33,18 @@
             </div>
         <% }); %>
 
+        <br><br><br>
+        <h2>Add New Friends</h2>
+
+        <form action="friendslist" method="post" class="add-friend-form">
+            <label for="friendName">Name of Friend:</label>
+            <input type="text" id="friendName" name="friendName">
+            <br><br>
+            
+            <button type="submit">Add</button>
+        </form>
+        <br>
+
     </div>
-    
 </body>
 </html>

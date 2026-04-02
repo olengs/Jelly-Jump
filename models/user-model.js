@@ -93,6 +93,8 @@ exports.deleteUser = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     await User.deleteOne({_id: id});
     //TODO: DELETE ALL DEPENDANT COMPONENTS
+    await Scoreboard.deleteScore({playerId: id});
+
     return 
 };
 
@@ -148,3 +150,11 @@ exports.getFriendUsernamesForUser = async (user) => {
     const friends = (await this.getUsersByIds(user.friends)) || [];
     return friends.map(a => a.username);
 }
+
+exports.getTopUsers = async function(limit = 0, search) {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;            
+    let results = await User.find();
+
+    if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
+    return results.slice(0, limit);
+};
