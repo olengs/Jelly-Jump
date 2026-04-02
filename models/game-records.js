@@ -8,16 +8,17 @@ const gameRecordsSchema = new mongoose.Schema({
     score: {type: Number, required: true},
     character: {type: String, required: true, default: "0"},
     currencyEarned: {type: Number, required: true, default: 0},
+    jumps: {type: Number, required: true, default: 0} 
 });
 
 const GameRecords = mongoose.model('GameRecords', gameRecordsSchema, "records");
 exports.GameRecords = GameRecords;
 
-exports.createRecord = async (playerId, timestamp, score, character, currencyEarned) => {
+exports.createRecord = async (playerId, timestamp, score, character, currencyEarned, jumps) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     _ = await UserModel.getUserById(playerId); //discarding, just checking for user, will throw if not found, to be caught in outer scope
-    let record = await GameRecords.create({playerId, timestamp, score, character, currencyEarned});
+    let record = await GameRecords.create({playerId, timestamp, score, character, currencyEarned, jumps});
     if (!record) throw new Error("Failed to create game records");
     return record;
 };
