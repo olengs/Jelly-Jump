@@ -16,13 +16,15 @@ const userSchema = new mongoose.Schema({
     bio: {type: String, required: true, default: "My bio"},
     friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     loginAttempts: {type: Number, default: 0}, 
-    isLocked: {type: Boolean, default: false}
+    lockUntil: {type: Date, default: null},  
+    securityQuestion:{type: String, required: true},
+    securityAnswer: {type: String, required: true},
 });
 
 const User = mongoose.model('User', userSchema, "users");
 exports.User = User;
 
-exports.createUser = async (username, email, password) => {
+exports.createUser = async (username, email, password, securityQuestion, securityAnswer) => {
     if (!email.match(email_regex)){
         throw new errors.EmailFormatError();
     }
@@ -49,7 +51,7 @@ exports.createUser = async (username, email, password) => {
         throw new errors.EmailAlreadyExistsError(email);
     }
     let passwordHash = await bcrypt.hash(password, Math.floor(Math.random() * 10));
-    let dbuser = await User.create({username, email, passwordHash});
+    let dbuser = await User.create({username, email, passwordHash, securityQuestion, securityAnswer});
 
     if (!dbuser) {
         throw new Error("Failed to create user in db");
@@ -146,7 +148,7 @@ exports.incrementLoginAttempts = async (username) => {
     let user = await User.findOne({username});
     user.loginAttempts += 1;
     if (user.loginAttempts >= 3) {
-        user.isLocked=true;
+        user.lockUntil = new Date(Date.now() + 30*1000);
     }
     return await user.save(); 
 }
@@ -154,5 +156,40 @@ exports.incrementLoginAttempts = async (username) => {
 // unlock account 
 exports.resetLoginAttempts = async (username) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    return await User.updateOne({username}, {loginAttempts: 0, isLocked: false});
+    return await User.updateOne({username}, {loginAttempts: 0, lockUntil: null});
+}
+
+exports.isLocked = async (username) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    let user = await User.findOne({username});
+    if (!user) return false; 
+    if (user.lockUntil && user.lockUntil > Date.now()){
+        return true; 
+    } 
+    if (user.lockUntil && user.lockUntil <= Date.now()){
+        await User.updateOne({username}, {loginAttempts: 0, lockUntil: null});
+    }
+    return false;
+}
+
+exports.verifySecurityAnswer = async (username, answer) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError; 
+    let user = await User.findOne({username});
+    if (!user) throw new errors.UserNotFoundError(username);
+    return user.securityAnswer.toLowerCase() === answer.toLowerCase();
+}
+
+exports.resetPassword = async (username, newPassword) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    if (!newPassword.match(password_regex)) throw new errors.PasswordFormatError();
+    let newPasswordHash = await bcrypt.hash(newPassword, Math.floor(Math.random() * 10));
+    return await User.updateOne({username}, {passwordHash: newPasswordHash});
+}
+
+exports.updateUser = async (id, username, bio) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    let username_exists = User.findOne({username, _id: {$ne: id}}).lean();
+    if (await username_exists) throw new errors.UserAlreadyExistsError();
+    if (!username.match(username_regex)) throw new errors.UsernameFormatError();
+    return await User.findByIdAndUpdate(id, {username, bio}, {new: true});
 }
