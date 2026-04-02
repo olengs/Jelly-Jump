@@ -4,16 +4,17 @@ const UserMiddleware = require("../middleware/user-middleware");
 const router = express.Router();
 
 // read- show profile page 
-router.get("/profile", UserMiddleware.requireUser, profileController.getProfile);
+router.get("/", UserMiddleware.requireUser, profileController.getOwnProfile);
+router.get("/:id", UserMiddleware.requireUser, profileController.getProfile);
 
 // update - show edit profile form 
-router.get("/profile/edit", UserMiddleware.requireUser, profileController.getEditProfile);
+router.get("/edit", UserMiddleware.requireUser, profileController.getEditProfile);
 
 // update - handle edit profile form submission 
-router.post("/profile/edit", UserMiddleware.requireUser, profileController.postEditProfile);
+router.post("/edit", UserMiddleware.requireUser, profileController.postEditProfile);
 
 // delete - delete account 
-router.post("/profile/delete", UserMiddleware.requireUser, profileController.deleteProfile);
+router.post("/delete", UserMiddleware.requireUser, profileController.deleteProfile);
 
 // read - show player history page 
 router.get("/history", UserMiddleware.requireUser, profileController.getHistory); 

@@ -40,8 +40,7 @@ const friendRoutes= require('./routes/friends-routes');
 const scoreboardRoutes = require('./routes/scoreboard_routes');
 const homeRoutes = require('./routes/home-routes');
 const profileRoutes = require('./routes/profile-routes');
-const inventoryRoutes = require('./routes/inventory-routes'); 
-
+const inventoryRoutes = require("./routes/inventory-routes.js");
 
 const userMiddleware = require("./middleware/user-middleware.js");
 server.use(userMiddleware.requireNavbar);
@@ -52,7 +51,7 @@ server.use("/", userRoutes);
 server.use('/',friendRoutes);
 server.use('/scoreboard', scoreboardRoutes);
 server.use("/", homeRoutes);
-server.use('/', profileRoutes);
+server.use('/profile', profileRoutes);
 server.use('/', inventoryRoutes);
 
 //Home page

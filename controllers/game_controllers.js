@@ -12,7 +12,7 @@ exports.gameViewController = (req, res) => {
 };
 
 exports.EndGameUpdateController = async (req, res) => {
-    let {playerId, highscore, gameEndTime, character} = req.body;
+    let {playerId, highscore, gameEndTime, character, jumps} = req.body;
     let endTime = new Date(gameEndTime);
 
     const user = await UserModel.getUserById(playerId);
@@ -23,7 +23,7 @@ exports.EndGameUpdateController = async (req, res) => {
 
     // insert score into db
     try {
-        await scoreboardModel.upsertScore(playerId, user.username, highscore);
+        await scoreboardModel.upsertScore(playerId, highscore, jumps);
         await GameRecordModel.createRecord(playerId, endTime, highscore, character, amtEarned);
         await InventoryModel.addCurrency(playerId, amtEarned);
         res.json({});

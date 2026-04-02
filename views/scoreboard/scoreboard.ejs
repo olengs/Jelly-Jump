@@ -30,7 +30,7 @@
                 </select>
 
                 <label for="limit">Show</label>
-                <input type="number" name="limit" min="1" max="<%= total %>" value="<%= limit %>" style="width: 60px">
+                <input type="number" id="limit" name="limit" min="1" value="<%= limit %>" style="width: 60px">
 
                 <button type="submit" class="apply-btn">Apply</button>
             </form>
@@ -49,6 +49,7 @@
                             <th>Player</th>
                             <th>High Score</th>
                             <th>Games Played</th>
+                            <th>Total Jumps</th>
                         </tr>
                     </thead>
                     <tbody id="global-tbody">
@@ -72,6 +73,7 @@
                             </td>
                             <td><%= entry.highscore %></td>
                             <td><%= entry.gamesPlayed %></td>
+                            <td><%= entry.jumps %></td>
                         </tr>
                         <% }); %>
                     </tbody>
