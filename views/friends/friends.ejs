@@ -49,23 +49,25 @@
         </form>
 
         <% if (typeof result !== undefined) {result.forEach(r => { %>
-            <form action="friendslist" method="post" style="max-width: 400px; align-items: center; margin: 0 auto">
-                <div class="friend-card">
-                    <p class="friend-name"><%= r.username %></p>                   
-                    <a class="btn" href="/profile/view/<%= r._id %>"> View Profile</a>
-                    <input type="hidden" name="friendName" value="<%= r.username %>">
-                    <% if (sentRequests.includes(r.username)) { %>
-                        <button class="btn" disabled style="opacity:0.5; cursor:not-allowed;">Sent</button>
-                    <% } else if (incomingRequests.includes(r.username)) { %>
-                        <form action="/acceptfriend" method="post" style="display:inline;">
-                            <input type="hidden" name="requesterName" value="<%= r.username %>">
-                            <button type="submit" class="btn">Accept</button>
-                        </form>
-                    <% } else { %>
+            <div class="friend-card" style="max-width: 400px; align-items: center; margin: 0 auto">
+                <p class="friend-name"><%= r.username %></p>                   
+                <a class="btn" href="/profile/view/<%= r._id %>">View Profile</a>
+
+                <% if (sentRequests.includes(r.username)) { %>
+                    <button class="btn" disabled style="opacity:0.5; cursor:not-allowed;">Sent</button>
+                <% } else if (incomingRequests.includes(r.username)) { %>
+                    <form action="/acceptfriend" method="post" style="display:inline;">
+                        <input type="hidden" name="requesterName" value="<%= r.username %>">
+                        <button type="submit" class="btn">Accept</button>
+                    </form>
+                <% } else { %>
+                    <form action="/friendslist" method="post" style="display:inline;">
+                        <input type="hidden" name="friendName" value="<%= r.username %>">
                         <button type="submit" class="btn">+ Add</button>
-                    <% } %>
-                </div>
-            </form>
+                    </form>
+                <% } %>
+            </div>
+            <br>
         <% }); } %>
         <br>
 
