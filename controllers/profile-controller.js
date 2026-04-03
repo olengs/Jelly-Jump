@@ -15,7 +15,7 @@ exports.getProfile = async (req, res) => {
     // //show highscore only
     // let highscore = await Scoreboard.getHighscore();
 
-    res.render("profile/user-profile", {user: await User.getUserById(req.params.id)});
+    res.render("profile/user-profile", {user: await User.getUserById(req.params.id), self: user});
 };
 
 exports.getOwnProfile = async (req, res) => {
@@ -23,7 +23,7 @@ exports.getOwnProfile = async (req, res) => {
     // let highscore = await Scoreboard.getHighscore();
     //show inventory stuff
     
-    res.render("profile/user-profile", {user: req.session.user});
+    res.render("profile/user-profile", {user: req.session.user, self: req.session.user});
 }
 
 exports.getEditProfile = async (req, res) => {
@@ -51,10 +51,10 @@ exports.postEditProfile = async (req, res) => {
 
 // read - get game history page 
 exports.getHistory = async (req, res) => {
-    const userID = req.session.user._id; 
+    const userID = req.params.id || req.session.user._id; 
     const user = await User.getUserById(userID);
     const history = await GameRecords.getPlayerHistory(userID);
-    res.render("profile/player-history", {user: user, history: history, error: null});
+    res.render("profile/player-history", {user: user, history: history, error: null, self: req.session.user});
 }
 
 // delete - delete a single history entity 
