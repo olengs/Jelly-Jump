@@ -82,7 +82,7 @@ class Spawner {
 
     checkSpawn(dt) {
         this.timeToSpawn -= dt;
-        console.log(this.timeToSpawn);
+        //console.log(this.timeToSpawn);
         if (this.timeToSpawn <= 0) {
             this.timeToSpawn = Math.random() * 2 + 0.8;
             return true;
