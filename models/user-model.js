@@ -118,13 +118,14 @@ exports.acceptFriendRequest = async (userId, requesterName) => {
     const requester = await User.findOne({username: requesterName}).lean();
     if (!requester) throw new errors.UserNotFoundError(requesterName);
 
-    //TODO: transaction
-    await User.findByIdAndUpdate(userId, {
-        $addToSet: {friends: requester._id},
-        $pull: {friendRequests: requester._id}
-    });
-    await User.findByIdAndUpdate(requester._id, {
-        $addToSet: {friends: userId}
+    await dbcommons.runInTransaction(async () => {
+        await User.findByIdAndUpdate(userId, {
+            $addToSet: {friends: requester._id},
+            $pull: {friendRequests: requester._id}
+        });
+        await User.findByIdAndUpdate(requester._id, {
+            $addToSet: {friends: userId}
+        });
     });
 };
 
@@ -205,13 +206,12 @@ exports.getTopUsers = async function(search, userId, friendslist) {
 exports.incrementLoginAttempts = async (username) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    // TODO: transaction
-
-    await User.updateOne({username}, { $inc: { loginAttempts: 1 } });
-    let user = await User.findOne({username}).lean();
-    if (user && user.loginAttempts >= 3) {
-        await User.updateOne({username}, { lockUntil: new Date(Date.now() + 30 * 1000) });
-    }
+    await dbcommons.runInTransaction(async () => {
+        let user = await User.findOneAndUpdate({username}, { $inc: { loginAttempts: 1 } }, {new: true}).lean();
+        if (user && user.loginAttempts >= 3) {
+            await User.updateOne({username}, { lockUntil: new Date(Date.now() + 30 * 1000) });
+        }
+    });
 }
 
 // unlock account 

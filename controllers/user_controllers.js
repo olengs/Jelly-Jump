@@ -51,7 +51,6 @@ exports.login = async (req, res) => {
         };
 
         if (error instanceof Errors.InvalidPasswordError) {
-            //todo: add error to session for display
             res.render("IAM/login", {errorMsg: error.message, islocked: false});
             return;
         };
@@ -134,6 +133,8 @@ exports.forgotPassword = async (req, res) => {
         console.log(error);
         res.render("IAM/forgot-password", {errorMsg: "Something went wrong.", username});
     }
+}
+
 exports.checkSysadminUser = () => {
     return UserModel.checkAndCreateSysadminUser();
 }
