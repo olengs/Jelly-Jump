@@ -102,7 +102,10 @@ passowrd: 123#Qwer
 6. Jing Wen | Home, Inventory, Navigation Bar
 
 # Learning Points
-
+1. Atomicity of database - make sure that one transaction doesn’t lead to partial changes in the database
+2. Auto error handling - make sure that the system detects and responds to all intended/unintended errors gracefully
+3. Levenshtein Distance Search - find close username matches, filtered to show users that you can add
+4. Complex mongodb queries - like logical operators, lean to improve latency of lookups
 
 # AI Declaration
 The team used AI for CSS Implementation. 
