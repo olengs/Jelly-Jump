@@ -3,8 +3,9 @@ const User = require('../models/user-model');
 
 exports.getAnnouncements = async (req, res) => {
     const announcements = await announcement.getAllAnnouncements();
+    const scheduled = await announcement.getScheduledAnnouncements();
     const user = req.session.user || null;
-    return res.render('announcement/announcement', {announcements, user})
+    return res.render('announcement/announcement', {announcements, scheduled, user});
 };
 
 exports.createAnnouncement = async (req, res) => {
