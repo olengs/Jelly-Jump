@@ -1,6 +1,0 @@
-@echo off
-echo Installing dependencies...
-npm install
-echo.
-echo Starting server...
-nodemon app.js

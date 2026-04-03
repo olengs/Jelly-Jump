@@ -22,14 +22,7 @@ npm i
 npm run app
 ```
 
-Or, run these files. 
-```
-bash: 
-command prompt: .\start.bat
-powershell: .\start.ps1
-```
-
-Then you will now be able to visit the page via http://localhost:8000/ or http://localhost:8000/index.html.
+Then you will now be able to visit the Page via http://localhost:8000/ or http://localhost:8000/index.html.
 
 # 2a. Default sysadmin user login:
 ```
@@ -39,16 +32,73 @@ password: JJAdmin@1
 
 # 2b. Testing user (in case signups are not working):
 ```
-
+username: user
+passowrd: 123#Qwer
 ```
 
 # 3. Features and the things you can do:
-1. Home page ("http://localhost:8000/")
-2. About page (Home page > About menu item)
+1. Home Page [/]
+    - Differnt items in navigation bar for logged in users
+
+2. Login Page [/login]
+    - Logging in as Registered User 
+
+3. Signup Page [/sign]
+    - Creation of New Users
+
+4. Forgot Password Page [/forgot-password]
+    - Changing Password with Security Feature check 
+
+5. About Page [/about]
     - Info about our game
-3. Announcement page (Home page > Announcements menu item)
-    - See the announcements made by admins
-    - Admins and post / schedule an announcement
-4. Play game (Home page > Play now menu item)
-    - Play the game
-5. 
+
+6. Announcement Page [/announcement]
+    - View the posted announcements by admins
+    - Admins can post / schedule announcement(s)
+    - Admins can update posted / scheduled annoucement(s)
+
+7. Game [/game]
+    - Play the game (JELLY JUMP)
+
+8. Scoreboard Page [/scoreboard]
+    - View top/bottom scores with Filters
+    - Fuzzy Searcing of Usernames [/scoreboard?search]
+    - Show Ranking of User & their friends' scores. 
+
+9. Friends Page [/friendslist]
+    - View 
+
+10. Profile [/profile/view]
+    - Edit Profile [/profile/edit]
+    - View Other User Profiles [/profile/edit/:playerId]
+    - Player History [/profile/history/:playerId] 
+
+11. Shop [/purchase]
+    - Purchase Shield [/purchase-shield]
+    - Purchase Coupon [/purchase-coupon]
+
+12. Jellies [/jellies]
+    - Change Nickname of Jelly characters
+    - Upgrade Jelly Characters 
+    - Choice to equip specific jelly character
+
+13. Gacha [/game/gacha]
+    - Gacha game for earning Gold and XP to upgrade jellies
+    - Choice of Draw 1 or Draw 10 
+    - Note: Infinite Money Glitch 💰💰💰
+
+14. Log Out
+
+# Members & Contributions
+1. Alecia   | Announcement
+2. Brilynn  | Friends, Jellies
+3. Jun Chen | Errors, Gacha, Game, IAM, Jellies, Profile, User 
+4. Vivienne | Announcement, Friends, Scoreboard
+5. Janice   | Errors, Player History, Profile
+6. Jing Wen | Home, Inventory, Navigation Bar
+
+# Learning Points
+
+
+# AI Declaration
+The team used AI for CSS Implementation. 
