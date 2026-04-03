@@ -26,6 +26,13 @@ npm i
 npm run app
 ```
 
+Or, run these files. 
+```
+bash: 
+command prompt: .\start.bat
+powershell: .\start.ps1
+```
+
 Then you will now be able to visit the page via http://localhost:8000/ or http://localhost:8000/index.html.
 
 # 2a. Default sysadmin user login:
