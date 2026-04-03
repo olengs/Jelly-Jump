@@ -256,12 +256,12 @@ exports.updateUser = async (id, username, bio) => {
 }
 
 exports.checkAndCreateSysadminUser = async () => {
-    console.log("checking for sysadmin");
+    //console.log("checking for sysadmin");
     let user = await User.findOne({role: "sysadmin"});
     if (user) return;
 
-    console.log(user, "creating sysadmin");
-    user = await User.create({email: "sysadmin@jellyjump.com", passwordHash: await bcrypt.hash("JJAdmin@1", 10), username: "sysadmin", role: "sysadmin"});
+    //console.log(user, "creating sysadmin");
+    user = await User.create({email: "sysadmin@jellyjump.com", passwordHash: await bcrypt.hash("JJAdmin@1", 10), username: "sysadmin", role: "sysadmin", securityAnswer: "sysadmin"});
     if (!user) throw new Error("Unable to create sysadmin");
 }
 
