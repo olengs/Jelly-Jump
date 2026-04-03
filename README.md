@@ -15,10 +15,6 @@ Unzip the file and go into the working directory of the unzipped folder.
 # 1c. Run steps:
 
 Create a file called .env and add the following text to the file:
-```
-DB_TEST_URI=mongodb+srv://jc:1234@test.nsxaa5l.mongodb.net/JellyJump?appName=Test
-SESSION_SECRET=0a321212-6552-4527-ac9c-b7065dcccc2e
-```
 
 Install the required packages and run:
 ```
@@ -39,3 +35,13 @@ password: JJAdmin@1
 
 ```
 
+# 3. Features and the things you can do:
+1. Home page ("http://localhost:8000/")
+2. About page (Home page > About menu item)
+    - Info about our game
+3. Announcement page (Home page > Announcements menu item)
+    - See the announcements made by admins
+    - Admins and post / schedule an announcement
+4. Play game (Home page > Play now menu item)
+    - Play the game
+5. 
