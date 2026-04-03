@@ -22,7 +22,7 @@ class Card{
         context.fillRect(x, y, cardWidth, cardHeight);
         if (this.type == "currency") {
             context.fillStyle = "white";
-            context.fillText(`${this.value} blobs`, x + cardWidth * 0.25, y + cardHeight * 0.5, cardWidth);
+            context.fillText(`${this.value} gold`, x + cardWidth * 0.25, y + cardHeight * 0.5, cardWidth);
         } else {
             let widthShift = Math.floor(0.05 * cardWidth);
             let heightShift = Math.floor(0.05 * cardHeight);
