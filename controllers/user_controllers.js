@@ -107,3 +107,19 @@ exports.deleteUser = async (req, res) => {
 
     res.redirect("/logout");
 }
+
+exports.viewAllUsers = async (req, res) => {
+    res.render("profile/sysadmin-view", {users: await UserModel.getAllUsers()});
+}
+
+exports.makeAdmin = async (req, res) => {
+    const {userId} = req.body;
+    await UserModel.makeRole(userId, "admin");
+    res.redirect(302, "/profile/viewall");
+}
+
+exports.makeUser = async (req, res) => {
+    const {userId} = req.body;
+    await UserModel.makeRole(userId, "player");
+    res.redirect(302, "/profile/viewall");
+}

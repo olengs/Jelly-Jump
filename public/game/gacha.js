@@ -81,8 +81,8 @@ let draw10 = async () => {
 }
 
 let draw = async (count) => {
-    draw1button.hidden = true;
-    draw10button.hidden = true;
+    draw1button.disabled = true;
+    draw10button.disabled = true;
     let playerId = document.getElementById("playerId").value;
     const data = JSON.stringify({playerId, pullCount: count});
     refreshBoard();
@@ -93,22 +93,24 @@ let draw = async (count) => {
             body: data,
         });
         if (!resp.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            console.log(`HTTP error! Status: ${response.status}`);
+            window.location.href = '/error.html';
         }
         let respjson = await resp.json();
         if (respjson.Error) {
-            throw new Error(`Gacha pull error: ${JSON.stringify(respjson.Error, null, 2)}`);
+            console.log(`Gacha pull error: ${JSON.stringify(respjson.Error, null, 2)}`);
+            window.location.href = '/error.html';
+            return;
         }
-        draw1button.hidden = false;
-        draw10button.hidden = false;
         const coupon_count_elem = document.getElementById("coupon_count");
         const remainder = Number(coupon_count_elem.textContent) - Number(count);
         coupon_count_elem.textContent = remainder;
-        if (remainder < 1) draw1button.disabled = true;
-        if (remainder < 10) draw10button.disabled = true;
+        draw1button.disabled = (remainder < 1) ? true : false;
+        draw10button.disabled = (remainder < 10) ? true : false;
         return respjson;
     } catch (error) {
         console.log(error);
+        window.location.href = '/error.html';
         return null;
     }
 }
