@@ -63,7 +63,7 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
     const {email, username, password, confirmPassword, securityAnswer} = req.body;
-    console.log(email, username, password, confirmPassword, securityAnswer);
+    console.log("user signed up:", email, username, password, confirmPassword, securityAnswer);
     //input validation (empty)
     if (!email || !username || !password || !confirmPassword || !securityAnswer) {
         throw new Error("Error, login fields are empty (html is not requiring input)");

@@ -21,7 +21,7 @@ exports.EndGameUpdateController = async (req, res) => {
     const user = await UserModel.getUserById(playerId);
 
     //update db with user score
-    console.log(`${endTime.toISOString()}: Updating uname: ${user.username} and highscore: ${highscore} with character: ${character} into DB`);
+    //console.log(`${endTime.toISOString()}: Updating uname: ${user.username} and highscore: ${highscore} with character: ${character} into DB`);
     let amtEarned = Math.floor(highscore / 100);
 
 
@@ -71,7 +71,7 @@ exports.gachaPullRequest = async (req, res) => {
         return acc;
     }, {});
 
-    console.log(currencySum, fragments);
+    //console.log(currencySum, fragments);
 
     try {
         await dbcommons.runInTransaction(async () => {

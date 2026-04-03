@@ -3,7 +3,7 @@ const jellyModel = require("../models/jelly-model")
 exports.showJellies = async (req,res) => {
     let jellyData = await jellyModel.getJelliesByPlayerId(req.session.user._id);
     jellyData = jellyModel.addUpgradeRequirementsForJellies(jellyData);
-    console.log("jelly data: ", jellyData);
+    //console.log("jelly data: ", jellyData);
 
     return res.render('jelly', {jellyData, error:''});
 }

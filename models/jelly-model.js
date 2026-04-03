@@ -68,10 +68,10 @@ exports.upgradeJelly = async (playerId, jellyId) => {
         [`characterXp.${jellyId}`]: -upgradeCost
     };
     if (currjellies.characterXp[jellyId] >= upgradeCost) {
-        let ret = await Jelly.updateOne({playerId}, {
+        await Jelly.updateOne({playerId}, {
             $inc: queryBuffer
         }, {new: true});
-        console.log(ret);
+        //console.log(ret);
         return;
     }
 

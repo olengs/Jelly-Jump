@@ -21,7 +21,7 @@ exports.purchaseShield = async (req, res) => {
         numberOfCoupons: numberOfCoupons
     });
 
-    console.log(currencyBalance);
+    //console.log(currencyBalance);
 };
 
 
