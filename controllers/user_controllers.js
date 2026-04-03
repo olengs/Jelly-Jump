@@ -70,7 +70,7 @@ exports.signup = async (req, res) => {
         return res.render("IAM/signup", {email, username, errorMsg: "Passwords do not match"});
     }
     
-    let user; let inventory;
+    let user; let inventory; let jellies;
     try {
         user = await UserModel.createUser(username, email, password, securityAnswer);
         inventory = await InventoryModel.createInventory(user._id);

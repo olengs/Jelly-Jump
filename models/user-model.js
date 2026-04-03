@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema, "users");
 exports.User = User;
 
-exports.createUser = async (username, email, password, securityQuestion, securityAnswer) => {
+exports.createUser = async (username, email, password, securityAnswer) => {
     if (!email.match(email_regex)){
         throw new errors.EmailFormatError();
     }
@@ -51,7 +51,7 @@ exports.createUser = async (username, email, password, securityQuestion, securit
         throw new errors.EmailAlreadyExistsError(email);
     }
     let passwordHash = await bcrypt.hash(password, Math.floor(Math.random() * 10));
-    let dbuser = await User.create({username, email, passwordHash, securityQuestion, securityAnswer});
+    let dbuser = await User.create({username, email, passwordHash, securityAnswer});
 
     if (!dbuser) {
         throw new Error("Failed to create user in db");
