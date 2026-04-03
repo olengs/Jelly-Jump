@@ -18,7 +18,7 @@ exports.createAnnouncement = async (req, res) => {
 };
 
 exports.deleteAnnouncement = async (req, res) => {
-    const announcementId = req.params;
+    const {announcementId} = req.params;
     await announcement.deleteAnnouncement(announcementId);
 
     res.redirect('/announcement');

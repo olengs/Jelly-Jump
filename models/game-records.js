@@ -23,6 +23,13 @@ exports.createRecord = async (playerId, timestamp, score, character, currencyEar
     return record;
 };
 
+exports.getRecordById = async (recordId) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    let record = await GameRecords.findById(recordId);
+    if (!record) throw new Error("Failed to retrieve record");
+    return record;
+}
+
 exports.getPlayerHistory = async (playerId) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     
@@ -33,12 +40,12 @@ exports.getPlayerHistory = async (playerId) => {
 
 exports.updateRecord = async (id, updatedData) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    await GameRecords.findByIdAndUpdate(id, updatedData, {new: true});
+    return await GameRecords.findByIdAndUpdate(id, updatedData, {new: true}).lean();
 };
 
 exports.deleteRecord = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    await GameRecords.findOneAndDelete({_id: id});
+    return await GameRecords.findOneAndDelete({_id: id}).lean();
 };
 
 exports.deleteAllRecordsByUser = async (playerId) => {

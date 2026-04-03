@@ -15,14 +15,8 @@
         <label>Score:</label><br>
         <input type="number" name="score" value="<%= record.score %>" required><br><br>
 
-        <label>Character:</label><br>
-        <input type="text" name="character" value="<%= record.character %>"><br><br>
-
-        <label>Currency Earned:</label>
-        <input type="number" name="currencyEarned" value="<%= record.currencyEarned %>"><br><br>
-
         <button type="submit">Save Changes</button>
-        <a href="/profile/history">Cancel</a>
+        <a href="/profile/history/<%= record.playerId %>">Cancel</a>
     </form>
 
 </body>

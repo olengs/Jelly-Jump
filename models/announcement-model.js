@@ -37,6 +37,7 @@ exports.getAllAnnouncements = function() {
 
 exports.deleteAnnouncement = function(announcementId) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    console.log("myannouncment", announcementId);
     return Announcements.deleteOne({_id: announcementId});
 };
 

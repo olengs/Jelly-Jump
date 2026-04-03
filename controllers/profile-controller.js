@@ -59,25 +59,25 @@ exports.getHistory = async (req, res) => {
 
 // delete - delete a single history entity 
 exports.deleteHistory = async (req, res) => {
-    await GameRecords.deleteRecord(req.params.id, req.session.user._id); 
-    res.redirect("/profile/history");
+    let record = await GameRecords.deleteRecord(req.params.id, req.session.user._id); 
+    res.redirect(`/profile/history/${record.playerId}`);
 }
 
 exports.getEditHistory = async (req, res) => {
-    const record = await GameRecords.getPlayerHistory(req.params.id);
-    res.render("profile/edit-history", {record: record, error: null});
+    const record = await GameRecords.getRecordById(req.params.id);
+
+    res.render("profile/edit-history", {record, error: null});
 }
 
 // update - handle edit history form
 exports.postEditHistory = async (req, res) => {
-
-    const {score, character, currencyEarned} = req.body; 
+    const {score} = req.body; 
 
     if (!score) {
         const record = await GameRecords.getRecordById(req.params.id);
         return res.render("profile/edit-history", {record: record, error: "Score cannot be empty."});
     }
 
-    await GameRecords.updateRecord(req.params.id, {score, character, currencyEarned});
-    res.redirect("/profile/history");
+    let record = await GameRecords.updateRecord(req.params.id, {score});
+    res.redirect(`/profile/history/${record.playerId}`);
 }
