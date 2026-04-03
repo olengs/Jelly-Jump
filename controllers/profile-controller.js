@@ -15,7 +15,7 @@ exports.getProfile = async (req, res) => {
     // //show highscore only
     // let highscore = await Scoreboard.getHighscore();
 
-    res.render("profile/user-profile", {user: await User.getUserById(req.params.id)});
+    res.render("profile/user-profile", {user: await User.getUserById(req.params.id), self: user});
 };
 
 exports.getOwnProfile = async (req, res) => {
@@ -23,7 +23,7 @@ exports.getOwnProfile = async (req, res) => {
     // let highscore = await Scoreboard.getHighscore();
     //show inventory stuff
     
-    res.render("profile/user-profile", {user: req.session.user});
+    res.render("profile/user-profile", {user: req.session.user, self: req.session.user});
 }
 
 exports.getEditProfile = async (req, res) => {
@@ -36,7 +36,7 @@ exports.postEditProfile = async (req, res) => {
     const { newUsername , newBio } = req.body;
     try {
         console.log(req.session.user.username, newUsername);
-        req.session.user = await User.updateUser(req.session.user._id, req.session.user.username == newUsername ? "" : newUsername, newBio);    
+        req.session.user = await User.updateUser(req.session.user._id, req.session.user.username, newUsername, newBio);    
     } catch (error) {
         if (error instanceof errors.UserAlreadyExistsError) {
             return res.render("profile/edit-profile", {user: req.session.user, errorMsg: error.message});
@@ -51,33 +51,33 @@ exports.postEditProfile = async (req, res) => {
 
 // read - get game history page 
 exports.getHistory = async (req, res) => {
-    const userID = req.session.user._id; 
+    const userID = req.params.id || req.session.user._id; 
     const user = await User.getUserById(userID);
     const history = await GameRecords.getPlayerHistory(userID);
-    res.render("profile/player-history", {user: user, history: history, error: null});
+    res.render("profile/player-history", {user: user, history: history, error: null, self: req.session.user});
 }
 
 // delete - delete a single history entity 
 exports.deleteHistory = async (req, res) => {
-    await GameRecords.deleteRecord(req.params.id, req.session.user._id); 
-    res.redirect("/profile/history");
+    let record = await GameRecords.deleteRecord(req.params.id, req.session.user._id); 
+    res.redirect(`/profile/history/${record.playerId}`);
 }
 
 exports.getEditHistory = async (req, res) => {
-    const record = await GameRecords.getPlayerHistory(req.params.id);
-    res.render("profile/edit-history", {record: record, error: null});
+    const record = await GameRecords.getRecordById(req.params.id);
+
+    res.render("profile/edit-history", {record, error: null});
 }
 
 // update - handle edit history form
 exports.postEditHistory = async (req, res) => {
-
-    const {score, character, currencyEarned} = req.body; 
+    const {score} = req.body; 
 
     if (!score) {
         const record = await GameRecords.getRecordById(req.params.id);
         return res.render("profile/edit-history", {record: record, error: "Score cannot be empty."});
     }
 
-    await GameRecords.updateRecord(req.params.id, {score, character, currencyEarned});
-    res.redirect("/profile/history");
+    let record = await GameRecords.updateRecord(req.params.id, {score});
+    res.redirect(`/profile/history/${record.playerId}`);
 }

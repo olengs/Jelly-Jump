@@ -14,7 +14,7 @@
         <h1>📜 Announcements</h1>
 
         <!-- creating announcements -->
-        <% if (user && user.role === 'admin') { %>
+        <% if (user && (user.role === 'admin' || user.role === "sysadmin")) { %>
             <div class="create-form">
                 <h2>Create Announcement</h2>
                 <form action="/announcement/createAnnouncement" method="post">
@@ -61,7 +61,7 @@
                     <p><%= a.message %></p>
                     <span class="urgency-badge urgency-<%= a.urgency %>"><%= a.urgency.charAt(0).toUpperCase() + a.urgency.slice(1) %></span>
 
-                    <% if (user && user.role === 'admin') { %>
+                    <% if (user && user.role === 'admin' || user.role === "sysadmin") { %>
                         <div class="admin-actions">
                             <form action="/announcement/delete/<%= a._id %>" method="POST">
                                 <button type="submit" class="delete-btn">Delete</button>
@@ -100,7 +100,7 @@
             <p>No announcements posted yet.</p>
         <% } %>
 
-        <% if (user && user.role === 'admin' && scheduled.length > 0) { %>
+        <% if (user && (user.role === 'admin' || user.role === "sysadmin") && scheduled.length > 0) { %>
             <div class="scheduled-section">
                 <h2>Scheduled Posts</h2>
                 <% scheduled.forEach(a => { %>

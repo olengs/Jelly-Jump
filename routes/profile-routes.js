@@ -18,7 +18,7 @@ router.post("/edit", UserMiddleware.requireUser, profileController.postEditProfi
 router.post("/delete", UserMiddleware.requireUser, userController.deleteUser);
 
 // read - show player history page 
-router.get("/history", UserMiddleware.requireUser, profileController.getHistory);
+router.get("/history/:id", UserMiddleware.requireUser, profileController.getHistory);
 
 // update - show edit history form 
 router.get("/history/edit/:id", UserMiddleware.requireUser, profileController.getEditHistory);

@@ -19,25 +19,24 @@
             <button class="tab-btn" onclick="switchTab('friends')">👥 Friends</button>
         </div>
 
-        <!-- Filters -->
-        <div class="filters">
-            <form method='GET' action="/scoreboard" style="display:inline" id="filter-form">
-                <input type="text" name="search" placeholder="Search username..." value="<%= search || '' %>" />
-
-                <select name='sort' id="sort-select">
-                    <option value="desc" <%= sort === 'desc' ? 'selected' : '' %>>High Score ↓</option>
-                    <option value="asc" <%= sort === 'asc' ? 'selected' : '' %>>High Score ↑</option>
-                </select>
-
-                <label for="limit">Show</label>
-                <input type="number" id="limit" name="limit" min="1" value="<%= limit %>" style="width: 60px">
-
-                <button type="submit" class="apply-btn">Apply</button>
-            </form>
-        </div>
-
         <!-- Global Tab -->
         <div id="tab-global" class="tab-content">
+        <!-- Filters -->
+            <div class="filters">
+                <form method='GET' action="/scoreboard" style="display:inline" id="filter-form">
+                    <input type="text" name="search" placeholder="Search username..." value="<%= search || '' %>" />
+
+                    <select name='sort' id="sort-select">
+                        <option value="desc" <%= sort === 'desc' ? 'selected' : '' %>>High Score ↓</option>
+                        <option value="asc" <%= sort === 'asc' ? 'selected' : '' %>>High Score ↑</option>
+                    </select>
+
+                    <label for="limit">Show</label>
+                    <input type="number" id="limit" name="limit" min="1" value="<%= limit %>" style="width: 60px">
+
+                    <button type="submit" class="apply-btn">Apply</button>
+                </form>
+            </div>
             <% if (topLimit && topLimit.length > 0) { %>
                 <table id="global-table">
                     <thead>
