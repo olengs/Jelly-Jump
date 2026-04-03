@@ -13,6 +13,27 @@
     <div class="friends-wrapper">
         <h1>👾 Friends</h1>
 
+        <!-- incoming friend requests -->
+        <% if (incomingRequests && incomingRequests.length > 0) { %>
+            <h2>📬 Friend Requests</h2>
+            <% incomingRequests.forEach(requester => { %>
+                <div class="friend-card" style="max-width: 400px; margin: 8px auto;">
+                    <p class="friend-name"><%= requester %></p>
+
+                    <form action="/acceptfriend" method="post" style="display:inline;">
+                        <input type="hidden" name="requesterName" value="<%= requester %>">
+                        <button type="submit" class="btn">Accept</button>
+                    </form>
+
+                    <form action="/rejectfriend" method="post" style="display:inline;">
+                        <input type="hidden" name="requesterName" value="<%= requester %>">
+                        <button type="submit" class="btn">Reject</button>
+                    </form>
+                </div>
+            <% }); %>
+            <br>
+        <% } %>
+
         <% if (error){ %>
             <p class="error-msg"><%= error %></p>
         <% } %>
@@ -27,13 +48,22 @@
             <button type="submit">Find</button>
         </form>
 
-        <% if (typeof result !== undefined) { result.forEach(r => { %>
+        <% if (typeof result !== undefined) {result.forEach(r => { %>
             <form action="friendslist" method="post" style="max-width: 400px; align-items: center; margin: 0 auto">
                 <div class="friend-card">
                     <p class="friend-name"><%= r.username %></p>                   
                     <a class="btn" href="/profile/view/<%= r._id %>"> View Profile</a>
                     <input type="hidden" name="friendName" value="<%= r.username %>">
-                    <button type="submit" class="btn">Add</button>
+                    <% if (sentRequests.includes(r.username)) { %>
+                        <button class="btn" disabled style="opacity:0.5; cursor:not-allowed;">Sent</button>
+                    <% } else if (incomingRequests.includes(r.username)) { %>
+                        <form action="/acceptfriend" method="post" style="display:inline;">
+                            <input type="hidden" name="requesterName" value="<%= r.username %>">
+                            <button type="submit" class="btn">Accept</button>
+                        </form>
+                    <% } else { %>
+                        <button type="submit" class="btn">+ Add</button>
+                    <% } %>
                 </div>
             </form>
         <% }); } %>
@@ -53,7 +83,7 @@
 
                 <form action="/deletefriend" method="post">
                     <input type="hidden" name='friendName' value="<%= f.name %>"> 
-                    <button type="submit" class="btn">delete</button>
+                    <button type="submit" class="btn">Delete</button>
                 </form>
             </div>
         <% }); %>

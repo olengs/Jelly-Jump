@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const JelliesModel = require("../models/jelly-model.js");
 
 exports.loginView = (req, res) => {
-    res.render("IAM/login", {errorMsg: null});
+    res.render("IAM/login", {errorMsg: null, islocked: false});
 };
 
 exports.signupView = (req, res) => {
@@ -21,7 +21,7 @@ exports.login = async (req, res) => {
         // check if account is locked
         const locked = await UserModel.isLocked(username);
         if (locked) {
-            return res.render("IAM/login", {errorMsg: "Account is locked. Please try again after 30 seconds."})
+            return res.render("IAM/login", {errorMsg: "Account is locked. Please try again after 30 seconds.", islocked: true})
         }
 
         let user = await UserModel.getUserByName(username);
@@ -33,25 +33,25 @@ exports.login = async (req, res) => {
             let updatedUser = await UserModel.getUserByName(username);
             let attemptsLeft = 3 - updatedUser.loginAttempts;
             if (attemptsLeft<=0){
-                return res.render("IAM/login", {errorMsg: "Account locked. Please try again after 30 seconds."});
+                return res.render("IAM/login", {errorMsg: "Account locked. Please try again after 30 seconds.", islocked: true});
             }
-            return res.render("IAM/login", {errorMsg: `Invalid password. ${attemptsLeft} attempt(s) left.`});
+            return res.render("IAM/login", {errorMsg: `Invalid password. ${attemptsLeft} attempt(s) left.`, islocked: false});
         }
         
         await UserModel.resetLoginAttempts(username);
         req.session.user = user;
         
-
     } catch (error) {
         if (error instanceof Errors.UserNotFoundError) {
-            res.render("IAM/login", {errorMsg: error.message});
+            res.render("IAM/login", {errorMsg: error.message, islocked: false});
             return;
-        }
+        };
+
         if (error instanceof Errors.InvalidPasswordError) {
             //todo: add error to session for display
-            res.render("IAM/login", {errorMsg: error.message});
+            res.render("IAM/login", {errorMsg: error.message, islocked: false});
             return;
-        }
+        };
 
         throw error;
     }
@@ -60,10 +60,10 @@ exports.login = async (req, res) => {
 }
 
 exports.signup = async (req, res) => {
-    const {email, username, password, confirmPassword, securityQuestion, securityAnswer} = req.body;
-    console.log(email, username, password, confirmPassword, securityQuestion, securityAnswer);
+    const {email, username, password, confirmPassword, securityAnswer} = req.body;
+    console.log(email, username, password, confirmPassword, securityAnswer);
     //input validation (empty)
-    if (!email || !username || !password || !confirmPassword || !securityQuestion || !securityAnswer) {
+    if (!email || !username || !password || !confirmPassword || !securityAnswer) {
         throw new Error("Error, login fields are empty (html is not requiring input)");
     }
     if (password != confirmPassword) {
@@ -72,7 +72,7 @@ exports.signup = async (req, res) => {
     
     let user; let inventory;
     try {
-        user = await UserModel.createUser(username, email, password, securityQuestion, securityAnswer);
+        user = await UserModel.createUser(username, email, password, securityAnswer);
         inventory = await InventoryModel.createInventory(user._id);
         jellies = await JelliesModel.createJellyStore(user._id);
         req.session.user = user;

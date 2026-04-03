@@ -1,74 +1,124 @@
 const userModel = require("../models/user-model");
 const errors = require("../models/errors");
 
-exports.friendslist = async(req,res) => { // looks at the User document and find the id in the bracker
-    // const friendslist = req.session.user.friends || [] // [ { }, { }]
-    // res.render('friends/friends',{friendslist,error:''})
-
-    const search = req.query.search || '';
-    const user = req.session && req.session.user ? req.session.user : null;
-    
-    const friendslist = await userModel.getFriendUsernamesForUser(req.session.user)
-    let friendsIdlist = [];
-
-    console.log('friendslist: ' + friendslist);
-    for (const friend of friendslist) {
-        const u = await userModel.getUserByName(friend);
-        friendsIdlist.push({name: friend, id: u._id});
+async function buildFriendsPageData(user, search = '') {
+    const friendslist = await userModel.getFriendUsernamesForUser(user);
+    const friendsIdlist = [];
+    for (const fname of friendslist) {
+        const u = await userModel.getUserByName(fname);
+        friendsIdlist.push({name: fname, id: u._id});
     }
 
-    console.log(friendslist);
-    console.log(friendsIdlist);
+    const freshUser = await userModel.getUserById(user._id);
+    const incomingRequests = await userModel.getPendingRequestUsernames(freshUser);
+    const sentRequests = await userModel.getSentRequestUsernames(user._id);
+
+    let result = [];
+    if (search !== '') {
+        result = await userModel.getTopUsers(search, user._id, friendslist);
+        result = result.filter(r => !incomingRequests.includes(r.username));
+    }
+
+    return {friendslist, friendsIdlist, incomingRequests, sentRequests, result, search};
+};
+
+exports.friendslist = async(req,res) => { // looks at the User document and find the id in the bracker
+    const search = req.query.search || '';
+    const user = req.session && req.session.user ? req.session.user : null;
+
+    const friendslist = await userModel.getFriendUsernamesForUser(req.session.user);
+    let friendsIdlist = [];
+    
+    for (const fname of friendslist) {
+        const u = await userModel.getUserByName(fname);
+        friendsIdlist.push({name: fname, id: u._id});
+    }
+
+    const incomingRequests = await userModel.getPendingRequestUsernames(await userModel.getUserById(user._id));
 
     if (search != '') {
         const topLimit = await userModel.getTopUsers(search, user._id, friendslist);
+        const sentRequests = await userModel.getSentRequestUsernames(user._id);
 
-        return res.render('friends/friends', {friendslist, search, result: topLimit, error: '', friendsIdlist});
+        const error = topLimit.length > 0 ? '' : 'No search result!'
+
+        return res.render('friends/friends', {friendslist, friendsIdlist, search, result: topLimit, error, incomingRequests, sentRequests});
     };
 
-    return res.render('friends/friends', {friendslist, search, result: [], error: "", friendsIdlist});
+    return res.render('friends/friends', {friendslist, friendsIdlist, incomingRequests,sentRequests: [], result: [], search: '', error: ''});
 };
 
 exports.addFriend = async (req,res) => {
     const friendName = req.body.friendName?.trim(); 
     const user = req.session.user;
     const search = req.query.search || '';
-    
-    const friendslist = await userModel.getFriendUsernamesForUser(user);
-    let friendsIdlist = [];
+    const data = await buildFriendsPageData(user, search);
 
-    friendslist.forEach(async friend => {
-        await friendsIdlist.push({friend: userModel.getUserByName(friend)._id});
-    });
-
-    if (!friendName) {    
-        return res.render('friends/friends', {error:'friend name cannot be empty', friendslist, search, friendsIdlist});
+    if (!friendName) {
+        return res.render('friends/friends', {...data,error:'friend name cannot be empty', friendslist: await userModel.getFriendUsernamesForUser(user)});
     }; 
 
     if (friendName === user.username) {
-        return res.render('friends/friends', {error:'cannot add yourself', friendslist, search, friendsIdlist});
+        return res.render('friends/friends', {...data,error:'cannot add yourself', friendslist: await userModel.getFriendUsernamesForUser(user)});
     };
     
     try {
         const friend = await userModel.getUserByName(friendName); // if inside, it will show the obj. if not its null--> falsey 
         const isFriend = user.friends.some(id => id.toString() === friend._id.toString());
         
-        if (isFriend)
-            return res.render('friends/friends', {error:'already friends', friendslist, search, friendsIdlist});
+        if (isFriend) {// already exist
+            return res.render('friends/friends', {...data, error:'already friends', friendslist: await userModel.getFriendUsernamesForUser(user)});
+        };
 
-        await userModel.addFriend(user._id, friendName);
-        await userModel.addFriend(friend._id, user.username);
+        const sentRequests = await userModel.getSentRequestUsernames(user._id);
+        if (sentRequests.includes(friendName)) {
+            const data = await buildFriendsPageData(user, search);
+            return res.render('friends/friends', {...data, error: 'Friend request already sent'});
+        }
+
+        await userModel.sendFriendRequest(user._id, friendName);
         return res.redirect('/friendslist');
-
+        // await userModel.addFriend(user._id, friendName);
+        // await userModel.addFriend(friend._id, user.username);
+        // return res.redirect('/friendslist');
+        
     } catch (error) {
         if (error instanceof errors.UserNotFoundError) {
             console.log(error);
-            return res.render('friends/friends', {error:'user not found', friendslist, search, friendsIdlist});
-        };
-
+            return res.render('friends/friends', {...data, error:'user not found', friendslist: await userModel.getFriendUsernamesForUser(user), search});
+        }
         throw error;
     };
 };
+
+exports.acceptFriend = async (req, res) => {
+    try {
+        const requesterName = req.body.requesterName?.trim();
+        const user = req.session.user;
+        await userModel.acceptFriendRequest(user._id, requesterName);
+        const updatedUser = await userModel.getUserById(user._id);
+        req.session.user = updatedUser;
+        return res.redirect('/friendslist');
+    } catch (error) {
+        console.log(error);
+        return res.redirect('/friendslist');
+    }
+};
+
+exports.rejectFriend = async (req, res) => {
+    try {
+        const requesterName = req.body.requesterName?.trim();
+        const user = req.session.user;
+        await userModel.rejectFriendRequest(user._id, requesterName);
+        const updatedUser = await userModel.getUserById(user._id);
+        req.session.user = updatedUser;
+        return res.redirect('/friendslist');
+    } catch (error) {
+        console.log(error);
+        return res.redirect('/friendslist');
+    }
+};
+
 
 exports.deleteFriend = async(req,res) =>{
     const friendName = req.body.friendName?.trim(); 
@@ -79,6 +129,18 @@ exports.deleteFriend = async(req,res) =>{
 
     return res.redirect('/friendslist');
 };
+
+exports.whatsProfile = async(req,res)=>{
+    let idArray=[]
+    const friendslist=  await userModel.getFriendUsernamesForUser(req.session.user) // [ben,mary ]
+    for ( let aname of friendslist){
+        const new1= await userModel.getUserByName(aname)// entire user
+        idArray.push(new1._id)
+
+    }
+    res.render('friends/friends',{idArray, error:'',friendslist})
+    
+}
 
 
 // for the addfriend. can use for each is can but need to do the isthere= false and isthere= true because foreach will loop through everything . EBERYTHING bfr it ends. thats why use .some can already

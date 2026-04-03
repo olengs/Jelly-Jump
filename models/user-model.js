@@ -15,9 +15,9 @@ const userSchema = new mongoose.Schema({
     role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
     bio: {type: String, required: true, default: "My bio"},
     friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    friendRequests: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     loginAttempts: {type: Number, default: 0}, 
-    lockUntil: {type: Date, default: null},  
-    securityQuestion:{type: String, required: true},
+    lockUntil: {type: Date, default: null}, 
     securityAnswer: {type: String, required: true},
 });
 
@@ -96,17 +96,68 @@ exports.deleteUser = async (id) => {
     return 
 };
 
-exports.addFriend = async (id, friendName) => {
+// exports.addFriend = async (id, friendName) => {
+//     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+//     const friend = await User.findOne({username: friendName}).lean();
+
+//     if (!friend) throw new errors.UserNotFoundError(friendName);    
+
+//     return await User.findByIdAndUpdate(id, {
+//         $push: {friends: friend._id}
+//     });
+// }
+
+exports.sendFriendRequest = async (senderId, friendName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
     const friend = await User.findOne({username: friendName}).lean();
+    if (!friend) throw new errors.UserNotFoundError(friendName);
 
-    if (!friend) throw new errors.UserNotFoundError(friendName);    
-
-    return await User.findByIdAndUpdate(id, {
-        $push: {friends: friend._id}
+    return await User.findByIdAndUpdate(friend._id, {
+        $addToSet: {friendRequests: senderId}
     });
-}
+};
+
+exports.acceptFriendRequest = async (userId, requesterName) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    const requester = await User.findOne({username: requesterName}).lean();
+    if (!requester) throw new errors.UserNotFoundError(requesterName);
+
+    await User.findByIdAndUpdate(userId, {
+        $addToSet: {friends: requester._id},
+        $pull: {friendRequests: requester._id}
+    });
+    await User.findByIdAndUpdate(requester._id, {
+        $addToSet: {friends: userId}
+    });
+};
+
+exports.rejectFriendRequest = async (userId, requesterName) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    const requester = await User.findOne({username: requesterName}).lean();
+    if (!requester) throw new errors.UserNotFoundError(requesterName);
+
+    return await User.findByIdAndUpdate(userId, {
+        $pull: {friendRequests: requester._id}
+    });
+};
+
+exports.getSentRequestUsernames = async (userId) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    const usersWithRequest = await User.find({friendRequests: userId}).lean();
+    return usersWithRequest.map(u => u.username);
+};
+
+exports.getPendingRequestUsernames = async (user) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    const requestIds = user.friendRequests || [];
+    if (requestIds.length === 0) return [];
+    const requesters = await User.find({_id: {$in: requestIds}}).lean();
+    return requesters.map(u => u.username);
+};
 
 exports.deleteFriend = async (id, friendName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
@@ -130,7 +181,7 @@ exports.getUsersByIds = async (ids) => {
 exports.getFriendUsernamesForUser = async (user) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     if (!user) throw new Error("User is not found");
-    const friends = (await this.getUsersByIds(user.friends)) || [];
+    const friends = (await exports.getUsersByIds(user.friends)) || [];
     return friends.map(a => a.username);
 }
 
@@ -149,13 +200,12 @@ exports.getTopUsers = async function(search, userId, friendslist) {
 
 // lock account after 3 failed login attempts 
 exports.incrementLoginAttempts = async (username) => {
-    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError; 
-    let user = await User.findOne({username});
-    user.loginAttempts += 1;
-    if (user.loginAttempts >= 3) {
-        user.lockUntil = new Date(Date.now() + 30*1000);
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    await User.updateOne({username}, { $inc: { loginAttempts: 1 } });
+    let user = await User.findOne({username}).lean();
+    if (user && user.loginAttempts >= 3) {
+        await User.updateOne({username}, { lockUntil: new Date(Date.now() + 30 * 1000) });
     }
-    return await user.save(); 
 }
 
 // unlock account 
