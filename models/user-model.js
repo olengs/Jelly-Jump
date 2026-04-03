@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true},
     email: {type: String, required: true, unique:true, trim:true},
     passwordHash: {type: String, required: true, unique:true},
-    role: {type: String, required: true, enum: ["admin", "player"], default:"player"},
+    role: {type: String, required: true, enum: ["sysadmin", "admin", "player"], default:"player"},
     bio: {type: String, required: true, default: "My bio"},
     friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     friendRequests: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
@@ -78,6 +78,12 @@ exports.getUserById = async (id) => {
     return user;
 }
 
+exports.getAllUsers = async () => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await User.find({role: {$ne: "sysadmin"}}).lean() || [];
+}
+
 // create reset password for update
 exports.updateUserPassword = async (username, oldPassword, newPassword) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
@@ -93,7 +99,6 @@ exports.updateUserPassword = async (username, oldPassword, newPassword) => {
 exports.deleteUser = async (id) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     await User.deleteOne({_id: id});
-    return 
 };
 
 exports.sendFriendRequest = async (senderId, friendName) => {
@@ -154,15 +159,15 @@ exports.deleteFriend = async (id, friendName) => {
     const friend = await User.findOne({username: friendName});
     if (!friend) throw new errors.UserNotFoundError(friendName);        
 
-    return await User.findByIdAndUpdate(id, {
-        $pull: {friends: friend._id}
-    });
+    return await User.findByIdAndUpdate(id, {$pull: {friends: friend._id}});
 }
 
 exports.getUsersByIds = async (ids) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    const users = await User.find({_id: { $in: ids }});
+    const users = await User.find({
+        _id: { $in: ids }
+    }).lean();
 
     return users || [];
 }
@@ -185,7 +190,7 @@ exports.getFriendUsernamesAndIdsForUser = async (user) => {
 
 exports.getTopUsers = async function(search, userId, friendslist) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let results = await User.find();
+    let results = await User.find({role: {$ne: "sysadmin"}}).lean();
 
     if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
     
@@ -248,4 +253,23 @@ exports.updateUser = async (id, username, bio) => {
     if (await username_exists) throw new errors.UserAlreadyExistsError();
     if (!username.match(username_regex)) throw new errors.UsernameFormatError();
     return await User.findByIdAndUpdate(id, {username, bio}, {new: true});
+}
+
+exports.checkAndCreateSysadminUser = async () => {
+    console.log("checking for sysadmin");
+    let user = await User.findOne({role: "sysadmin"});
+    if (user) return;
+
+    console.log(user, "creating sysadmin");
+    user = await User.create({email: "sysadmin@jellyjump.com", passwordHash: await bcrypt.hash("JJAdmin@1", 10), username: "sysadmin", role: "sysadmin"});
+    if (!user) throw new Error("Unable to create sysadmin");
+}
+
+exports.makeRole = async (userId, role) => {
+    if (role == "player") {
+        return await User.updateOne({_id: userId}, {role});
+    } else if(role == "admin") {
+        return await User.updateOne({_id: userId}, {role});
+    }
+    throw new Error("Invalid role to make");
 }

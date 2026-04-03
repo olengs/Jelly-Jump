@@ -6,10 +6,10 @@ const server = express();
 require("dotenv").config({quiet: true});
 const mongoose = require("mongoose");
 mongoose.set("bufferCommands", false);
+mongoose.set('transactionAsyncLocalStorage', true);
 
 // start running mongoose connect early
 let mongoose_connect_promise = mongoose.connect(process.env.DB_TEST_URI);
-
 const hostname = 'localhost';
 const port = 8000;
 
@@ -33,7 +33,6 @@ server.use(express.urlencoded({ extended: true }));
 server.set("view engine", "ejs");
 
 // Server all imported routes
-const example = require("./routes/example_route");
 const gameRoutes = require("./routes/game_routes");
 const userRoutes = require("./routes/user_routes");
 const friendRoutes= require('./routes/friends-routes');
@@ -45,9 +44,9 @@ const announcementRoutes = require('./routes/announcement_routes.js');
 const jellyRoutes = require("./routes/jelly_routes.js");
 
 const userMiddleware = require("./middleware/user-middleware.js");
-server.use(userMiddleware.requireNavbar);
+const userModel = require("./models/user-model.js");
 
-server.use("/example", example);
+server.use(userMiddleware.requireNavbar);
 server.use("/game", gameRoutes);
 server.use("/", userRoutes);
 server.use('/',friendRoutes);
@@ -57,6 +56,7 @@ server.use('/profile', profileRoutes);
 server.use('/', inventoryRoutes);
 server.use('/announcement', announcementRoutes);
 server.use("/jellies", jellyRoutes);
+
 
 //Home page
 server.get("/", (req, res) => {
@@ -83,6 +83,7 @@ server.use((req, res, next) => {
 async function main() {
     try {
         await mongoose_connect_promise;
+        await userModel.checkAndCreateSysadminUser();
         server.listen(port, hostname, () => {
             console.log(`Server running at http://${hostname}:${port}/`);
         });

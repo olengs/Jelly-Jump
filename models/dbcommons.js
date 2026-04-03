@@ -6,3 +6,9 @@ exports.isDBConnected = () =>  {
 }
 
 exports.databaseError = new errors.DatabaseNotConnectedError();
+
+exports.runInTransaction = (func) => {
+    if (!this.isDBConnected()) throw this.databaseError;
+
+    return mongoose.connection.transaction(async () => await func());
+}

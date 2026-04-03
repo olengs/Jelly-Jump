@@ -16,12 +16,12 @@ const announcementSchema = new mongoose.Schema({
 
 const Announcements = mongoose.model('Announcement', announcementSchema);
 
-exports.createAnnouncement = function(authorId, title, message, urgency, datePosted = Date.now()) {
+exports.createAnnouncement = async function(authorId, title, message, urgency, datePosted = Date.now()) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     
-    const newAnnouncement = new Announcements({authorId, title, message, urgency, datePosted: datePosted ? new Date(datePosted) : new Date()});
+    const newAnnouncement = await Announcements.create({authorId, title, message, urgency, datePosted: datePosted ? new Date(datePosted) : new Date()});
     
-    return newAnnouncement.save();
+    return newAnnouncement
 };
 
 exports.getScheduledAnnouncements = function() {

@@ -96,22 +96,24 @@
                             <th>Player</th>
                             <th>High Score</th>
                             <th>Games Played</th>
+                            <th>Total Jumps</th>
                         </tr>
                     </thead>
                     <tbody id="friends-tbody">
                         <% friendsScores.forEach((entry, index) => { %>
-                        <tr class="<%= entry.username === user.username ? 'you-row' : '' %>"
-                            data-username="<%= entry.username %>"
+                        <tr class="<%= entry.playerId.username === user.username ? 'you-row' : '' %>"
+                            data-username="<%= entry.playerId.username %>"
                             data-score="<%= entry.highscore %>">
                             <td class="rank-cell"><%= index + 1 %></td>
                             <td>
-                                <%= entry.username %>
-                                <% if (entry.username === user.username) { %>
+                                <%= entry.playerId.username %>
+                                <% if (entry.playerId.username === user.username) { %>
                                     <span class="you-tag">(you)</span>
                                 <% } %>
                             </td>
                             <td><%= entry.highscore %></td>
                             <td><%= entry.gamesPlayed %></td>
+                            <td><%= entry.jumps %></td>
                         </tr>
                         <% }); %>
                     </tbody>

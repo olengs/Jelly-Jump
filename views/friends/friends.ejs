@@ -42,7 +42,7 @@
         <!-- search friend AND THEN ADD FRIEND -->
         <form action="friendslist" method="get" class="add-friend-form">
             <label for="friendName">Name of Friend:</label>
-            <input type="text" id="friendName" name="search" placeholder="Search username..." value="<%= typeof search !== undefined ? search : '' %>">
+            <input type="text" id="friendName" name="search" placeholder="Search username..." value="<%= typeof search !== "undefined" ? search : '' %>">
             <br><br>
             
             <button type="submit">Find</button>

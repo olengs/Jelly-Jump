@@ -13,8 +13,9 @@
 
     <canvas id="board"></canvas>
     <div>
-        <button id="draw1button" class="midbutton" onclick="draw1();">Draw 1</button>
-        <button id="draw10button" class="midbutton" onclick="draw10();">Draw 10</button>
+        Owned Coupons: <span id="coupon_count"><%= coupon_count %></span>
+        <button id="draw1button" class="midbutton" onclick="draw1();" <%= coupon_count < 1 ? "disabled" : "" %>>Draw 1</button>
+        <button id="draw10button" class="midbutton" onclick="draw10();" <%= coupon_count < 10 ? "disabled" : "" %>>Draw 10</button>
     </div>
 
     <input type="hidden" id="playerId" value="<%= playerId %>">
