@@ -6,7 +6,7 @@ class InsufficientFundError extends Error {
 
 class InsufficientCouponsError extends Error {
     constructor() {
-        super("Purchase failed: Insufficient funds");
+        super("Purchase failed: Insufficient Coupons");
     }
 }
 

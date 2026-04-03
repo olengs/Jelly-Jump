@@ -1,10 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Document</title>
+    <meta charset="UTF-8">
+    <title>Jelly</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
 </head>
 <body>
-   <%= jellyData %>
+    <%- include('partials/navbar') %>
+    <table border="2" class="centered">
+        <tr>
+            <th> Nickname </th>
+            <th> Rank</th>
+            <th> Image </th>
+            <th> EXP </th>
+            <th> Upgrade</th>
+            <th> Equip</th>
+        </tr>
+        <% for (let i=0; i < jellyData.characterNicknames.length; ++i) { %>
+            <tr>
+                <td>
+                    <form action="/jellies/edit" method="post">
+                        <input type="hidden" name="jellyId" value="<%= i %>">
+                        <input type="text" name="newNickname" id="newNickname" value="<%= jellyData.characterNicknames[i] %>" style="text-align: center;">
+                    </form>
+                </td>
+                <td><%= jellyData.characterRank[i] %></td>
+                <td><img src ="/game/img/jelly<%= i %>.png" height="40"></td>
+                <td>
+                    <%= jellyData.characterXp[i] %>/ <%= jellyData.upgradeRequirements[i] %>
+                </td>
+                <!-- upgrade button -->
+                <form action="/jellies/upgrade" method="post">
+                    <input type="hidden" name="jellyId" value="<%= i %>">
+                    <td><button type="submit" 
+                        <%= jellyData.characterXp[i] < jellyData.upgradeRequirements[i] ? "disabled" : "" %>
+                    >upgrade</button></td>
+                </form>
+                <td>
+                    <% if (i !== jellyData.currentlyEquippedCharacter) {%>
+                        <form action="/jellies/updateChar" method="post">
+                            <input type="hidden" name="jellyId" value="<%= i %>">
+                            <button type="submit">Equip</button>
+                        </form>
+                    <% } %>
+                </td>
+        <% } %>
+       
+    </table>
    
 </body>
 </html>
