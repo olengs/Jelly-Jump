@@ -10,7 +10,6 @@ mongoose.set('transactionAsyncLocalStorage', true);
 
 // start running mongoose connect early
 let mongoose_connect_promise = mongoose.connect(process.env.DB_TEST_URI);
-
 const hostname = 'localhost';
 const port = 8000;
 
@@ -46,8 +45,8 @@ const jellyRoutes = require("./routes/jelly_routes.js");
 
 const userMiddleware = require("./middleware/user-middleware.js");
 const userModel = require("./models/user-model.js");
-server.use(userMiddleware.requireNavbar);
 
+server.use(userMiddleware.requireNavbar);
 server.use("/game", gameRoutes);
 server.use("/", userRoutes);
 server.use('/',friendRoutes);

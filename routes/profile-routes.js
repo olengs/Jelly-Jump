@@ -29,4 +29,8 @@ router.post("/history/edit/:id", UserMiddleware.requireUser, profileController.p
 // delete - delete a single history entry
 router.post("/history/delete/:id", UserMiddleware.requireUser, profileController.deleteHistory);
 
-module.exports = router; 
+router.get("/viewall", UserMiddleware.requireSysadmin, userController.viewAllUsers);
+router.post("/makeAdmin", UserMiddleware.requireSysadmin, userController.makeAdmin);
+router.post("/makeUser", UserMiddleware.requireSysadmin, userController.makeUser);
+
+module.exports = router;

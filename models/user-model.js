@@ -74,6 +74,12 @@ exports.getUserById = async (id) => {
     return user;
 }
 
+exports.getAllUsers = async () => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    return await User.find({role: {$ne: "sysadmin"}}).lean() || [];
+}
+
 // create reset password for update
 exports.updateUserPassword = async (username, oldPassword, newPassword) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
@@ -116,7 +122,9 @@ exports.deleteFriend = async (id, friendName, session = null) => {
 exports.getUsersByIds = async (ids) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
-    const users = await User.find({_id: { $in: ids }});
+    const users = await User.find({
+        _id: { $in: ids }
+    }).lean();
 
     return users || [];
 }
@@ -130,7 +138,7 @@ exports.getFriendUsernamesForUser = async (user) => {
 
 exports.getTopUsers = async function(search, userId, friendslist) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let results = await User.find();
+    let results = await User.find({role: {$ne: "sysadmin"}}).lean();
 
     if (search) results = utilities.fuzzySearch(search.toLowerCase(), results, false, a => a.username.toLowerCase());
     
@@ -139,9 +147,20 @@ exports.getTopUsers = async function(search, userId, friendslist) {
 };
 
 exports.checkAndCreateSysadminUser = async () => {
-    let user = User.findOne({role: "sysadmin"});
+    console.log("checking for sysadmin");
+    let user = await User.findOne({role: "sysadmin"});
     if (user) return;
 
-    user = User.create({email: "sysadmin@jellyjump.com", passwordHash: bcrypt.hash("JJAdmin@1"), username: "sysadmin", role: "sysadmin"});
+    console.log(user, "creating sysadmin");
+    user = await User.create({email: "sysadmin@jellyjump.com", passwordHash: await bcrypt.hash("JJAdmin@1", 10), username: "sysadmin", role: "sysadmin"});
     if (!user) throw new Error("Unable to create sysadmin");
+}
+
+exports.makeRole = async (userId, role) => {
+    if (role == "player") {
+        return await User.updateOne({_id: userId}, {role});
+    } else if(role == "admin") {
+        return await User.updateOne({_id: userId}, {role});
+    }
+    throw new Error("Invalid role to make");
 }
