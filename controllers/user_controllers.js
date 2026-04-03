@@ -8,7 +8,7 @@ const Scoreboard = require("../models/scoreboard-model.js");
 const dbcommons = require("../models/dbcommons.js");
 
 exports.loginView = (req, res) => {
-    res.render("IAM/login", {});
+    res.render("IAM/login", {islocked: false});
 };
 
 exports.signupView = (req, res) => {
@@ -21,24 +21,39 @@ exports.login = async (req, res) => {
     try {
         if (!username || !password) throw new Error("Empty login field(s)");
 
+        // check if account is locked
+        const locked = await UserModel.isLocked(username);
+        if (locked) {
+            return res.render("IAM/login", {errorMsg: "Account is locked. Please try again after 30 seconds.", islocked: true})
+        }
+
         let user = await UserModel.getUserByName(username);
-
         let password_valid = await bcrypt.compare(password, user.passwordHash);
-        if (!password_valid) throw new Errors.InvalidPasswordError();
-        
-        req.session.user = user;
-        console.log(`Logged in with ${username}, ${password}`);
 
+
+        if (!password_valid){
+            await UserModel.incrementLoginAttempts(username); 
+            let updatedUser = await UserModel.getUserByName(username);
+            let attemptsLeft = 3 - updatedUser.loginAttempts;
+            if (attemptsLeft<=0){
+                return res.render("IAM/login", {errorMsg: "Account locked. Please try again after 30 seconds.", islocked: true});
+            }
+            return res.render("IAM/login", {errorMsg: `Invalid password. ${attemptsLeft} attempt(s) left.`, islocked: false});
+        }
+        
+        await UserModel.resetLoginAttempts(username);
+        req.session.user = user;
+        
     } catch (error) {
         if (error instanceof Errors.UserNotFoundError) {
-            res.render("IAM/login", {errorMsg: error.message});
+            res.render("IAM/login", {errorMsg: error.message, islocked: false});
             return;
-        }
+        };
+
         if (error instanceof Errors.InvalidPasswordError) {
-            //todo: add error to session for display
-            res.render("IAM/login", {errorMsg: error.message});
+            res.render("IAM/login", {errorMsg: error.message, islocked: false});
             return;
-        }
+        };
 
         throw error;
     }
@@ -47,10 +62,10 @@ exports.login = async (req, res) => {
 }
 
 exports.signup = async (req, res) => {
-    const {email, username, password, confirmPassword} = req.body;
-    console.log(email, username, password, confirmPassword);
+    const {email, username, password, confirmPassword, securityAnswer} = req.body;
+    console.log(email, username, password, confirmPassword, securityAnswer);
     //input validation (empty)
-    if (!email || !username || !password || !confirmPassword) {
+    if (!email || !username || !password || !confirmPassword || !securityAnswer) {
         throw new Error("Error, login fields are empty (html is not requiring input)");
     }
     if (password != confirmPassword) {
@@ -60,7 +75,7 @@ exports.signup = async (req, res) => {
 
     try {
         await dbcommons.runInTransaction(async () => {
-            let user = await UserModel.createUser(username, email, password);
+            let user = await UserModel.createUser(username, email, password, securityAnswer);
             await InventoryModel.createInventory(user._id);
             await Jellies.createJellyStore(user._id);
             req.session.user = user;
@@ -88,6 +103,36 @@ exports.logout = async (req, res) => {
         }
         return res.redirect(302, "/");
     });
+}
+
+exports.forgotPasswordView = (req, res) => {
+    res.render("IAM/forgot-password", {errorMsg: null, username: null});
+}
+
+exports.forgotPassword = async (req, res) => {
+    const {username, securityAnswer, newPassword, confirmPassword} = req.body;
+
+    try {
+        if (!username || !securityAnswer || !newPassword || !confirmPassword){
+            return res.render("IAM/forgot-password", {errorMsg: "All fields are required.", username});
+        }
+        if (newPassword !== confirmPassword){
+            return res.render("IAM/forgot-password", {errorMsg: "Passwords do not match.", username});
+        }
+        const isCorrect = await UserModel.verifySecurityAnswer(username, securityAnswer);
+        if (!isCorrect) {
+            return res.render("IAM/forgot-password", {errorMsg: "Wrong security answer.", username});
+        }
+
+        await UserModel.resetPassword(username, newPassword);
+        res.redirect("/login");
+    } catch (error) {
+        if (error instanceof Errors.UserNotFoundError) {
+            return res.render("IAM/forgot-password", {errorMsg: "User not found.", username});
+        }
+        console.log(error);
+        res.render("IAM/forgot-password", {errorMsg: "Something went wrong.", username});
+    }
 }
 
 exports.checkSysadminUser = () => {

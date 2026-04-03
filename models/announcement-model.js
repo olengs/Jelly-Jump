@@ -24,9 +24,15 @@ exports.createAnnouncement = async function(authorId, title, message, urgency, d
     return newAnnouncement
 };
 
+exports.getScheduledAnnouncements = function() {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    return Announcements.find({ datePosted: { $gt: new Date() } }).sort({datePosted: 1}); // soonest first
+};
+
 exports.getAllAnnouncements = function() {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    return Announcements.find().sort({datePosted: -1}); // newest first
+    // $lte -> less than or equal to, ensures only announcements with datePosted in the past are shown
+    return Announcements.find({ datePosted: { $lte: new Date()}}).sort({datePosted: -1});
 };
 
 exports.deleteAnnouncement = function(announcementId) {

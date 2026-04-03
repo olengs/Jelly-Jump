@@ -39,7 +39,7 @@
                         </div>
                         <div class="form-group">
                             <label for="datePosted">Post Date</label>
-                            <input type="datetime-local" name="datePosted" id="datePosted">
+                            <input type="datetime-local" name="datePosted" id="datePosted" min="<%= new Date().toISOString().slice(0,16) %>">
                         </div>
                     </div>
 
@@ -97,9 +97,53 @@
                 </div>
             <% }); %>
         <% } else { %>
-            <p>No announcements yet.</p>
+            <p>No announcements posted yet.</p>
         <% } %>
 
+        <% if (user && user.role === 'admin' && scheduled.length > 0) { %>
+            <div class="scheduled-section">
+                <h2>Scheduled Posts</h2>
+                <% scheduled.forEach(a => { %>
+                    <div class="announcement-card">
+                        <span class="posted-date">Scheduled for: <%= new Date(a.datePosted).toLocaleString() %></span>
+                        <h3><%= a.title %></h3>
+                        <p><%= a.message %></p>
+                        <span class="urgency-badge urgency-<%= a.urgency %>"><%= a.urgency.charAt(0).toUpperCase() + a.urgency.slice(1) %></span>
+                        <div class="admin-actions">
+                            <form action="/announcement/delete/<%= a._id %>" method="POST">
+                                <button type="submit" class="delete-btn">Delete</button>
+                            </form>
+                            <button class="edit-btn" onclick="document.getElementById('edit-modal-<%= a._id %>').style.display='flex'">Edit</button>
+                        </div>
+                        <!-- reuse same edit modal -->
+                        <div id="edit-modal-<%= a._id %>" class="modal-overlay" style="display:none;">
+                            <div class="modal-card">
+                                <h2>Edit Announcement</h2>
+                                <form action="/announcement/edit/<%= a._id %>" method="POST">
+                                    <label>Title:</label>
+                                    <input type="text" name="title" value="<%= a.title %>" maxlength="100">
+                                    <label>Message:</label>
+                                    <textarea name="message" rows="4" maxlength="1000"><%= a.message %></textarea>
+                                    <label>Urgency:</label>
+                                    <select name="urgency">
+                                        <option value="low" <%= a.urgency === 'low' ? 'selected' : '' %>>Low</option>
+                                        <option value="medium" <%= a.urgency === 'medium' ? 'selected' : '' %>>Medium</option>
+                                        <option value="high" <%= a.urgency === 'high' ? 'selected' : '' %>>High</option>
+                                    </select>
+                                    <label>Post Date:</label>
+                                    <input type="datetime-local" name="datePosted" id="datePosted" min="<%= new Date().toISOString().slice(0,16) %>">
+                                    
+                                    <div class="modal-actions">
+                                        <button type="submit" class="submit-btn">Save Changes</button>
+                                        <button type="button" class="cancel-btn" onclick="document.getElementById('edit-modal-<%= a._id %>').style.display='none'">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
     </div>
 </body>
 </html>
