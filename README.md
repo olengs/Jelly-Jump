@@ -15,6 +15,10 @@ Unzip the file and go into the working directory of the unzipped folder.
 # 1c. Run steps:
 
 Create a file called .env and add the following text to the file:
+```
+DB_TEST_URI=mongodb+srv://<username>:<password>@test.nsxaa5l.mongodb.net/
+SESSION_SECRET=<your-secret>
+```
 
 Install the required packages and run:
 ```
