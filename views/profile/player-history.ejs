@@ -21,7 +21,9 @@
                 <th>Character</th>
                 <th>Currency Earned</th>
                 <th>Jumps</th>
-                <th>Action</th>
+                <% if (self.role == "admin" || self.role == "sysadmin") { %>
+                    <th>Action</th>
+                <% } %>
             </tr>
 
             <% history.forEach(function(entry) { %>
@@ -31,14 +33,16 @@
                 <td>Jelly <%= entry.character || '-' %></td>
                 <td><%= entry.currencyEarned %></td>
                 <td><%= entry.jumps %></td>
-                <td>
-                    <form action="/profile/history/edit/<%= entry._id %>" method="get">
-                        <button type="submit">Edit</button>
-                    </form>
-                    <form action="/profile/history/delete/<%= entry._id %>" method="post">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
+                <% if (self.role == "admin" || self.role == "sysadmin") { %>
+                    <td>
+                        <form action="/profile/history/edit/<%= entry._id %>" method="get">
+                            <button type="submit">Edit</button>
+                        </form>
+                        <form action="/profile/history/delete/<%= entry._id %>" method="post">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                <% } %>
             </tr>
         <% }) %>
         </table>
