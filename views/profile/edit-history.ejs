@@ -11,7 +11,7 @@
         <p><%= error %></p>
     <% } %> 
 
-    <form action="/history/edit/<%= record._id %>" method="post">
+    <form action="/profile/history/edit/<%= record._id %>" method="post">
         <label>Score:</label><br>
         <input type="number" name="score" value="<%= record.score %>" required><br><br>
 
@@ -22,7 +22,7 @@
         <input type="number" name="currencyEarned" value="<%= record.currencyEarned %>"><br><br>
 
         <button type="submit">Save Changes</button>
-        <a href="/history">Cancel</a>
+        <a href="/profile/history">Cancel</a>
     </form>
 
 </body>

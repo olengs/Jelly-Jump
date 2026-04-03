@@ -63,7 +63,6 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
     const {email, username, password, confirmPassword, securityAnswer} = req.body;
-    console.log("user signed up:", email, username, password, confirmPassword, securityAnswer);
     //input validation (empty)
     if (!email || !username || !password || !confirmPassword || !securityAnswer) {
         throw new Error("Error, login fields are empty (html is not requiring input)");
@@ -79,7 +78,7 @@ exports.signup = async (req, res) => {
             await InventoryModel.createInventory(user._id);
             await Jellies.createJellyStore(user._id);
             req.session.user = user;
-            //console.log(`User created: id: ${user.id}, uname: ${user.username}, email: ${user.email}`);
+            console.log("user signed up:", email, username, password, confirmPassword, securityAnswer);
         });
     } catch (error) {
         if (error instanceof Errors.UserAlreadyExistsError || error instanceof Errors.UsernameFormatError) {

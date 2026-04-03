@@ -29,7 +29,7 @@ exports.EndGameUpdateController = async (req, res) => {
     try {
         await dbcommons.runInTransaction(async () => {
             await scoreboardModel.upsertScore(playerId, highscore, jumps);
-            await GameRecordModel.createRecord(playerId, endTime, highscore, character, amtEarned);
+            await GameRecordModel.createRecord(playerId, endTime, highscore, character, amtEarned, jumps);
             await InventoryModel.addCurrency(playerId, amtEarned);
         });
         res.json({});

@@ -35,7 +35,7 @@ exports.requireAdmin = async (req, res, next) => {
         return res.redirect(302, "/login");
     }
 
-    if (req.session.user.role === "admin") {
+    if (req.session.user.role === "admin" || req.session.user.role === "sysadmin") {
         return next();
     }
 

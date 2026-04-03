@@ -249,10 +249,10 @@ exports.resetPassword = async (username, newPassword) => {
 
 exports.updateUser = async (id, username, bio) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let username_exists = User.findOne({username, _id: {$ne: id}}).lean();
-    if (await username_exists) throw new errors.UserAlreadyExistsError();
+    let username_exists = await User.findOne({username, _id: {$ne: id}}).lean();
+    if (username_exists) throw new errors.UserAlreadyExistsError();
     if (!username.match(username_regex)) throw new errors.UsernameFormatError();
-    return await User.findByIdAndUpdate(id, {username, bio}, {new: true});
+    return await User.findByIdAndUpdate(id, {username, bio}, {returnDocument: "after"}).lean();
 }
 
 exports.checkAndCreateSysadminUser = async () => {
