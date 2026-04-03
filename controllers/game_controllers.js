@@ -46,8 +46,8 @@ exports.gachaViewController = async (req, res) => {
     res.render("game/gacha", {playerId: user._id, coupon_count: inventory.numberOfCoupons });
 };
 
-const rebateMin = 10;
-const rebateMax = 100;
+const rebateMin = 5;
+const rebateMax = 20;
 const NumCharacters = 12;
 const characterRate = 0.5;
 let gachaPull = () => {

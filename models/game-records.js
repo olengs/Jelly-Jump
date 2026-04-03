@@ -4,7 +4,7 @@ const UserModel = require("./user-model");
 
 const gameRecordsSchema = new mongoose.Schema({
     playerId: {type: mongoose.Types.ObjectId, required: true},
-    timestamp: {type: Date, required: true, default: Date.now, expires: '10m'},
+    timestamp: {type: Date, required: true, default: Date.now},
     score: {type: Number, required: true},
     character: {type: String, required: true, default: "0"},
     currencyEarned: {type: Number, required: true, default: 0},
