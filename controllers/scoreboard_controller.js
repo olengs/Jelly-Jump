@@ -30,13 +30,7 @@ exports.getLeaderboard = async (req, res) => {
 
         // include the user's own id too
         friendIds.push(user._id.toString());
-        friendsScores = await Scoreboard.getFriendScoresByPlayerIds(friendIds, ascending);
-
-        // attach username to friend scores too
-        for (let i = 0; i < friendsScores.length; i++) {
-            const friendUser = await User.getUserById(friendsScores[i].playerId);
-            friendsScores[i].username = friendUser.username;
-        };
+        friendsScores = await Scoreboard.getFriendScoresByPlayerIds(friendIds, ascending, true);
     };
 
     res.render('scoreboard/scoreboard', {topLimit, total, limit, sort: req.query.sort || 'desc', search, user, friendsScores});

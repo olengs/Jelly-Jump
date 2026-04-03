@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Jelly Jump</title>
+    <link rel="stylesheet" href="/style/globalstyle.css">
+    <link rel="stylesheet" href="/style/scoreboard.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="scoreboard-wrapper">
+        <h1>🏆 All Users</h1>
+
+        <!-- Global Tab -->
+        <div id="tab-global" class="tab-content">
+            <% if (users && users.length > 0) { %>
+                <table id="global-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th colspan="2">Role</th>
+                            <th>View Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody id="global-tbody">
+                        <% users.forEach(entry => { %>
+                        <tr>
+                            <td><%= entry.email %></td>
+                            <td><%= entry.username %></td>
+                            <td><%= entry.role %></td>
+                            <td>
+                                <% if (entry.role !== "admin") { %>
+                                    <form action="/profile/makeadmin" method="post">
+                                        <input type="hidden" name="userId" value="<%= entry._id %>">
+                                        <button type="submit">Make Admin</button>
+                                    </form>
+                                <% } else {%>
+                                    <form action="/profile/makeUser" method="post">
+                                        <input type="hidden" name="userId" value="<%= entry._id %>">
+                                        <button type="submit">Make User</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                            <td>
+                                <form action="/profile/view/<%= entry._id %>" method="get">
+                                    <button type="submit">View</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <p id="global-empty" style="display:none;">No users yet!</p>
+            <% } else { %>
+                <p>No users yet!</p>
+            <% } %>
+        </div>
+</body>
+</html>

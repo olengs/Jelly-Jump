@@ -73,16 +73,16 @@ let draw10 = async () => {
         for (let j = 0; j < 5; ++j) {
             let x = Math.floor(boardWidth * (0.13 + 0.18 * j) - cardWidth * 0.5);
             let y = Math.floor(boardHeight * (0.33 + 0.33 * i) - cardHeight * 0.5);
-            console.log(x, y);
-            ret = new Card(results[i * 2 + j]);
+            //console.log(x, y);
+            ret = new Card(results[i * 5 + j]);
             ret.draw(context, x, y);
         }
     }
 }
 
 let draw = async (count) => {
-    draw1button.hidden = true;
-    draw10button.hidden = true;
+    draw1button.disabled = true;
+    draw10button.disabled = true;
     let playerId = document.getElementById("playerId").value;
     const data = JSON.stringify({playerId, pullCount: count});
     refreshBoard();
@@ -93,17 +93,24 @@ let draw = async (count) => {
             body: data,
         });
         if (!resp.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            console.log(`HTTP error! Status: ${response.status}`);
+            window.location.href = '/error.html';
         }
         let respjson = await resp.json();
         if (respjson.Error) {
-            throw new Error(`Gacha pull error: ${resp.Error || "Unknown Error"}`);
+            console.log(`Gacha pull error: ${JSON.stringify(respjson.Error, null, 2)}`);
+            window.location.href = '/error.html';
+            return;
         }
-        draw1button.hidden = false;
-        draw10button.hidden = false;
+        const coupon_count_elem = document.getElementById("coupon_count");
+        const remainder = Number(coupon_count_elem.textContent) - Number(count);
+        coupon_count_elem.textContent = remainder;
+        draw1button.disabled = (remainder < 1) ? true : false;
+        draw10button.disabled = (remainder < 10) ? true : false;
         return respjson;
     } catch (error) {
         console.log(error);
+        window.location.href = '/error.html';
         return null;
     }
 }

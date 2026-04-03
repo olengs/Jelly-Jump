@@ -84,7 +84,7 @@ class Spawner {
         this.timeToSpawn -= dt;
         console.log(this.timeToSpawn);
         if (this.timeToSpawn <= 0) {
-            this.timeToSpawn = Math.random() * 1.5 + 0.3;
+            this.timeToSpawn = Math.random() * 2 + 0.8;
             return true;
         }
         return false;
@@ -255,13 +255,18 @@ let updateHighscore = async (highscore, jumps) => {
             body: data,
         });
         if (!resp.ok) {
-            throw new Error(`Network response error: ${resp.Error}`);
+            console.log(`Network response error: ${resp.Error}`);
+            window.location.href = '/error.html';
+            return;
         }
         let respjson = await resp.json();
         if (respjson.Error) {
-            throw new Error(`Update highscore error: ${resp.Error}`);
+            console.log(`Update highscore error: ${resp.Error}`);
+            window.location.href = '/error.html';
+            return;
         }
     } catch (error) {
         console.log(error);
+        window.location.href = '/error.html';
     }
 }
