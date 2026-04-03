@@ -59,7 +59,7 @@ let refreshBoard = () => {
 
 let draw1 = async () => {
     let {results} = await draw(1);
-    console.log(results);
+    //console.log(results);
     let x = Math.floor(boardWidth * 0.5 - cardWidth * 0.5);
     let y = Math.floor(boardHeight * 0.5 - cardHeight * 0.5);
     ret = new Card(results[0]);
@@ -68,7 +68,7 @@ let draw1 = async () => {
 
 let draw10 = async () => {
     let {results} = await draw(10);
-    console.log(results);
+    //console.log(results);
     for (let i = 0; i < 2; ++i) {
         for (let j = 0; j < 5; ++j) {
             let x = Math.floor(boardWidth * (0.13 + 0.18 * j) - cardWidth * 0.5);
