@@ -9,7 +9,7 @@ exports.getProfile = async (req, res) => {
     const user = req.session.user;
 
     if (user._id == req.params.id) {
-        return res.redirect(302, "/profile");
+        return res.redirect(302, "/profile/view");
     }
 
     // //show highscore only
@@ -35,7 +35,8 @@ exports.getEditProfile = async (req, res) => {
 exports.postEditProfile = async (req, res) => {
     const { newUsername , newBio } = req.body;
     try {
-        await User.updateUser(req.session.user._id, newBio, req.session.user.username == newUsername ? null : newUsername);
+        console.log(req.session.user.username, newUsername);
+        req.session.user = await User.updateUser(req.session.user._id, req.session.user.username == newUsername ? "" : newUsername, newBio);    
     } catch (error) {
         if (error instanceof errors.UserAlreadyExistsError) {
             return res.render("profile/edit-profile", {user: req.session.user, errorMsg: error.message});
@@ -45,7 +46,7 @@ exports.postEditProfile = async (req, res) => {
         // rethrow back to main handler
         throw error;
     }
-    return res.redirect("/profile");
+    return res.redirect("/profile/view");
 }
 
 // read - get game history page 
@@ -59,11 +60,11 @@ exports.getHistory = async (req, res) => {
 // delete - delete a single history entity 
 exports.deleteHistory = async (req, res) => {
     await GameRecords.deleteRecord(req.params.id, req.session.user._id); 
-    res.redirect("/history");
+    res.redirect("/profile/history");
 }
 
 exports.getEditHistory = async (req, res) => {
-    const record = await GameRecords.getRecordById(req.params.id);
+    const record = await GameRecords.getPlayerHistory(req.params.id);
     res.render("profile/edit-history", {record: record, error: null});
 }
 
@@ -78,5 +79,5 @@ exports.postEditHistory = async (req, res) => {
     }
 
     await GameRecords.updateRecord(req.params.id, {score, character, currencyEarned});
-    res.redirect("/history");
+    res.redirect("/profile/history");
 }
