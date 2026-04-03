@@ -69,8 +69,8 @@ passowrd: 123#Qwer
     - View 
 
 10. Profile [/profile/view]
-    - Edit Profile [/profile/edit]
-    - View Other User Profiles [/profile/edit/:playerId]
+    - Edit Profile [/profile/edit/:id]
+    - View Other User Profiles [/profile/view/:playerId]
     - Player History [/profile/history/:playerId] 
 
 11. Shop [/purchase]
