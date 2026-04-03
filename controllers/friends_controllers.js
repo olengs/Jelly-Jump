@@ -2,12 +2,8 @@ const userModel = require("../models/user-model");
 const errors = require("../models/errors");
 
 async function buildFriendsPageData(user, search = '') {
-    const friendslist = await userModel.getFriendUsernamesForUser(user);
-    const friendsIdlist = [];
-    for (const fname of friendslist) {
-        const u = await userModel.getUserByName(fname);
-        friendsIdlist.push({name: fname, id: u._id});
-    }
+    const friendsIdlist = await userModel.getFriendUsernamesAndIdsForUser(user);
+    const friendslist = friendsIdlist.map(a => a.id);
 
     const freshUser = await userModel.getUserById(user._id);
     const incomingRequests = await userModel.getPendingRequestUsernames(freshUser);
@@ -24,17 +20,11 @@ async function buildFriendsPageData(user, search = '') {
 
 exports.friendslist = async(req,res) => { // looks at the User document and find the id in the bracker
     const search = req.query.search || '';
-    const user = req.session && req.session.user ? req.session.user : null;
+    const user = req.session.user;
 
-    const friendslist = await userModel.getFriendUsernamesForUser(req.session.user);
-    let friendsIdlist = [];
-    
-    for (const fname of friendslist) {
-        const u = await userModel.getUserByName(fname);
-        friendsIdlist.push({name: fname, id: u._id});
-    }
-
-    const incomingRequests = await userModel.getPendingRequestUsernames(await userModel.getUserById(user._id));
+    const friendsIdlist = await userModel.getFriendUsernamesAndIdsForUser(user);
+    const friendslist = friendsIdlist.map(a => a.id);
+    const incomingRequests = await userModel.getPendingRequestUsernames(user);
 
     if (search != '') {
         const topLimit = await userModel.getTopUsers(search, user._id, friendslist);
@@ -130,17 +120,11 @@ exports.deleteFriend = async(req,res) =>{
     return res.redirect('/friendslist');
 };
 
-exports.whatsProfile = async(req,res)=>{
-    let idArray=[]
-    const friendslist=  await userModel.getFriendUsernamesForUser(req.session.user) // [ben,mary ]
-    for ( let aname of friendslist){
-        const new1= await userModel.getUserByName(aname)// entire user
-        idArray.push(new1._id)
+// exports.whatsProfile = async(req,res)=>{
+//     const friendslist=  await userModel.getFriendUsernamesAndIdsForUser(req.session.user) // [ben,mary ]
 
-    }
-    res.render('friends/friends',{idArray, error:'',friendslist})
-    
-}
+//     res.render('friends/friends',{idArray, error:'',friendslist})
+// }
 
 
 // for the addfriend. can use for each is can but need to do the isthere= false and isthere= true because foreach will loop through everything . EBERYTHING bfr it ends. thats why use .some can already

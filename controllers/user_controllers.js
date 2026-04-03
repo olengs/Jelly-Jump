@@ -5,11 +5,11 @@ const bcrypt = require("bcrypt");
 const JelliesModel = require("../models/jelly-model.js");
 
 exports.loginView = (req, res) => {
-    res.render("IAM/login", {errorMsg: null, islocked: false});
+    res.render("IAM/login", {islocked: false});
 };
 
 exports.signupView = (req, res) => {
-    res.render("IAM/signup", {errorMsg: null});
+    res.render("IAM/signup", {});
 }
 
 exports.login = async (req, res) => {

@@ -96,18 +96,6 @@ exports.deleteUser = async (id) => {
     return 
 };
 
-// exports.addFriend = async (id, friendName) => {
-//     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-
-//     const friend = await User.findOne({username: friendName}).lean();
-
-//     if (!friend) throw new errors.UserNotFoundError(friendName);    
-
-//     return await User.findByIdAndUpdate(id, {
-//         $push: {friends: friend._id}
-//     });
-// }
-
 exports.sendFriendRequest = async (senderId, friendName) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
 
@@ -125,6 +113,7 @@ exports.acceptFriendRequest = async (userId, requesterName) => {
     const requester = await User.findOne({username: requesterName}).lean();
     if (!requester) throw new errors.UserNotFoundError(requesterName);
 
+    //TODO: transaction
     await User.findByIdAndUpdate(userId, {
         $addToSet: {friends: requester._id},
         $pull: {friendRequests: requester._id}
@@ -185,6 +174,15 @@ exports.getFriendUsernamesForUser = async (user) => {
     return friends.map(a => a.username);
 }
 
+exports.getFriendUsernamesAndIdsForUser = async (user) => {
+    if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+    if (!user) throw new Error("User is not found");
+    const friends = (await exports.getUsersByIds(user.friends)) || [];
+    return friends.map(a => {
+        return {name: a.username, id: a._id}
+    });
+}
+
 exports.getTopUsers = async function(search, userId, friendslist) {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
     let results = await User.find();
@@ -201,6 +199,9 @@ exports.getTopUsers = async function(search, userId, friendslist) {
 // lock account after 3 failed login attempts 
 exports.incrementLoginAttempts = async (username) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
+
+    // TODO: transaction
+
     await User.updateOne({username}, { $inc: { loginAttempts: 1 } });
     let user = await User.findOne({username}).lean();
     if (user && user.loginAttempts >= 3) {
