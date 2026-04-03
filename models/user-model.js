@@ -247,11 +247,14 @@ exports.resetPassword = async (username, newPassword) => {
     return await User.updateOne({username}, {passwordHash: newPasswordHash});
 }
 
-exports.updateUser = async (id, username, bio) => {
+exports.updateUser = async (id, oldusername, username, bio) => {
     if (!dbcommons.isDBConnected()) throw dbcommons.databaseError;
-    let username_exists = await User.findOne({username, _id: {$ne: id}}).lean();
-    if (username_exists) throw new errors.UserAlreadyExistsError();
-    if (!username.match(username_regex)) throw new errors.UsernameFormatError();
+
+    if (oldusername != username) {
+        let username_exists = await User.findOne({username, _id: {$ne: id}}).lean();
+        if (username_exists) throw new errors.UserAlreadyExistsError();
+        if (!username.match(username_regex)) throw new errors.UsernameFormatError();
+    }
     return await User.findByIdAndUpdate(id, {username, bio}, {returnDocument: "after"}).lean();
 }
 

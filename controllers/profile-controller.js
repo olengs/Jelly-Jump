@@ -36,7 +36,7 @@ exports.postEditProfile = async (req, res) => {
     const { newUsername , newBio } = req.body;
     try {
         console.log(req.session.user.username, newUsername);
-        req.session.user = await User.updateUser(req.session.user._id, req.session.user.username == newUsername ? "" : newUsername, newBio);    
+        req.session.user = await User.updateUser(req.session.user._id, req.session.user.username, newUsername, newBio);    
     } catch (error) {
         if (error instanceof errors.UserAlreadyExistsError) {
             return res.render("profile/edit-profile", {user: req.session.user, errorMsg: error.message});
