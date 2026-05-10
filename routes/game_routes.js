@@ -7,10 +7,10 @@ router.use(express.json());
 
 router.get("/", userMiddleware.requireUser, GameControllers.gameViewController);
 
-router.post("/endgame", GameControllers.EndGameUpdateController);
+router.post("/endgame", userMiddleware.requireUser, GameControllers.EndGameUpdateController);
 
 router.get("/gacha", userMiddleware.requireUser, GameControllers.gachaViewController);
 
-router.post("/pull", GameControllers.gachaPullRequest);
+router.post("/pull", userMiddleware.requireUser, GameControllers.gachaPullRequest);
 
 module.exports = router;
