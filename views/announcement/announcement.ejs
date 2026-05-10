@@ -61,7 +61,7 @@
                     <p><%= a.message %></p>
                     <span class="urgency-badge urgency-<%= a.urgency %>"><%= a.urgency.charAt(0).toUpperCase() + a.urgency.slice(1) %></span>
 
-                    <% if (user && user.role === 'admin' || user.role === "sysadmin") { %>
+                    <% if (user && (user.role === 'admin' || user.role === "sysadmin")) { %>
                         <div class="admin-actions">
                             <form action="/announcement/delete/<%= a._id %>" method="POST">
                                 <button type="submit" class="delete-btn">Delete</button>
